@@ -16,7 +16,7 @@ connectDB();
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://your-frontend.vercel.app' // ← update after frontend deploy
+    'wandervault-frontend.vercel.app' // ← update after frontend deploy
   ],
   credentials: true
 }));
