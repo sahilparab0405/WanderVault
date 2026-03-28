@@ -61,29 +61,43 @@ export default function Itinerary() {
   }, {});
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-gray-400">Loading itinerary...</p>
+    <div className="min-h-screen flex items-center justify-center bg-bg page-content">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-text-secondary text-sm font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
+          Loading itinerary...
+        </p>
+      </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-blue-600">🌍 WanderVault</h1>
-        <Link to={`/trip/${id}`} className="text-sm text-gray-500 hover:text-gray-700">
+    <div className="min-h-screen bg-bg page-content">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+
+        {/* Back link */}
+        <Link
+          to={`/trip/${id}`}
+          className="inline-flex items-center gap-1 text-text-secondary hover:text-navy text-sm no-underline transition-colors duration-150 mb-6"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
           ← Back to Trip
         </Link>
-      </nav>
 
-      <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">📅 Itinerary</h2>
-            {trip && <p className="text-gray-500 text-sm">{trip.name} • {trip.destination}</p>}
+            <h2 className="text-2xl font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>📅 Itinerary</h2>
+            {trip && (
+              <p className="text-text-secondary text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>
+                {trip.name} • {trip.destination}
+              </p>
+            )}
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+            id="itinerary-add-toggle"
+            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-150 cursor-pointer border-0"
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
             {showForm ? '✕ Cancel' : '+ Add Item'}
           </button>
@@ -91,61 +105,73 @@ export default function Itinerary() {
 
         {/* Add Form */}
         {showForm && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 border border-blue-100">
-            <h4 className="font-semibold text-gray-700 mb-4">New Itinerary Item</h4>
+          <div className="bg-card rounded-xl p-6 mb-6 border border-primary-100" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <h4 className="font-semibold text-navy mb-4 text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>New Itinerary Item</h4>
             <form onSubmit={handleAdd} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Day Number</label>
+                  <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Day Number</label>
                   <input
                     type="number" required placeholder="1"
                     min="1"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    id="itinerary-day"
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                    style={{ fontFamily: "'Inter', sans-serif" }}
                     value={form.day}
                     onChange={(e) => setForm({ ...form, day: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Time</label>
+                  <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Time</label>
                   <input
                     type="time"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    id="itinerary-time"
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                    style={{ fontFamily: "'Inter', sans-serif" }}
                     value={form.time}
                     onChange={(e) => setForm({ ...form, time: e.target.value })}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Activity Title</label>
+                <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Activity Title</label>
                 <input
                   type="text" required placeholder="Visit Baga Beach"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  id="itinerary-title"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Location</label>
+                <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Location</label>
                 <input
                   type="text" placeholder="Baga Beach, Goa"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  id="itinerary-location"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
                   value={form.location}
                   onChange={(e) => setForm({ ...form, location: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Notes</label>
+                <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Notes</label>
                 <textarea
                   placeholder="Carry sunscreen, rent a scooter..."
                   rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  id="itinerary-description"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy resize-y"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                 />
               </div>
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium transition"
+                id="itinerary-submit"
+                className="w-full bg-primary hover:bg-primary-dark text-white py-2 rounded-lg text-sm font-semibold transition-colors duration-150 cursor-pointer border-0"
+                style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 Add to Itinerary ✓
               </button>
@@ -155,47 +181,53 @@ export default function Itinerary() {
 
         {/* Itinerary Timeline */}
         {Object.keys(groupedByDay).length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
+          <div className="text-center py-16 bg-card rounded-xl border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
             <p className="text-4xl mb-3">🗺️</p>
-            <p className="text-gray-400">No itinerary yet. Plan your days!</p>
+            <p className="text-text-secondary text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>No itinerary yet. Plan your days!</p>
           </div>
         ) : (
           <div className="space-y-6">
             {Object.entries(groupedByDay).map(([day, dayItems]) => (
               <div key={day}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                  <span
+                    className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold"
+                    style={{ fontFamily: "'Poppins', sans-serif" }}
+                  >
                     {day}
                   </span>
-                  <div className="flex-1 h-px bg-gray-200" />
+                  <div className="flex-1 h-px bg-border" />
                 </div>
                 <div className="space-y-3 ml-2">
                   {dayItems.map(item => (
                     <div key={item._id}
-                      className="bg-white rounded-xl shadow-sm p-4 flex justify-between items-start hover:shadow-md transition"
+                      className="bg-card rounded-xl p-4 flex justify-between items-start border border-border hover:border-primary-100 transition-all duration-150"
+                      style={{ boxShadow: 'var(--shadow-sm)' }}
                     >
                       <div className="flex gap-3">
-                        <div className="w-1 bg-blue-400 rounded-full min-h-full" />
+                        <div className="w-1 bg-primary rounded-full min-h-full" />
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold text-gray-800">{item.title}</p>
+                            <p className="font-semibold text-navy text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>{item.title}</p>
                             {item.time && (
-                              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                              <span className="text-xs bg-bg text-text-secondary px-2 py-0.5 rounded-full border border-border-light"
+                                style={{ fontFamily: "'Inter', sans-serif" }}
+                              >
                                 🕐 {item.time}
                               </span>
                             )}
                           </div>
                           {item.location && (
-                            <p className="text-sm text-gray-500 mt-0.5">📍 {item.location}</p>
+                            <p className="text-sm text-text-secondary mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>📍 {item.location}</p>
                           )}
                           {item.description && (
-                            <p className="text-sm text-gray-400 mt-1">{item.description}</p>
+                            <p className="text-sm text-text-muted mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>{item.description}</p>
                           )}
                         </div>
                       </div>
                       <button
                         onClick={() => handleDelete(item._id)}
-                        className="text-red-400 hover:text-red-600 text-sm ml-3 shrink-0"
+                        className="text-danger/60 hover:text-danger text-sm ml-3 shrink-0 cursor-pointer bg-transparent border-0"
                       >🗑️</button>
                     </div>
                   ))}

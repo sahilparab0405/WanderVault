@@ -24,69 +24,125 @@ export default function CreateTrip() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-xl mx-auto">
+    <div className="min-h-screen bg-bg page-content">
+      <div className="max-w-xl mx-auto px-4 sm:px-6">
         <div className="flex items-center gap-3 mb-6 mt-4">
-          <Link to="/dashboard" className="text-gray-400 hover:text-gray-600">← Back</Link>
-          <h2 className="text-2xl font-bold text-gray-800">Create New Trip ✈️</h2>
+          <Link
+            to="/dashboard"
+            className="text-text-secondary hover:text-navy transition-colors duration-150 no-underline text-sm"
+            style={{ fontFamily: "'Inter', sans-serif" }}
+          >
+            ← Back
+          </Link>
+          <h2
+            className="text-2xl font-bold text-navy"
+            style={{ fontFamily: "'Poppins', sans-serif" }}
+          >
+            Create New Trip ✈️
+          </h2>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm p-6">
+        <div
+          className="bg-card rounded-xl p-6 border border-border"
+          style={{ boxShadow: 'var(--shadow-card)' }}
+        >
           {error && (
-            <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm">{error}</div>
+            <div
+              className="bg-danger-light text-danger p-3 rounded-lg mb-4 text-sm font-medium border border-danger/20"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              {error}
+            </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Trip Name</label>
+              <label
+                className="block text-sm font-medium text-navy mb-1"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                Trip Name
+              </label>
               <input
                 type="text" required placeholder="Goa Summer Trip"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                id="create-trip-name"
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                style={{ fontFamily: "'Inter', sans-serif" }}
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+              <label
+                className="block text-sm font-medium text-navy mb-1"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                Destination
+              </label>
               <input
                 type="text" required placeholder="Goa, India"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                id="create-trip-destination"
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                style={{ fontFamily: "'Inter', sans-serif" }}
                 value={form.destination}
                 onChange={(e) => setForm({ ...form, destination: e.target.value })}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <label
+                  className="block text-sm font-medium text-navy mb-1"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  Start Date
+                </label>
                 <input
                   type="date" required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  id="create-trip-start"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
                   value={form.startDate}
                   onChange={(e) => setForm({ ...form, startDate: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <label
+                  className="block text-sm font-medium text-navy mb-1"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  End Date
+                </label>
                 <input
                   type="date" required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  id="create-trip-end"
+                  className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
                   value={form.endDate}
                   onChange={(e) => setForm({ ...form, endDate: e.target.value })}
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Total Budget (₹)</label>
+              <label
+                className="block text-sm font-medium text-navy mb-1"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                Total Budget (₹)
+              </label>
               <input
                 type="number" required placeholder="10000"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                id="create-trip-budget"
+                className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                style={{ fontFamily: "'Inter', sans-serif" }}
                 value={form.budget}
                 onChange={(e) => setForm({ ...form, budget: e.target.value })}
               />
             </div>
             <button
               type="submit" disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition"
+              id="create-trip-submit"
+              className="w-full bg-primary hover:bg-primary-dark disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg transition-colors duration-150 cursor-pointer border-0 text-sm"
+              style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {loading ? 'Creating...' : 'Create Trip 🚀'}
             </button>

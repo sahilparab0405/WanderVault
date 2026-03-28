@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -25,36 +26,64 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-2">🌍 WanderVault</h1>
-        <p className="text-center text-gray-500 mb-6">Welcome back, traveler!</p>
+    <div className="min-h-screen bg-bg flex items-center justify-center p-4">
+      <div
+        className="bg-card rounded-xl p-8 w-full max-w-md border border-border"
+        style={{ boxShadow: 'var(--shadow-lg)' }}
+      >
+        {/* Logo */}
+        <div className="flex justify-center mb-2">
+          <Logo size="large" />
+        </div>
+        <p
+          className="text-center text-text-secondary mb-6 text-sm"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          Welcome back, traveler!
+        </p>
 
         {error && (
-          <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm">
+          <div
+            className="bg-danger-light text-danger p-3 rounded-lg mb-4 text-sm font-medium border border-danger/20"
+            style={{ fontFamily: "'Inter', sans-serif" }}
+          >
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label
+              className="block text-sm font-medium text-navy mb-1"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              Email
+            </label>
             <input
               type="email"
               required
               placeholder="you@email.com"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              id="login-email"
+              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+              style={{ fontFamily: "'Inter', sans-serif" }}
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label
+              className="block text-sm font-medium text-navy mb-1"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              Password
+            </label>
             <input
               type="password"
               required
               placeholder="••••••••"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              id="login-password"
+              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+              style={{ fontFamily: "'Inter', sans-serif" }}
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
@@ -62,15 +91,20 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition"
+            id="login-submit"
+            className="w-full bg-primary hover:bg-primary-dark disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg transition-colors duration-150 cursor-pointer border-0 text-sm"
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p
+          className="text-center text-sm text-text-secondary mt-5"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
           Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 font-medium hover:underline">
+          <Link to="/register" className="text-primary font-semibold hover:underline no-underline">
             Register
           </Link>
         </p>
