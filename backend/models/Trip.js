@@ -15,6 +15,19 @@ const tripSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  latitude: {
+    type: Number,
+    default: null
+  },
+  longitude: {
+    type: Number,
+    default: null
+  },
+  travelMode: {
+    type: String,
+    enum: ['flight', 'train', 'bus', 'car'],
+    default: 'flight'
+  },
   startDate: {
     type: Date,
     required: true

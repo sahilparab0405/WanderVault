@@ -16,7 +16,7 @@ router.get('/', protect, async (req, res) => {
 // POST create new trip
 router.post('/', protect, async (req, res) => {
   try {
-    const { name, destination, startDate, endDate, budget } = req.body;
+    const { name, destination, startDate, endDate, budget, travelMode, latitude, longitude } = req.body;
 
     const trip = await Trip.create({
       user: req.user._id,
@@ -24,7 +24,10 @@ router.post('/', protect, async (req, res) => {
       destination,
       startDate,
       endDate,
-      budget
+      budget,
+      travelMode: travelMode || 'flight',
+      latitude: latitude || null,
+      longitude: longitude || null
     });
 
     res.status(201).json(trip);
