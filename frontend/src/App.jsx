@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import CreateTrip from './pages/CreateTrip';
 import TripDetail from './pages/TripDetail';
 import Itinerary from './pages/Itinerary';
+import BudgetDemo from './pages/BudgetDemo';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -44,6 +45,7 @@ function App() {
         <Route path="/trip/:id/itinerary" element={
           <PrivateRoute><Itinerary /></PrivateRoute>
         } />
+        <Route path="/budget-demo" element={<BudgetDemo />} />
       </Routes>
     </BrowserRouter>
   );

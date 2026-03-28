@@ -2,6 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import NearbyPlaces from '../components/NearbyPlaces';
+import BudgetTracker from '../components/BudgetTracker';
 
 /* Lazy-load the map component (Leaflet is heavy — only load when needed) */
 const TripMap = lazy(() => import('../components/TripMap'));
@@ -268,23 +269,8 @@ export default function TripDetail() {
               </div>
             </div>
 
-            {/* Category Summary */}
-            {Object.keys(categoryTotals).length > 0 && (
-              <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <h3 className="font-bold text-navy text-sm mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>Spending by Category</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {Object.entries(categoryTotals).map(([cat, total]) => (
-                    <div key={cat} className="bg-bg rounded-xl p-3 flex items-center gap-3 border border-border-light">
-                      <span className="text-2xl">{CATEGORY_ICONS[cat]}</span>
-                      <div>
-                        <p className="text-xs text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>{cat}</p>
-                        <p className="font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>₹{total?.toLocaleString()}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Budget Analytics */}
+            <BudgetTracker trip={trip} expenses={expenses} />
 
             {/* Expenses Section */}
             <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
