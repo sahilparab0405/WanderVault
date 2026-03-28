@@ -8,6 +8,7 @@ import CreateTrip from './pages/CreateTrip';
 import TripDetail from './pages/TripDetail';
 import Itinerary from './pages/Itinerary';
 import BudgetDemo from './pages/BudgetDemo';
+import AccommodationDemo from './pages/AccommodationDemo';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -46,6 +47,7 @@ function App() {
           <PrivateRoute><Itinerary /></PrivateRoute>
         } />
         <Route path="/budget-demo" element={<BudgetDemo />} />
+        <Route path="/accommodation-demo" element={<AccommodationDemo />} />
       </Routes>
     </BrowserRouter>
   );

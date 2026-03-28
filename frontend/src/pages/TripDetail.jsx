@@ -422,6 +422,7 @@ export default function TripDetail() {
 
               {/* Nearby Places */}
               <NearbyPlaces
+                tripId={trip._id}
                 latitude={trip.latitude}
                 longitude={trip.longitude}
                 onPlacesLoaded={setNearbyPlaces}

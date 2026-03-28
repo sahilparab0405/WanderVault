@@ -11,6 +11,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import AccommodationList from './AccommodationList';
 
 /* ─── Category Configuration ─── */
 const CATEGORIES = [
@@ -188,7 +189,7 @@ function PlaceCard({ place }) {
    Main NearbyPlaces Component
    ═══════════════════════════════════════ */
 
-export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded }) {
+export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded, tripId }) {
   const [places, setPlaces] = useState({
     restaurant: [],
     hotel: [],
@@ -374,12 +375,16 @@ export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded }) {
             </p>
           </div>
         ) : (
-          /* Place cards */
-          <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
-            {activePlaces.map((place) => (
-              <PlaceCard key={place.id} place={place} />
-            ))}
-          </div>
+          /* Place lists logic */
+          activeTab === 'hotel' ? (
+            <AccommodationList places={activePlaces} tripId={tripId} />
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+              {activePlaces.map((place) => (
+                <PlaceCard key={place.id} place={place} />
+              ))}
+            </div>
+          )
         )}
       </div>
 
