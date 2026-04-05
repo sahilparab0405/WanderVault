@@ -1,13 +1,10 @@
 /**
  * axios.js — Centralised Axios instance for WanderVault API
  *
- * FIX 1:
- *  - Uses VITE_API_URL from env (falls back to localhost)
- *  - Attaches JWT token from localStorage on every request
- *  - Intercepts 401 responses → auto-logout + redirect to /login
- *
- * FIX 7 (Browser Compatibility):
- *  - No Chrome-specific APIs — uses standard Axios + localStorage
+ * CORS FIX: withCredentials must be true when the backend sends
+ * Access-Control-Allow-Credentials: true. Without it, the browser
+ * strips cookies and the backend rejects the request — both sides
+ * must agree or neither work.
  */
 
 import axios from 'axios';
@@ -18,13 +15,14 @@ const BASE_URL =
 
 const API = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000, // 15 s — accounts for Render cold starts
+  timeout: 15000,         // 15 s — covers Render cold-start delay
+  withCredentials: true,  // !! REQUIRED when backend uses credentials:true !!
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// ── REQUEST interceptor: attach token ────────────────────────
+// ── REQUEST interceptor: attach JWT token ─────────────────────
 API.interceptors.request.use(
   (config) => {
     try {
@@ -33,26 +31,24 @@ API.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch {
-      // localStorage unavailable (private browsing edge case)
+      // localStorage unavailable (private browsing / Edge quirk)
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ── RESPONSE interceptor: handle 401 token expiry ────────────
+// ── RESPONSE interceptor: 401 → auto-logout ──────────────────
 API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid — clear auth state and redirect
       try {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       } catch {
-        // ignore storage errors
+        // ignore
       }
-      // Only redirect if not already on an auth page
       const { pathname } = window.location;
       if (pathname !== '/login' && pathname !== '/register') {
         window.location.href = '/login';

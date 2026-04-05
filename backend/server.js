@@ -12,68 +12,112 @@ const app = express();
 
 connectDB();
 
-// ── CORS — allow both local dev and production frontend ──────
+// ─────────────────────────────────────────────────────────────
+// CORS Configuration
+//
+// Root cause of the CORS error:
+//   1. app.options('*', cors()) was called WITHOUT the options
+//      object, so pre-flight responses had NO Allow-Origin header.
+//   2. callback(new Error()) on blocked origins returned a 500
+//      with NO CORS headers, making the browser misreport it.
+//   3. axios was missing withCredentials:true while the server
+//      was sending credentials:true — a mismatch that blocks cookies.
+//
+// Fix: define ONE shared corsOptions object and use it everywhere.
+// ─────────────────────────────────────────────────────────────
+
 const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://localhost:5174',
   'https://wandervault-frontend.vercel.app',
+  'https://wandervault.vercel.app',
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g. curl, Postman, mobile apps)
+    // Allow requests with no origin (Postman, curl, mobile apps)
     if (!origin) return callback(null, true);
-    if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
-    callback(new Error(`CORS blocked for origin: ${origin}`));
+
+    if (ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Return false (not an Error) so Express still sends a proper
+    // HTTP response — just without the Allow-Origin header.
+    // This avoids the misleading "CORS header values are valid" message.
+    console.warn(`[CORS] Blocked origin: ${origin}`);
+    return callback(null, false);
   },
-  credentials: true,
+  credentials: true,                                         // Allow cookies / Authorization header
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+  optionsSuccessStatus: 200,                                 // Some browsers (IE11) choke on 204
+};
 
-// Pre-flight for all routes
-app.options('*', cors());
+// Apply to ALL routes — must be before any route definitions
+app.use(cors(corsOptions));
 
+// !! KEY FIX !! — pre-flight OPTIONS MUST use the SAME corsOptions
+// Previously this was: app.options('*', cors())   ← no options = broken
+app.options('*', cors(corsOptions));
+
+// ─────────────────────────────────────────────────────────────
+// Body parsers
+// ─────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// ── API Routes ───────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// API Routes
+// ─────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/itinerary', itineraryRoutes);
 
-// ── Health check ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// Health check (useful for Render & uptime monitors)
+// ─────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({ message: '🌍 WanderVault API is running!', status: 'ok' });
 });
 
-// ── 404 fallback for unknown API routes ──────────────────────
+// ─────────────────────────────────────────────────────────────
+// 404 fallback
+// ─────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// ── Global error handler ─────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// Global error handler
+// NOTE: Must be LAST — 4 arguments is what Express uses to detect
+// error-handling middleware.
+// ─────────────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err.message);
   const statusCode = err.status || 500;
   res.status(statusCode).json({ message: err.message || 'Internal server error' });
 });
 
-// ── FIX 2: Keep-alive ping every 14 minutes (Render free tier) ──
+// ─────────────────────────────────────────────────────────────
+// Keep-alive ping every 14 minutes (prevents Render free-tier sleep)
+// ─────────────────────────────────────────────────────────────
 const KEEP_ALIVE_URL = 'https://wandervault-backend.onrender.com';
-const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes
+const PING_INTERVAL = 14 * 60 * 1000;
 
 const keepAlive = () => {
   fetch(KEEP_ALIVE_URL, { signal: AbortSignal.timeout(10000) })
-    .then(res => console.log(`🏓 Keep-alive ping OK [${res.status}]`))
-    .catch(err => console.warn('⚠️  Keep-alive ping failed:', err.message));
+    .then(r => console.log(`🏓 Keep-alive ping OK [${r.status}]`))
+    .catch(e => console.warn('⚠️  Keep-alive ping failed:', e.message));
 };
 
-// Only ping in production (not local dev)
 if (process.env.NODE_ENV !== 'development') {
   setInterval(keepAlive, PING_INTERVAL);
 }
 
+// ─────────────────────────────────────────────────────────────
+// Start server
+// ─────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
