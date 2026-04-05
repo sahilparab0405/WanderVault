@@ -59,7 +59,7 @@ app.use(cors(corsOptions));
 
 // !! KEY FIX !! — pre-flight OPTIONS MUST use the SAME corsOptions
 // Previously this was: app.options('*', cors())   ← no options = broken
-app.options('*', cors(corsOptions));
+app.options('/(.*)', cors(corsOptions));
 
 // ─────────────────────────────────────────────────────────────
 // Body parsers
