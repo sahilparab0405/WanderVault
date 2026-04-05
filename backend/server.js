@@ -54,12 +54,10 @@ const corsOptions = {
   optionsSuccessStatus: 200,                                 // Some browsers (IE11) choke on 204
 };
 
-// Apply to ALL routes — must be before any route definitions
+// Apply to ALL routes (including pre-flight OPTIONS) — must be before routes.
+// Note: app.use(cors()) automatically responds to OPTIONS pre-flight requests.
+// A separate app.options() call is NOT needed and crashes on path-to-regexp v8+.
 app.use(cors(corsOptions));
-
-// !! KEY FIX !! — pre-flight OPTIONS MUST use the SAME corsOptions
-// Previously this was: app.options('*', cors())   ← no options = broken
-app.options('/(.*)', cors(corsOptions));
 
 // ─────────────────────────────────────────────────────────────
 // Body parsers
