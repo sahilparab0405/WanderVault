@@ -1,8 +1,16 @@
 /**
- * Skeleton — Loading skeleton components
+ * Skeleton.jsx — Loading skeleton components
  *
- * Provides shimmer/pulse animations for content placeholders
- * while data is being fetched. Used across the app.
+ * FIX 6: Skeleton loaders on all pages, no blank white screens
+ * FIX 7: Uses only standard CSS — works on Chrome + Edge
+ *
+ * Exports:
+ *  - SkeletonBlock (default)     — generic shimmer block
+ *  - TripCardSkeleton            — boarding-pass card
+ *  - StatCardSkeleton            — dashboard stat card
+ *  - TripDetailSkeleton          — full trip detail page skeleton
+ *  - ItinerarySkeleton           — itinerary page skeleton
+ *  - PageSpinner                 — centered spinner for page transitions
  */
 
 /* ─── Base shimmer block ─── */
@@ -89,6 +97,130 @@ export function StatCardSkeleton() {
     >
       <SkeletonBlock className="h-8 w-12 mx-auto mb-2" />
       <SkeletonBlock className="h-3 w-16 mx-auto" />
+    </div>
+  );
+}
+
+/* ─── Trip Detail Page Skeleton ─── */
+export function TripDetailSkeleton() {
+  return (
+    <div className="min-h-screen bg-bg page-content">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
+        {/* Back link */}
+        <SkeletonBlock className="h-4 w-32 mb-6 rounded" />
+
+        <div className="grid gap-6 md:grid-cols-5">
+          {/* Left column */}
+          <div className="space-y-6 md:col-span-3">
+            {/* Trip header card */}
+            <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <SkeletonBlock className="h-7 w-2/3 mb-2 rounded" />
+              <SkeletonBlock className="h-4 w-1/3 mb-4 rounded" />
+              <div className="flex gap-2 mb-4">
+                <SkeletonBlock className="h-5 w-16 rounded-full" />
+                <SkeletonBlock className="h-5 w-28 rounded-full" />
+                <SkeletonBlock className="h-5 w-14 rounded-full" />
+              </div>
+              <SkeletonBlock className="h-3 w-full rounded-full mb-2" />
+              <div className="flex justify-between">
+                <SkeletonBlock className="h-3 w-20 rounded" />
+                <SkeletonBlock className="h-3 w-20 rounded" />
+              </div>
+            </div>
+
+            {/* Budget tracker card */}
+            <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <SkeletonBlock className="h-5 w-40 mb-4 rounded" />
+              <SkeletonBlock className="h-48 w-full rounded-lg" />
+            </div>
+
+            {/* Expenses card */}
+            <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <SkeletonBlock className="h-5 w-32 mb-4 rounded" />
+              {[1, 2, 3].map(i => (
+                <div key={i} className="flex items-center justify-between py-3 border-b border-border-light last:border-0">
+                  <div className="flex items-center gap-3">
+                    <SkeletonBlock className="w-8 h-8 rounded-full" />
+                    <div>
+                      <SkeletonBlock className="h-4 w-28 mb-1 rounded" />
+                      <SkeletonBlock className="h-3 w-20 rounded" />
+                    </div>
+                  </div>
+                  <SkeletonBlock className="h-5 w-16 rounded" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right column */}
+          <div className="md:col-span-2 space-y-6">
+            <SkeletonBlock className="h-64 w-full rounded-xl" />
+            <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <SkeletonBlock className="h-5 w-32 mb-4 rounded" />
+              {[1, 2, 3].map(i => (
+                <SkeletonBlock key={i} className="h-20 w-full rounded-xl mb-3" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Itinerary Page Skeleton ─── */
+export function ItinerarySkeleton() {
+  return (
+    <div className="min-h-screen bg-bg page-content">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
+        <SkeletonBlock className="h-4 w-28 mb-6 rounded" />
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <SkeletonBlock className="h-7 w-40 mb-2 rounded" />
+            <SkeletonBlock className="h-4 w-56 rounded" />
+          </div>
+          <SkeletonBlock className="h-9 w-24 rounded-lg" />
+        </div>
+        {[1, 2].map(g => (
+          <div key={g} className="mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <SkeletonBlock className="h-7 w-16 rounded-full" />
+              <SkeletonBlock className="h-0.5 flex-1 rounded" />
+            </div>
+            {[1, 2].map(i => (
+              <SkeletonBlock key={i} className="h-20 w-full rounded-xl mb-3" />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Centered page spinner ─── */
+export function PageSpinner({ message = 'Loading...' }) {
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center bg-bg page-content"
+      role="status"
+      aria-label={message}
+    >
+      <div className="flex flex-col items-center gap-3">
+        {/* Standard border spinner — no Chrome-only features */}
+        <div
+          className="w-10 h-10 rounded-full animate-spin"
+          style={{
+            border: '3px solid var(--color-border)',
+            borderTopColor: 'var(--color-primary)',
+          }}
+        />
+        <p
+          className="text-text-secondary text-sm font-medium"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          {message}
+        </p>
+      </div>
     </div>
   );
 }

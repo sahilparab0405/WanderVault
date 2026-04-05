@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import ErrorBoundary from './components/ErrorBoundary';
+import { PageSpinner } from './components/Skeleton';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -11,46 +13,74 @@ import BudgetDemo from './pages/BudgetDemo';
 import AccommodationDemo from './pages/AccommodationDemo';
 import DashboardDemo from './pages/DashboardDemo';
 
+/**
+ * PrivateRoute — redirects unauthenticated users to /login
+ * FIX 6: Shows PageSpinner (not blank) while auth state loads
+ */
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-bg">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-text-secondary text-sm font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
-          Loading...
-        </p>
-      </div>
-    </div>
-  );
-  return user ? children : <Navigate to="/login" />;
+  if (loading) return <PageSpinner message="Loading..." />;
+  return user ? children : <Navigate to="/login" replace />;
 };
 
 function App() {
   return (
     <BrowserRouter>
-      {/* Navbar renders on all pages — it self-hides on auth pages via useAuth check */}
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={
-          <PrivateRoute><Dashboard /></PrivateRoute>
-        } />
-        <Route path="/create-trip" element={
-          <PrivateRoute><CreateTrip /></PrivateRoute>
-        } />
-        <Route path="/trip/:id" element={
-          <PrivateRoute><TripDetail /></PrivateRoute>
-        } />
-        <Route path="/trip/:id/itinerary" element={
-          <PrivateRoute><Itinerary /></PrivateRoute>
-        } />
-        <Route path="/budget-demo" element={<BudgetDemo />} />
-        <Route path="/accommodation-demo" element={<AccommodationDemo />} />
-        <Route path="/dashboard-demo" element={<DashboardDemo />} />
-      </Routes>
+      {/* Global error boundary — catches any render crash */}
+      <ErrorBoundary>
+        {/* Navbar renders on all pages — self-hides on auth pages */}
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <ErrorBoundary>
+                  <Dashboard />
+                </ErrorBoundary>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/create-trip"
+            element={
+              <PrivateRoute>
+                <ErrorBoundary>
+                  <CreateTrip />
+                </ErrorBoundary>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/trip/:id"
+            element={
+              <PrivateRoute>
+                <ErrorBoundary>
+                  <TripDetail />
+                </ErrorBoundary>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/trip/:id/itinerary"
+            element={
+              <PrivateRoute>
+                <ErrorBoundary>
+                  <Itinerary />
+                </ErrorBoundary>
+              </PrivateRoute>
+            }
+          />
+          <Route path="/budget-demo" element={<BudgetDemo />} />
+          <Route path="/accommodation-demo" element={<AccommodationDemo />} />
+          <Route path="/dashboard-demo" element={<DashboardDemo />} />
+          {/* 404 fallback */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

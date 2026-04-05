@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import API from '../api/axios';
+import { ItinerarySkeleton } from '../components/Skeleton';
 
 export default function Itinerary() {
   const { id } = useParams();
@@ -60,16 +61,8 @@ export default function Itinerary() {
     return acc;
   }, {});
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-bg page-content">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-text-secondary text-sm font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
-          Loading itinerary...
-        </p>
-      </div>
-    </div>
-  );
+  /* FIX 6: Full skeleton instead of spinner */
+  if (loading) return <ItinerarySkeleton />;
 
   return (
     <div className="min-h-screen bg-bg page-content">

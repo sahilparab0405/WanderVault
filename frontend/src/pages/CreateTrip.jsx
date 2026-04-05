@@ -202,8 +202,12 @@ export default function CreateTrip() {
       case 1: return form.name.trim().length >= 2;
       case 2: return form.destination.trim().length >= 2;
       case 3: return form.travelMode !== '';
-      case 4: return form.startDate !== '' && form.endDate !== '' && form.endDate >= form.startDate;
-      case 5: return form.budget !== '' && Number(form.budget) > 0;
+      case 4: {
+        if (!form.startDate || !form.endDate) return false;
+        // Compare date strings directly (YYYY-MM-DD) — works on all browsers
+        return form.endDate >= form.startDate;
+      }
+      case 5: return form.budget !== '' && Number(form.budget) >= 1;
       default: return false;
     }
   };
@@ -345,8 +349,13 @@ export default function CreateTrip() {
                 maxLength={60}
               />
               {form.name.trim().length > 0 && form.name.trim().length < 2 && (
-                <p className="text-warning text-xs mt-2 text-center" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  Name must be at least 2 characters
+                <p className="text-danger text-xs mt-2 text-center" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  ⚠️ Name must be at least 2 characters
+                </p>
+              )}
+              {form.name.trim().length >= 2 && (
+                <p className="text-success text-xs mt-2 text-center" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  ✓ Looks good!
                 </p>
               )}
             </div>
@@ -594,10 +603,15 @@ export default function CreateTrip() {
                 </div>
               )}
 
-              {/* Validation message */}
+              {/* Validation messages */}
               {form.startDate && form.endDate && form.endDate < form.startDate && (
                 <p className="text-danger text-xs mt-2 text-center" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  End date cannot be before start date
+                  ⚠️ End date cannot be before start date
+                </p>
+              )}
+              {form.startDate && !form.endDate && (
+                <p className="text-text-muted text-xs mt-2 text-center" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  Now select your return date
                 </p>
               )}
             </div>
@@ -627,10 +641,22 @@ export default function CreateTrip() {
                   style={{ fontFamily: "'Poppins', sans-serif" }}
                   value={form.budget}
                   min="1"
-                  onChange={(e) => setForm({ ...form, budget: e.target.value })}
+                  step="1"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    // Prevent negative values
+                    if (val === '' || Number(val) >= 0) {
+                      setForm({ ...form, budget: val });
+                    }
+                  }}
                   onKeyDown={handleKeyDown}
                 />
               </div>
+              {form.budget !== '' && Number(form.budget) < 1 && (
+                <p className="text-danger text-xs mt-2 text-center" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  ⚠️ Budget must be at least ₹1
+                </p>
+              )}
 
               {/* Quick amount buttons */}
               <div className="flex flex-wrap gap-2 mt-4 justify-center">

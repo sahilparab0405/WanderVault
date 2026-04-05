@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import NearbyPlaces from '../components/NearbyPlaces';
 import BudgetTracker from '../components/BudgetTracker';
+import { TripDetailSkeleton, PageSpinner } from '../components/Skeleton';
 
 /* Lazy-load the map component (Leaflet is heavy — only load when needed) */
 const TripMap = lazy(() => import('../components/TripMap'));
@@ -37,6 +38,7 @@ export default function TripDetail() {
   });
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
+  const [formErrors, setFormErrors] = useState({});
 
   /* ─── Active tab for mobile: overview / explore ─── */
   const [activeSection, setActiveSection] = useState('overview');
@@ -62,10 +64,27 @@ export default function TripDetail() {
 
   const handleAddExpense = async (e) => {
     e.preventDefault();
+
+    // FIX 5: Client-side validation
+    const errs = {};
+    if (!form.title.trim() || form.title.trim().length < 2)
+      errs.title = 'Title must be at least 2 characters';
+    if (!form.amount || Number(form.amount) <= 0)
+      errs.amount = 'Enter a valid amount greater than 0';
+    if (Object.keys(errs).length > 0) {
+      setFormErrors(errs);
+      return;
+    }
+    setFormErrors({});
+
     setFormLoading(true);
     setError('');
     try {
-      const { data } = await API.post(`/expenses/${id}`, form);
+      const { data } = await API.post(`/expenses/${id}`, {
+        ...form,
+        title: form.title.trim(),
+        amount: Number(form.amount),
+      });
       setExpenses([...expenses, data.expense]);
       setTrip(prev => ({
         ...prev,
@@ -74,6 +93,7 @@ export default function TripDetail() {
       }));
       if (data.budgetExceeded) setBudgetAlert(true);
       setForm({ title: '', amount: '', category: 'Food', date: '' });
+      setFormErrors({});
       setShowForm(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add expense');
@@ -110,16 +130,8 @@ export default function TripDetail() {
 
   const travelMode = trip ? (TRAVEL_MODES[trip.travelMode] || TRAVEL_MODES.flight) : null;
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-bg page-content">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-text-secondary text-sm font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
-          Loading trip details...
-        </p>
-      </div>
-    </div>
-  );
+  /* FIX 6: Full skeleton instead of blank screen */
+  if (loading) return <TripDetailSkeleton />;
 
   if (!trip) return (
     <div className="min-h-screen flex items-center justify-center bg-bg page-content">
@@ -297,29 +309,47 @@ export default function TripDetail() {
                       style={{ fontFamily: "'Inter', sans-serif" }}
                     >{error}</div>
                   )}
-                  <form onSubmit={handleAddExpense} className="space-y-3">
+                  <form onSubmit={handleAddExpense} className="space-y-3" noValidate>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Title</label>
                         <input
-                          type="text" required placeholder="Hotel booking"
+                          type="text" placeholder="Hotel booking"
                           id="expense-title"
-                          className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                          className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 bg-white text-navy ${
+                            formErrors.title ? 'border-danger focus:border-danger' : 'border-border focus:border-primary'
+                          }`}
                           style={{ fontFamily: "'Inter', sans-serif" }}
                           value={form.title}
-                          onChange={(e) => setForm({ ...form, title: e.target.value })}
+                          onChange={(e) => {
+                            setForm({ ...form, title: e.target.value });
+                            if (formErrors.title) setFormErrors(p => ({ ...p, title: '' }));
+                          }}
                         />
+                        {formErrors.title && (
+                          <p className="text-xs text-danger mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>{formErrors.title}</p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Amount (₹)</label>
                         <input
-                          type="number" required placeholder="500"
+                          type="number" placeholder="500"
                           id="expense-amount"
-                          className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                          min="1"
+                          step="any"
+                          className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 bg-white text-navy ${
+                            formErrors.amount ? 'border-danger focus:border-danger' : 'border-border focus:border-primary'
+                          }`}
                           style={{ fontFamily: "'Inter', sans-serif" }}
                           value={form.amount}
-                          onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                          onChange={(e) => {
+                            setForm({ ...form, amount: e.target.value });
+                            if (formErrors.amount) setFormErrors(p => ({ ...p, amount: '' }));
+                          }}
                         />
+                        {formErrors.amount && (
+                          <p className="text-xs text-danger mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>{formErrors.amount}</p>
+                        )}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -350,12 +380,19 @@ export default function TripDetail() {
                       </div>
                     </div>
                     <button
-                      type="submit" disabled={formLoading}
+                      type="submit" disabled={formLoading || !form.title.trim() || !form.amount || Number(form.amount) <= 0}
                       id="expense-submit"
-                      className="w-full bg-primary hover:bg-primary-dark disabled:opacity-60 text-white py-2 rounded-lg text-sm font-semibold transition-colors duration-150 cursor-pointer border-0"
+                      className="w-full bg-primary hover:bg-primary-dark disabled:opacity-60 disabled:cursor-not-allowed text-white py-2 rounded-lg text-sm font-semibold transition-colors duration-150 cursor-pointer border-0 flex items-center justify-center gap-2"
                       style={{ fontFamily: "'Inter', sans-serif" }}
                     >
-                      {formLoading ? 'Adding...' : 'Add Expense ✓'}
+                      {formLoading ? (
+                        <>
+                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Adding...
+                        </>
+                      ) : (
+                        'Add Expense ✓'
+                      )}
                     </button>
                   </form>
                 </div>
@@ -402,12 +439,15 @@ export default function TripDetail() {
             <div className={`md:col-span-2 space-y-6 ${
               activeSection !== 'explore' ? 'hidden md:block' : ''
             }`}>
-              {/* Map */}
+              {/* Map — FIX 7: PageSpinner uses standard CSS, no border-3 */}
               <Suspense fallback={
-                <div className="bg-card rounded-xl border border-border p-8 text-center animate-pulse"
+                <div className="bg-card rounded-xl border border-border p-8 text-center"
                   style={{ boxShadow: 'var(--shadow-card)', height: '350px' }}>
                   <div className="flex flex-col items-center justify-center h-full gap-3">
-                    <span className="text-4xl">🗺️</span>
+                    <div
+                      className="w-8 h-8 rounded-full animate-spin"
+                      style={{ border: '2px solid var(--color-border)', borderTopColor: 'var(--color-primary)' }}
+                    />
                     <p className="text-text-muted text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>Loading map...</p>
                   </div>
                 </div>
