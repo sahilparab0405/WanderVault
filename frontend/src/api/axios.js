@@ -1,22 +1,10 @@
-/**
- * axios.js — Centralised Axios instance for WanderVault API
- *
- * CORS FIX: withCredentials must be true when the backend sends
- * Access-Control-Allow-Credentials: true. Without it, the browser
- * strips cookies and the backend rejects the request — both sides
- * must agree or neither work.
- */
-
 import axios from 'axios';
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  'http://localhost:5000/api';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const API = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000,         // 15 s — covers Render cold-start delay
-  withCredentials: true,  // !! REQUIRED when backend uses credentials:true !!
+  timeout: 15000, 
   headers: {
     'Content-Type': 'application/json',
   },
@@ -31,7 +19,7 @@ API.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch {
-      // localStorage unavailable (private browsing / Edge quirk)
+      // localStorage unavailable
     }
     return config;
   },
