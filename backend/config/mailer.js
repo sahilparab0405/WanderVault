@@ -1,14 +1,19 @@
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
 const sendBudgetAlert = async (userEmail, userName, tripName, budget, totalExpense) => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log('Email not configured - skipping');
+    return;
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  });
+
   try {
     await transporter.sendMail({
       from: `"WanderVault 🌍" <${process.env.EMAIL_USER}>`,
@@ -43,7 +48,7 @@ const sendBudgetAlert = async (userEmail, userName, tripName, budget, totalExpen
     });
     console.log('📧 Budget alert email sent!');
   } catch (error) {
-    console.error('Email error:', error.message);
+    console.log('Email error:', error.message);
   }
 };
 
