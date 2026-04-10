@@ -11,17 +11,13 @@ const app = express();
 
 connectDB();
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 
-    'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 
-    'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') {
-    return res.status(200).json({});
-  }
-  next();
-});
+const cors = require('cors');
+
+app.use(cors({
+  origin: "https://wandervault-frontend.vercel.app",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 // Body parsers
 app.use(express.json({ limit: '10mb' }));
