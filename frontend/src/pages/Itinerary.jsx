@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import API from '../api/axios';
 import { ItinerarySkeleton } from '../components/Skeleton';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default function Itinerary() {
   const { id } = useParams();
@@ -116,20 +118,33 @@ export default function Itinerary() {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Time</label>
-                  <input
-                    type="time"
+                  <DatePicker
+                    selected={form.time ? new Date(`1970-01-01T${form.time}:00`) : null}
+                    onChange={(date) => {
+                      if (date) {
+                        const hours = String(date.getHours()).padStart(2, '0');
+                        const mins = String(date.getMinutes()).padStart(2, '0');
+                        setForm({ ...form, time: `${hours}:${mins}` });
+                      } else {
+                        setForm({ ...form, time: '' });
+                      }
+                    }}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="Time"
+                    dateFormat="h:mm aa"
+                    placeholderText="hh:mm"
                     id="itinerary-time"
                     className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                    value={form.time}
-                    onChange={(e) => setForm({ ...form, time: e.target.value })}
+                    wrapperClassName="w-full"
                   />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Activity Title</label>
                 <input
-                  type="text" required placeholder="Visit Baga Beach"
+                  type="text" required placeholder="e.g., Visit a local landmark"
                   id="itinerary-title"
                   className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
                   style={{ fontFamily: "'Inter', sans-serif" }}

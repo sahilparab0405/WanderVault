@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 /* ═══════════════════════════════════════
    Step Configuration
@@ -551,22 +553,25 @@ export default function CreateTrip() {
                   >
                     Start Date
                   </label>
-                  <input
-                    type="date"
-                    autoFocus
-                    id="step-start-date"
-                    className="w-full border border-border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                    value={form.startDate}
-                    min={new Date().toISOString().split('T')[0]}
-                    onChange={(e) => {
-                      setForm({ ...form, startDate: e.target.value });
-                      // Reset end date if it's before new start date
-                      if (form.endDate && e.target.value > form.endDate) {
-                        setForm(prev => ({ ...prev, startDate: e.target.value, endDate: '' }));
+                  <DatePicker
+                    selected={form.startDate ? new Date(form.startDate + 'T12:00:00') : null}
+                    onChange={(date) => {
+                      if (date) {
+                        const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                        setForm({ ...form, startDate: dateString });
+                        if (form.endDate && dateString > form.endDate) {
+                          setForm(prev => ({ ...prev, startDate: dateString, endDate: '' }));
+                        }
+                      } else {
+                        setForm({ ...form, startDate: '' });
                       }
                     }}
-                    onKeyDown={handleKeyDown}
+                    minDate={new Date()}
+                    dateFormat="yyyy-MM-dd"
+                    placeholderText="Select start date"
+                    id="step-start-date"
+                    className="w-full border border-border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
+                    wrapperClassName="w-full"
                   />
                 </div>
                 <div>
@@ -576,15 +581,22 @@ export default function CreateTrip() {
                   >
                     End Date
                   </label>
-                  <input
-                    type="date"
+                  <DatePicker
+                    selected={form.endDate ? new Date(form.endDate + 'T12:00:00') : null}
+                    onChange={(date) => {
+                      if (date) {
+                        const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                        setForm({ ...form, endDate: dateString });
+                      } else {
+                        setForm({ ...form, endDate: '' });
+                      }
+                    }}
+                    minDate={form.startDate ? new Date(form.startDate + 'T12:00:00') : new Date()}
+                    dateFormat="yyyy-MM-dd"
+                    placeholderText="Select end date"
                     id="step-end-date"
                     className="w-full border border-border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                    value={form.endDate}
-                    min={form.startDate || new Date().toISOString().split('T')[0]}
-                    onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-                    onKeyDown={handleKeyDown}
+                    wrapperClassName="w-full"
                   />
                 </div>
               </div>

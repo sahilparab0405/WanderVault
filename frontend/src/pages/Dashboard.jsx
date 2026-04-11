@@ -116,40 +116,40 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-10">
-            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-border transition-all hover:border-primary-100 flex flex-col relative overflow-hidden group" style={{ boxShadow: 'var(--shadow-sm)' }}>
+            <div className="bg-white rounded-2xl p-3 sm:p-5 border border-border transition-all hover:border-primary-100 flex flex-col relative overflow-hidden group" style={{ boxShadow: 'var(--shadow-sm)' }}>
               <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary mb-3">
                 <span className="text-xl">✈️</span>
               </div>
-              <p className="text-3xl font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>{trips.length}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>{trips.length}</p>
               <p className="text-text-secondary text-xs sm:text-sm mt-0.5 font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>Total Trips</p>
               <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out" />
             </div>
 
-            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-border transition-all hover:border-primary-100 flex flex-col relative overflow-hidden group" style={{ boxShadow: 'var(--shadow-sm)' }}>
+            <div className="bg-white rounded-2xl p-3 sm:p-5 border border-border transition-all hover:border-primary-100 flex flex-col relative overflow-hidden group" style={{ boxShadow: 'var(--shadow-sm)' }}>
               <div className="w-10 h-10 rounded-full bg-navy/5 flex items-center justify-center text-navy mb-3">
                 <span className="text-xl">💸</span>
               </div>
-              <p className="text-3xl font-bold text-navy uppercase" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              <p className="text-2xl sm:text-3xl font-bold text-navy uppercase" style={{ fontFamily: "'Poppins', sans-serif" }}>
                 ₹{totalSpent >= 1000 ? (totalSpent / 1000).toFixed(1) + 'K' : totalSpent}
               </p>
               <p className="text-text-secondary text-xs sm:text-sm mt-0.5 font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>Total Spent</p>
               <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-navy/5 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out" />
             </div>
 
-            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-border transition-all hover:border-success/30 flex flex-col relative overflow-hidden group" style={{ boxShadow: 'var(--shadow-sm)' }}>
+            <div className="bg-white rounded-2xl p-3 sm:p-5 border border-border transition-all hover:border-success/30 flex flex-col relative overflow-hidden group" style={{ boxShadow: 'var(--shadow-sm)' }}>
               <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success mb-3">
                 <span className="text-xl">🛡️</span>
               </div>
-              <p className="text-3xl font-bold text-success" style={{ fontFamily: "'Poppins', sans-serif" }}>{onBudget}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-success" style={{ fontFamily: "'Poppins', sans-serif" }}>{onBudget}</p>
               <p className="text-text-secondary text-xs sm:text-sm mt-0.5 font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>On Budget</p>
               <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-success/10 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out" />
             </div>
 
-            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-border transition-all hover:border-danger/30 flex flex-col relative overflow-hidden group" style={{ boxShadow: 'var(--shadow-sm)' }}>
+            <div className="bg-white rounded-2xl p-3 sm:p-5 border border-border transition-all hover:border-danger/30 flex flex-col relative overflow-hidden group" style={{ boxShadow: 'var(--shadow-sm)' }}>
               <div className="w-10 h-10 rounded-full bg-danger/10 flex items-center justify-center text-danger mb-3">
                 <span className="text-xl">⚠️</span>
               </div>
-              <p className="text-3xl font-bold text-danger" style={{ fontFamily: "'Poppins', sans-serif" }}>{overBudget}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-danger" style={{ fontFamily: "'Poppins', sans-serif" }}>{overBudget}</p>
               <p className="text-text-secondary text-xs sm:text-sm mt-0.5 font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>Over Budget</p>
               <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-danger/10 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out" />
             </div>
@@ -195,12 +195,19 @@ export default function Dashboard() {
             <div className="absolute inset-0 bg-primary/5 point-events-none" style={{ backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)', backgroundSize: '24px 24px', opacity: 0.5 }} />
             
             <div className="relative z-10 flex flex-col items-center">
-              <div className="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                <span className="text-5xl translate-x-1 -translate-y-1">🏝️</span>
+              <div className="w-32 h-32 mb-6">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-navy">
+                  <path d="M12 11.5C11.337 11.5 10.8 10.963 10.8 10.3C10.8 9.637 11.337 9.1 12 9.1C12.663 9.1 13.2 9.637 13.2 10.3C13.2 10.963 12.663 11.5 12 11.5Z" fill="currentColor"/>
+                  <path d="M12 2C7.589 2 4 5.589 4 9.995C3.971 16.44 11.696 21.784 12 22C12 22 20.029 16.44 20 9.995C20 5.589 16.411 2 12 2ZM12 13.5C10.234 13.5 8.8 12.066 8.8 10.3C8.8 8.534 10.234 7.1 12 7.1C13.766 7.1 15.2 8.534 15.2 10.3C15.2 12.066 13.766 13.5 12 13.5Z" fill="var(--color-primary)"/>
+                  <path d="M14 18L10 21" stroke="var(--color-accent)" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
               </div>
-              <h3 className="text-navy font-bold text-2xl sm:text-3xl mb-3" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              <h3 className="text-navy font-bold text-2xl sm:text-3xl mb-1" style={{ fontFamily: "'Poppins', sans-serif" }}>
                 Your vault is empty!
               </h3>
+              <p className="text-accent font-semibold text-sm sm:text-base mb-3" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                Your adventure begins here!
+              </p>
               <p className="text-text-secondary text-sm sm:text-base mb-8 max-w-sm mx-auto leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
                 Every great journey begins with a single step. Start planning your first itinerary, track expenses, and discover places to go.
               </p>

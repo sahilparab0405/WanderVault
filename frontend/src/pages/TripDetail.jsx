@@ -4,6 +4,8 @@ import API from '../api/axios';
 import NearbyPlaces from '../components/NearbyPlaces';
 import BudgetTracker from '../components/BudgetTracker';
 import { TripDetailSkeleton, PageSpinner } from '../components/Skeleton';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 /* Lazy-load the map component (Leaflet is heavy — only load when needed) */
 const TripMap = lazy(() => import('../components/TripMap'));
@@ -369,13 +371,21 @@ export default function TripDetail() {
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Date</label>
-                        <input
-                          type="date"
+                        <DatePicker
+                          selected={form.date ? new Date(form.date + 'T12:00:00') : null}
+                          onChange={(date) => {
+                            if (date) {
+                              const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                              setForm({ ...form, date: dateString });
+                            } else {
+                              setForm({ ...form, date: '' });
+                            }
+                          }}
+                          dateFormat="yyyy-MM-dd"
+                          placeholderText="Select date"
                           id="expense-date"
                           className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
-                          style={{ fontFamily: "'Inter', sans-serif" }}
-                          value={form.date}
-                          onChange={(e) => setForm({ ...form, date: e.target.value })}
+                          wrapperClassName="w-full"
                         />
                       </div>
                     </div>
