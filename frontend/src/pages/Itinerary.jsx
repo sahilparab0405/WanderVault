@@ -155,7 +155,7 @@ export default function Itinerary() {
               <div>
                 <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Location</label>
                 <input
-                  type="text" placeholder="Baga Beach, Goa"
+                  type="text" placeholder="e.g., Gateway of India"
                   id="itinerary-location"
                   className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy"
                   style={{ fontFamily: "'Inter', sans-serif" }}

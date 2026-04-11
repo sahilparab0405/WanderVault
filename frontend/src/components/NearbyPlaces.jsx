@@ -65,8 +65,24 @@ function formatDistance(km) {
   return `${km.toFixed(1)}km`;
 }
 
-/* ─── Overpass API fetcher ─── */
+/* ─── Overpass API fetcher with Cache ─── */
 async function fetchNearbyPlaces(lat, lon, category, radius = 3000) {
+  // FIX 3: LocalStorage caching for 24h to prevent 429 Too Many Requests
+  const cacheKey = `wv_places_${Number(lat).toFixed(4)}_${Number(lon).toFixed(4)}_${category.id}`;
+  const cachedData = localStorage.getItem(cacheKey);
+  
+  if (cachedData) {
+    try {
+      const parsed = JSON.parse(cachedData);
+      // Valid for 24 hours
+      if (Date.now() - parsed.timestamp < 86400000) {
+        return parsed.data;
+      }
+    } catch (e) {
+      console.warn('Cache parsing failed, fetching fresh', e);
+    }
+  }
+
   const query = `
     [out:json][timeout:10];
     (
@@ -87,7 +103,7 @@ async function fetchNearbyPlaces(lat, lon, category, radius = 3000) {
 
     const data = await response.json();
 
-    return data.elements
+    const formattedData = data.elements
       .map((el) => {
         const elLat = el.lat || el.center?.lat;
         const elLon = el.lon || el.center?.lon;
@@ -121,6 +137,13 @@ async function fetchNearbyPlaces(lat, lon, category, radius = 3000) {
       .filter(Boolean)
       .sort((a, b) => a.distanceKm - b.distanceKm)
       .slice(0, 15); // Limit to 15 per category
+
+    localStorage.setItem(cacheKey, JSON.stringify({
+      timestamp: Date.now(),
+      data: formattedData
+    }));
+
+    return formattedData;
   } catch (err) {
     console.error(`Failed to fetch ${category.label}:`, err);
     return [];

@@ -75,6 +75,24 @@ function MapUpdater({ center, zoom }) {
       map.setView(center, zoom);
     }
   }, [center, zoom, map]);
+
+  useEffect(() => {
+    // FIX 2: Handle map resizing when switching tabs from hidden to block
+    const observer = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    const container = map.getContainer();
+    if (container) observer.observe(container);
+    
+    // Also invalidate immediately after a short delay to be safe
+    const timer = setTimeout(() => map.invalidateSize(), 150);
+    
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
+  }, [map]);
+
   return null;
 }
 

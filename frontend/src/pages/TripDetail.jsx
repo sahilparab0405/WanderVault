@@ -67,9 +67,8 @@ export default function TripDetail() {
   const handleAddExpense = async (e) => {
     e.preventDefault();
 
-    // FIX 5: Client-side validation
     const errs = {};
-    if (!form.title.trim() || form.title.trim().length < 2)
+    if (!form.title || !form.title.trim() || form.title.trim().length < 2)
       errs.title = 'Title must be at least 2 characters';
     if (!form.amount || Number(form.amount) <= 0)
       errs.amount = 'Enter a valid amount greater than 0';
@@ -82,25 +81,33 @@ export default function TripDetail() {
     setFormLoading(true);
     setError('');
     try {
-      const { data } = await API.post(`/expenses/${id}`, {
-        ...form,
+      const payload = {
         title: form.title.trim(),
         amount: Number(form.amount),
-      });
-      setExpenses([...expenses, data.expense]);
+        category: form.category || 'Food',
+        date: form.date || new Date().toISOString().split('T')[0]
+      };
+      
+      const { data } = await API.post(`/expenses/${id}`, payload);
+      
+      setExpenses(prev => [...prev, data.expense]);
       setTrip(prev => ({
         ...prev,
         totalExpense: data.totalExpense,
         budgetExceeded: data.budgetExceeded
       }));
       if (data.budgetExceeded) setBudgetAlert(true);
+      
+      // Reset form
       setForm({ title: '', amount: '', category: 'Food', date: '' });
       setFormErrors({});
       setShowForm(false);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add expense');
+      console.error("Add expense error:", err);
+      setError(err.response?.data?.message || err.message || 'Failed to add expense');
+    } finally {
+      setFormLoading(false);
     }
-    setFormLoading(false);
   };
 
   const handleDeleteExpense = async (expenseId) => {
@@ -390,7 +397,7 @@ export default function TripDetail() {
                       </div>
                     </div>
                     <button
-                      type="submit" disabled={formLoading || !form.title.trim() || !form.amount || Number(form.amount) <= 0}
+                      type="submit" disabled={formLoading || !form.title || !form.title.trim() || !form.amount || Number(form.amount) <= 0}
                       id="expense-submit"
                       className="w-full bg-primary hover:bg-primary-dark disabled:opacity-60 disabled:cursor-not-allowed text-white py-2 rounded-lg text-sm font-semibold transition-colors duration-150 cursor-pointer border-0 flex items-center justify-center gap-2"
                       style={{ fontFamily: "'Inter', sans-serif" }}

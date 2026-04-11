@@ -9,6 +9,8 @@ export default function Dashboard() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  // FIX 4: Delete Confirmation Modal state
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -26,11 +28,12 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const deleteTrip = async (id) => {
-    if (!window.confirm('Delete this trip?')) return;
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await API.delete(`/trips/${id}`);
-      setTrips(trips.filter(t => t._id !== id));
+      await API.delete(`/trips/${deleteTarget.id}`);
+      setTrips(trips.filter(t => t._id !== deleteTarget.id));
+      setDeleteTarget(null);
     } catch (err) {
       console.error(err);
     }
@@ -178,7 +181,7 @@ export default function Dashboard() {
               <TripCard
                 key={trip._id}
                 trip={trip}
-                onDelete={deleteTrip}
+                onDelete={(id) => setDeleteTarget({ id, name: trip.name })}
               />
             ))}
           </div>
@@ -221,6 +224,37 @@ export default function Dashboard() {
                 </div>
                 Plan Your First Trip
               </Link>
+            </div>
+          </div>
+        )}
+
+        {/* FIX 4: Custom Delete Confirmation Modal */}
+        {deleteTarget && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-border" style={{ fontFamily: "'Inter', sans-serif" }}>
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-accent/10 text-accent mb-4 mx-auto">
+                <span className="text-xl">⚠️</span>
+              </div>
+              <h3 className="text-xl font-bold text-navy text-center mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                Delete Trip?
+              </h3>
+              <p className="text-text-secondary text-center mb-6">
+                Are you sure you want to delete <strong className="text-navy">{deleteTarget.name}</strong>?<br/>This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteTarget(null)}
+                  className="flex-1 py-3 px-4 rounded-xl font-semibold border border-border text-navy bg-white hover:bg-bg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 py-3 px-4 rounded-xl font-semibold border border-accent text-white bg-accent hover:bg-accent-dark transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         )}
