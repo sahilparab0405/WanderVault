@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 
 const TripMap = lazy(() => import('../components/TripMap'));
+const DiningNearby = lazy(() => import('../components/DiningNearby'));
+const SightseeingNearby = lazy(() => import('../components/SightseeingNearby'));
 
 const CATEGORIES = ['Food', 'Transport', 'Hotel', 'Activities', 'Shopping', 'Other'];
 
@@ -225,15 +227,23 @@ export default function TripDetail() {
         )}
 
         <div className="flex gap-2 mb-6 md:hidden overflow-x-auto pb-1 hide-scrollbar">
-          {['overview', 'hotels', 'explore'].map(v => (
-            <button key={v} onClick={() => setActiveSection(v)} className={`capitalize px-4 py-2 rounded-lg text-xs font-semibold border cursor-pointer whitespace-nowrap transition-all duration-150 ${activeSection === v ? 'bg-primary text-white border-primary' : 'bg-white text-text-secondary border-border'}`} style={{ fontFamily: "'Inter', sans-serif" }}>
-              {v}
+          {[
+            { id: 'overview',    label: 'Overview' },
+            { id: 'hotels',      label: 'Hotels' },
+            { id: 'dining',      label: 'Dining' },
+            { id: 'sightseeing', label: 'Sightseeing' },
+            { id: 'explore',     label: 'Explore' },
+          ].map(({ id, label }) => (
+            <button key={id} onClick={() => setActiveSection(id)} className={`px-4 py-2 rounded-lg text-xs font-semibold border cursor-pointer whitespace-nowrap transition-all duration-150 ${
+              activeSection === id ? 'bg-primary text-white border-primary' : 'bg-white text-text-secondary border-border'
+            }`} style={{ fontFamily: "'Inter', sans-serif" }}>
+              {label}
             </button>
           ))}
         </div>
 
-        <div className={`grid gap-6 ${hasCoordinates ? 'md:grid-cols-5' : ''}`}>
-          <div className={`space-y-6 ${hasCoordinates ? 'md:col-span-3' : ''} ${hasCoordinates && activeSection !== 'overview' && activeSection !== 'hotels' ? 'hidden md:block' : ''}`}>
+        <div className="grid gap-6">
+          <div className="space-y-6">
 
             {/* OVERVIEW SECTION (Visible when activeSection is overview or on md+) */}
             <div className={activeSection === 'overview' || window.innerWidth > 768 ? 'block space-y-6' : 'hidden md:block space-y-6'}>
@@ -403,12 +413,53 @@ export default function TripDetail() {
             </div>
           </div>
 
-          {/* RIGHT COL: Explore / Map */}
+          {/* ── DINING SECTION ── */}
           {hasCoordinates && (
-            <div className={`md:col-span-2 space-y-6 ${activeSection !== 'explore' ? 'hidden md:block' : ''}`}>
-              <Suspense fallback={<div className="bg-card rounded-xl border border-border p-8 text-center h-[350px]"><div className="w-8 h-8 rounded-full animate-spin border-2 border-border border-t-primary mx-auto mb-3" /><p className="text-text-muted text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>Loading map...</p></div>}>
-                <TripMap latitude={trip.latitude} longitude={trip.longitude} destination={trip.destination} nearbyPlaces={nearbyPlaces} />
-              </Suspense>
+            <div className={activeSection === 'dining' ? 'block' : 'hidden md:block'}>
+              <div className="bg-white rounded-xl border border-border p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <Suspense fallback={
+                  <div className="space-y-4 animate-pulse">
+                    <div className="flex gap-2">{[1,2,3].map(k=><div key={k} className="h-8 w-20 bg-border rounded-full"/>)}</div>
+                    <div className="grid sm:grid-cols-2 gap-4">{[1,2,3,4].map(k=><div key={k} className="h-40 bg-border/40 rounded-xl"/>)}</div>
+                    <div className="h-[280px] bg-border/40 rounded-xl"/>
+                  </div>
+                }>
+                  <DiningNearby latitude={trip.latitude} longitude={trip.longitude} />
+                </Suspense>
+              </div>
+            </div>
+          )}
+
+          {/* ── SIGHTSEEING SECTION ── */}
+          {hasCoordinates && (
+            <div className={activeSection === 'sightseeing' ? 'block' : 'hidden md:block'}>
+              <div className="bg-white rounded-xl border border-border p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <Suspense fallback={
+                  <div className="space-y-4 animate-pulse">
+                    <div className="flex gap-2">{[1,2,3,4].map(k=><div key={k} className="h-8 w-24 bg-border rounded-full"/>)}</div>
+                    <div className="grid sm:grid-cols-2 gap-4">{[1,2,3,4].map(k=><div key={k} className="h-44 bg-border/40 rounded-xl"/>)}</div>
+                    <div className="h-[280px] bg-border/40 rounded-xl"/>
+                  </div>
+                }>
+                  <SightseeingNearby latitude={trip.latitude} longitude={trip.longitude} />
+                </Suspense>
+              </div>
+            </div>
+          )}
+
+          {/* ── EXPLORE / MAP SECTION ── */}
+          {hasCoordinates && (
+            <div className={activeSection === 'explore' ? 'block' : 'hidden md:block'}>
+              <div className="bg-white rounded-xl border border-border p-0 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <Suspense fallback={
+                  <div className="h-[350px] flex flex-col items-center justify-center gap-3">
+                    <div className="w-8 h-8 rounded-full animate-spin border-2 border-border border-t-primary" />
+                    <p className="text-text-muted text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>Loading map...</p>
+                  </div>
+                }>
+                  <TripMap latitude={trip.latitude} longitude={trip.longitude} destination={trip.destination} nearbyPlaces={nearbyPlaces} />
+                </Suspense>
+              </div>
               <NearbyPlaces tripId={trip._id} latitude={trip.latitude} longitude={trip.longitude} onPlacesLoaded={setNearbyPlaces} />
             </div>
           )}
