@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import ErrorBoundary from './components/ErrorBoundary';
 import { PageSpinner } from './components/Skeleton';
 import Login from './pages/Login';
@@ -13,73 +13,82 @@ import BudgetDemo from './pages/BudgetDemo';
 import AccommodationDemo from './pages/AccommodationDemo';
 import DashboardDemo from './pages/DashboardDemo';
 
-/**
- * PrivateRoute — redirects unauthenticated users to /login
- * FIX 6: Shows PageSpinner (not blank) while auth state loads
- */
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <PageSpinner message="Loading..." />;
   return user ? children : <Navigate to="/login" replace />;
 };
 
+/*
+ * AppShell — wraps authenticated routes in the sidebar layout.
+ * Auth pages (login / register) render full-screen with no shell.
+ */
+function AppShell({ children }) {
+  const { user } = useAuth();
+  const location = useLocation();
+  const isAuthPage = ['/login', '/register'].includes(location.pathname);
+
+  if (!user || isAuthPage) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div className="sidebar-shell">
+      <Sidebar />
+      <main className="wv-main lg:pt-0 pt-14">
+        {children}
+      </main>
+    </div>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      {/* Global error boundary — catches any render crash */}
       <ErrorBoundary>
-        {/* Navbar renders on all pages — self-hides on auth pages */}
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <ErrorBoundary>
-                  <Dashboard />
-                </ErrorBoundary>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/create-trip"
-            element={
-              <PrivateRoute>
-                <ErrorBoundary>
-                  <CreateTrip />
-                </ErrorBoundary>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/trip/:id"
-            element={
-              <PrivateRoute>
-                <ErrorBoundary>
-                  <TripDetail />
-                </ErrorBoundary>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/trip/:id/itinerary"
-            element={
-              <PrivateRoute>
-                <ErrorBoundary>
-                  <Itinerary />
-                </ErrorBoundary>
-              </PrivateRoute>
-            }
-          />
-          <Route path="/budget-demo" element={<BudgetDemo />} />
-          <Route path="/accommodation-demo" element={<AccommodationDemo />} />
-          <Route path="/dashboard-demo" element={<DashboardDemo />} />
-          {/* 404 fallback */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+        <AppShell>
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <ErrorBoundary><Dashboard /></ErrorBoundary>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/create-trip"
+              element={
+                <PrivateRoute>
+                  <ErrorBoundary><CreateTrip /></ErrorBoundary>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/trip/:id"
+              element={
+                <PrivateRoute>
+                  <ErrorBoundary><TripDetail /></ErrorBoundary>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/trip/:id/itinerary"
+              element={
+                <PrivateRoute>
+                  <ErrorBoundary><Itinerary /></ErrorBoundary>
+                </PrivateRoute>
+              }
+            />
+            <Route path="/budget-demo" element={<BudgetDemo />} />
+            <Route path="/accommodation-demo" element={<AccommodationDemo />} />
+            <Route path="/dashboard-demo" element={<DashboardDemo />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </AppShell>
       </ErrorBoundary>
     </BrowserRouter>
   );

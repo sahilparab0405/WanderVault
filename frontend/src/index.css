@@ -134,14 +134,57 @@ p {
   outline-offset: 2px;
 }
 
-/* ═══════════════════════════════════════
-   Navbar spacing — prevents content 
-   from hiding behind sticky navbar
-   ═══════════════════════════════════════ */
+/*
+ * Sidebar layout — authenticated pages render inside a sidebar shell.
+ * Auth pages (login/register) are full-screen - no sidebar.
+ */
 
-.page-content {
-  padding-top: 72px;
+.sidebar-shell {
+  display: flex;
+  min-height: 100vh;
 }
+
+/* Fixed sidebar */
+.wv-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 240px;
+  background: #1a2b4a;
+  z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 0.25s ease;
+}
+
+/* Main content right of sidebar */
+.wv-main {
+  margin-left: 240px;
+  min-height: 100vh;
+  flex: 1;
+  background: var(--color-bg);
+}
+
+/* Mobile: sidebar hidden off-screen */
+@media (max-width: 1023px) {
+  .wv-sidebar {
+    transform: translateX(-100%);
+  }
+  .wv-sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.25);
+  }
+  .wv-main {
+    margin-left: 0;
+  }
+}
+
+/* Legacy page-content — kept for CreateTrip / Itinerary which have their own padding */
+.page-content {
+  padding-top: 0;
+}
+
 
 /* ═══════════════════════════════════════
    Selection color
