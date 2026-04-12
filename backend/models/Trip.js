@@ -47,7 +47,20 @@ const tripSchema = new mongoose.Schema({
   budgetExceeded: {
     type: Boolean,
     default: false
-  }
+  },
+  accommodation: [{
+    name: String,
+    address: String,
+    rating: Number,
+    priceRange: String,
+    checkIn: Date,
+    checkOut: Date,
+    photo: String,
+    bookedVia: String,
+    fromDay: Number,
+    toDay: Number,
+    pricePerNight: Number
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Trip', tripSchema);
