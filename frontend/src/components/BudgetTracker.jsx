@@ -15,8 +15,8 @@ import { useMemo, useState, useCallback } from 'react';
 import {
   PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ReferenceLine,
-  Legend,
 } from 'recharts';
+import { Utensils, Car, Building2, Compass, ShoppingBag, MoreHorizontal, DollarSign, BarChart2, Target, MapPin } from 'lucide-react';
 
 /* ═══════════════════════════════════════
    Constants
@@ -31,16 +31,16 @@ const CATEGORY_COLORS = {
   Other: '#6B7280',
 };
 
-const CATEGORY_ICONS = {
-  Food: '🍔', Transport: '🚗', Hotel: '🏨',
-  Activities: '🎯', Shopping: '🛍️', Other: '💸'
+const CATEGORY_ICON_COMPONENTS = {
+  Food: Utensils, Transport: Car, Hotel: Building2,
+  Activities: Compass, Shopping: ShoppingBag, Other: MoreHorizontal,
 };
 
 const THRESHOLDS = [
   { percent: 50, label: '50%', color: '#3B82F6', bg: 'bg-primary-50', text: 'text-primary', message: 'Halfway through your budget' },
   { percent: 75, label: '75%', color: '#F59E0B', bg: 'bg-warning-light', text: 'text-warning', message: 'Consider slowing down spending' },
-  { percent: 90, label: '90%', color: '#FF6B35', bg: 'bg-accent-50', text: 'text-accent', message: 'Almost at your limit!' },
-  { percent: 100, label: '100%', color: '#EF4444', bg: 'bg-danger-light', text: 'text-danger', message: 'Budget exceeded!' },
+  { percent: 90, label: '90%', color: '#FF6B35', bg: 'bg-accent-50', text: 'text-accent', message: 'Approaching your limit' },
+  { percent: 100, label: '100%', color: '#EF4444', bg: 'bg-danger-light', text: 'text-danger', message: 'Budget exceeded' },
 ];
 
 /* ═══════════════════════════════════════
@@ -55,7 +55,7 @@ function PieTooltipContent({ active, payload }) {
       className="bg-navy text-white px-3 py-2 rounded-lg"
       style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
     >
-      <p className="font-semibold mb-0.5">{CATEGORY_ICONS[name]} {name}</p>
+      <p className="font-semibold mb-0.5">{name}</p>
       <p>₹{value.toLocaleString()} ({data.percentage.toFixed(1)}%)</p>
     </div>
   );
@@ -213,9 +213,9 @@ function BudgetVoucher({ trip, totalSpent, remaining, budgetPercent }) {
 
         {/* Serial number at bottom */}
         <div className="mt-3 flex justify-between items-center">
-          <p className="text-[9px] text-text-muted font-medium tracking-wider"
+          <p className="text-[9px] text-text-muted font-medium tracking-wider flex items-center gap-1"
             style={{ fontFamily: "'Inter', sans-serif" }}>
-            📍 {trip.destination}
+            <MapPin size={9} strokeWidth={1.5} />{trip.destination}
           </p>
           <p className="text-[9px] text-text-muted font-medium tracking-wider"
             style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -593,7 +593,7 @@ export default function BudgetTracker({ trip, expenses }) {
       {/* ═══ Header ═══ */}
       <div className="px-5 py-4 border-b border-border flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-lg">📊</span>
+          <BarChart2 size={16} strokeWidth={1.5} className="text-primary" />
           <h3 className="font-bold text-navy text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
             Budget Analytics
           </h3>
@@ -701,25 +701,25 @@ export default function BudgetTracker({ trip, expenses }) {
         <div className="flex gap-2">
           <button
             onClick={() => setActiveView('charts')}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold border cursor-pointer transition-all duration-150 ${
+            className={`flex-1 py-2 rounded-lg text-xs font-semibold border cursor-pointer transition-all duration-150 flex items-center justify-center gap-1.5 ${
               activeView === 'charts'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-text-secondary border-border hover:bg-bg'
             }`}
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            📊 Charts
+            <BarChart2 size={12} strokeWidth={1.5} />Analytics
           </button>
           <button
             onClick={() => setActiveView('milestones')}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold border cursor-pointer transition-all duration-150 ${
+            className={`flex-1 py-2 rounded-lg text-xs font-semibold border cursor-pointer transition-all duration-150 flex items-center justify-center gap-1.5 ${
               activeView === 'milestones'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-text-secondary border-border hover:bg-bg'
             }`}
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            🎯 Milestones
+            <Target size={12} strokeWidth={1.5} />Milestones
           </button>
         </div>
 
@@ -735,9 +735,9 @@ export default function BudgetTracker({ trip, expenses }) {
                 </h4>
                 {pieData.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-10">
-                    <span className="text-4xl mb-2">💸</span>
+                    <DollarSign size={32} strokeWidth={1.5} className="text-text-muted opacity-50 mb-2" />
                     <p className="text-text-muted text-xs" style={{ fontFamily: "'Inter', sans-serif" }}>
-                      No expenses to analyze yet
+                      No expense data available.
                     </p>
                   </div>
                 ) : (
@@ -800,9 +800,10 @@ export default function BudgetTracker({ trip, expenses }) {
                       .sort((a, b) => b[1] - a[1])
                       .map(([cat, total]) => {
                         const catPercent = totalSpent > 0 ? (total / totalSpent) * 100 : 0;
+                        const CatIcon = CATEGORY_ICON_COMPONENTS[cat] || MoreHorizontal;
                         return (
                           <div key={cat} className="flex items-center gap-2.5">
-                            <span className="text-lg">{CATEGORY_ICONS[cat]}</span>
+                            <CatIcon size={18} strokeWidth={1.5} style={{ color: CATEGORY_COLORS[cat] || '#6B7280', flexShrink: 0 }} />
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-center mb-0.5">
                                 <span className="text-xs font-medium text-navy truncate" style={{ fontFamily: "'Inter', sans-serif" }}>

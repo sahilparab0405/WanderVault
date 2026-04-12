@@ -1,115 +1,65 @@
 /**
- * WanderVault Original Logo Component
+ * WanderVault Logo — Clean wordmark with hand-crafted compass SVG
+ * Style: Yatra / Cleartrip-inspired. No emoji, no clipart.
  * 
- * Design: Circular vault door with an airplane flying out,
- * paired with "Wander" (navy) + "Vault" (orange) wordmark.
- * 
- * Hand-crafted SVG — no clipart, no emoji, no icon libraries.
+ * "Wander" → Poppins Bold #1a2b4a
+ * "Vault"  → Poppins Bold #FF6B35
+ * Icon     → Compass SVG, #FF6B35, left of text
+ * Height   → 32px total
  */
 
 export default function Logo({ size = 'default', showText = true, className = '' }) {
-  // Size presets
   const sizes = {
-    small: { icon: 28, text: 14, gap: 4 },
-    default: { icon: 34, text: 17, gap: 6 },
-    large: { icon: 48, text: 24, gap: 8 },
+    small:   { icon: 22, text: 13, gap: 6 },
+    default: { icon: 28, text: 16, gap: 7 },
+    large:   { icon: 40, text: 22, gap: 9 },
   };
 
   const s = sizes[size] || sizes.default;
 
   return (
-    <div 
-      className={`flex items-center ${className}`} 
+    <div
+      className={`flex items-center ${className}`}
       style={{ gap: `${s.gap}px` }}
       aria-label="WanderVault"
     >
-      {/* Vault + Airplane Icon */}
+      {/* Compass icon — hand-crafted SVG, no emoji */}
       <svg
         width={s.icon}
         height={s.icon}
-        viewBox="0 0 48 48"
+        viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        {/* Outer vault door circle */}
-        <circle 
-          cx="22" 
-          cy="24" 
-          r="20" 
-          stroke="#1a2b4a" 
-          strokeWidth="3" 
-          fill="none" 
+        {/* Outer circle */}
+        <circle cx="16" cy="16" r="14" stroke="#FF6B35" strokeWidth="1.8" />
+
+        {/* Compass needle — North (orange) */}
+        <path
+          d="M16 16 L13.5 8 L16 10.5 L18.5 8 Z"
+          fill="#FF6B35"
         />
-        
-        {/* Inner vault ring */}
-        <circle 
-          cx="22" 
-          cy="24" 
-          r="13" 
-          stroke="#1a2b4a" 
-          strokeWidth="2" 
-          fill="none" 
+        {/* Compass needle — South (muted) */}
+        <path
+          d="M16 16 L13.5 24 L16 21.5 L18.5 24 Z"
+          fill="#FF6B35"
+          fillOpacity="0.3"
         />
 
-        {/* Vault handle — horizontal bar */}
-        <line 
-          x1="14" y1="24" 
-          x2="30" y2="24" 
-          stroke="#1a2b4a" 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
-        />
+        {/* Cardinal dot — center */}
+        <circle cx="16" cy="16" r="2" fill="#FF6B35" />
 
-        {/* Vault handle — vertical bar */}
-        <line 
-          x1="22" y1="16" 
-          x2="22" y2="32" 
-          stroke="#1a2b4a" 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
-        />
-
-        {/* Vault locking dots — 4 compass points */}
-        <circle cx="22" cy="17.5" r="1.5" fill="#1a2b4a" />
-        <circle cx="22" cy="30.5" r="1.5" fill="#1a2b4a" />
-        <circle cx="14.5" cy="24" r="1.5" fill="#1a2b4a" />
-        <circle cx="29.5" cy="24" r="1.5" fill="#1a2b4a" />
-
-        {/* Airplane flying out from vault — positioned top-right */}
-        <g transform="translate(31, 8) rotate(-30)">
-          {/* Fuselage */}
-          <path
-            d="M0 5 L12 3 L14 5 L12 7 L0 5Z"
-            fill="#FF6B35"
-          />
-          {/* Top wing */}
-          <path
-            d="M4 5 L7 0 L9 0 L7 5Z"
-            fill="#FF6B35"
-          />
-          {/* Bottom wing */}
-          <path
-            d="M4 5 L7 10 L9 10 L7 5Z"
-            fill="#FF6B35"
-          />
-          {/* Tail fin */}
-          <path
-            d="M0 5 L-1 2.5 L1 2.5Z"
-            fill="#FF6B35"
-          />
-          <path
-            d="M0 5 L-1 7.5 L1 7.5Z"
-            fill="#FF6B35"
-          />
-        </g>
+        {/* Tick marks at E and W */}
+        <line x1="3" y1="16" x2="5.5" y2="16" stroke="#1a2b4a" strokeWidth="1.6" strokeLinecap="round" />
+        <line x1="26.5" y1="16" x2="29" y2="16" stroke="#1a2b4a" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
 
-      {/* Wordmark Text */}
+      {/* Wordmark */}
       {showText && (
-        <span 
-          style={{ 
-            fontFamily: "'Poppins', sans-serif", 
+        <span
+          style={{
+            fontFamily: "'Poppins', sans-serif",
             fontWeight: 700,
             fontSize: `${s.text}px`,
             letterSpacing: '-0.02em',
