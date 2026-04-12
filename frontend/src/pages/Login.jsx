@@ -11,6 +11,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
+import { AlertTriangle } from 'lucide-react';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -96,7 +97,7 @@ export default function Login() {
           className="text-center text-text-secondary mb-6 text-sm"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
-          Welcome back, traveler! ✈️
+          Sign in to your account
         </p>
 
         {/* Server error banner */}
@@ -106,7 +107,7 @@ export default function Login() {
             role="alert"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            <span className="shrink-0 mt-0.5">⚠️</span>
+            <AlertTriangle size={14} strokeWidth={1.5} className="shrink-0 mt-0.5" />
             <span>{serverError}</span>
           </div>
         )}

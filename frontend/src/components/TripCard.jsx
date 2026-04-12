@@ -12,13 +12,14 @@
  */
 
 import { Link } from 'react-router-dom';
+import { Plane, Train, Bus, Car, Calendar, Trash2 } from 'lucide-react';
 
 /* ─── Travel Mode Metadata ─── */
 const TRAVEL_MODES = {
-  flight: { icon: '✈️', label: 'Flight' },
-  train: { icon: '🚂', label: 'Train' },
-  bus: { icon: '🚌', label: 'Bus' },
-  car: { icon: '🚗', label: 'Car' },
+  flight: { Icon: Plane,  label: 'Flight' },
+  train:  { Icon: Train,  label: 'Train' },
+  bus:    { Icon: Bus,    label: 'Bus' },
+  car:    { Icon: Car,    label: 'Car' },
 };
 
 /* ─── Unsplash image URL helper (no API key needed) ─── */
@@ -144,10 +145,10 @@ export default function TripCard({ trip, onDelete }) {
         {/* Travel mode badge — top left */}
         <div className="absolute top-3 left-3">
           <span
-            className="px-2 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-navy backdrop-blur-sm"
+            className="px-2 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-navy backdrop-blur-sm flex items-center gap-1"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            {mode.icon} {mode.label}
+            {mode.Icon && <mode.Icon size={11} strokeWidth={1.5} />}{mode.label}
           </span>
         </div>
       </div>
@@ -172,7 +173,7 @@ export default function TripCard({ trip, onDelete }) {
           <div className="flex-1 mx-3 flex items-center gap-1">
             <div className="w-1.5 h-1.5 rounded-full bg-primary" />
             <div className="flex-1 border-t border-dashed border-text-muted" />
-            <span className="text-sm">{mode.icon}</span>
+            {mode.Icon && <mode.Icon size={14} strokeWidth={1.5} className="text-text-muted shrink-0" />}
             <div className="flex-1 border-t border-dashed border-text-muted" />
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
           </div>
@@ -276,18 +277,18 @@ export default function TripCard({ trip, onDelete }) {
           <Link
             to={`/trip/${trip._id}/itinerary`}
             className="flex-1 text-center bg-primary-50 text-primary py-2 rounded-lg text-xs font-semibold
-                       hover:bg-primary-100 transition-colors duration-150 no-underline"
+                       hover:bg-primary-100 transition-colors duration-150 no-underline flex items-center justify-center gap-1"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            📅 Itinerary
+            <Calendar size={12} strokeWidth={1.5} />Itinerary
           </Link>
           <button
             onClick={() => onDelete(trip._id)}
             className="w-9 h-9 flex items-center justify-center bg-border-light text-text-muted rounded-lg
-                       hover:bg-danger-light hover:text-danger transition-colors duration-150 cursor-pointer border-0 text-xs shrink-0"
+                       hover:bg-danger-light hover:text-danger transition-colors duration-150 cursor-pointer border-0 shrink-0"
             aria-label="Delete trip"
           >
-            🗑️
+            <Trash2 size={14} strokeWidth={1.5} />
           </button>
         </div>
       </div>

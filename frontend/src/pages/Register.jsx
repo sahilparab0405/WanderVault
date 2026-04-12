@@ -11,6 +11,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
+import { AlertTriangle } from 'lucide-react';
 
 /* ── Validation helpers ───────────────────────────────────── */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -121,7 +122,7 @@ export default function Register() {
           className="text-center text-text-secondary mb-6 text-sm"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
-          Start your journey today!
+          Create your account
         </p>
 
         {/* Server-side error banner */}
@@ -131,7 +132,7 @@ export default function Register() {
             role="alert"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            <span className="shrink-0 mt-0.5">⚠️</span>
+            <AlertTriangle size={14} strokeWidth={1.5} className="shrink-0 mt-0.5" />
             <span>{serverError}</span>
           </div>
         )}
