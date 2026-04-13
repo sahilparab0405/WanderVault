@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Clock, Star, Tag, ExternalLink, Utensils, Coffee } from 'lucide-react';
+import { MapPin, Clock, Star, Tag, ExternalLink, Utensils, Coffee, RefreshCw, AlertCircle } from 'lucide-react';
 
 // Fix Leaflet default icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -31,11 +31,10 @@ function formatTime(distKm) {
 }
 
 function getRating(seed) {
-  // Mock rating based on hash for consistency between reloads
   return (3.5 + ((seed % 15) / 10)).toFixed(1);
 }
 
-/* ─── Map Icons ─── */
+/* ─── Map Icon ─── */
 const mapIcon = L.divIcon({
   html: `<div style="background-color: #FF6B35; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
   className: '',
@@ -43,84 +42,45 @@ const mapIcon = L.divIcon({
   iconAnchor: [12, 12]
 });
 
-// Component to recenter map if places change
 function ChangeView({ center }) {
   const map = useMap();
   useEffect(() => { map.setView(center); }, [center, map]);
   return null;
 }
 
+/* ─── Cache helpers ─── */
+const CACHE_HOUR = 60 * 60 * 1000;
+
+function writeFallbackCache(cacheKey) {
+  // Write empty result with ts set 23h ago → expires in ~1h
+  localStorage.setItem(cacheKey, JSON.stringify({
+    ts: Date.now() - (23 * CACHE_HOUR),
+    data: []
+  }));
+}
+
 export default function DiningNearby({ latitude, longitude }) {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(false); // false | 'rate_limited' | 'network'
+  const [retryIn, setRetryIn] = useState(null); // countdown seconds
   const [activeFilter, setActiveFilter] = useState('All');
   const [cuisines, setCuisines] = useState(['All']);
 
-  useEffect(() => {
-    if (!latitude || !longitude) return;
-    
-    let isCancelled = false;
-    const fetchDining = async (retryCount = 0) => {
-      try {
-        setLoading(true); setError(false);
-        const cacheKey = `wv_dining_${latitude}_${longitude}`;
-        const cached = localStorage.getItem(cacheKey);
-        
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (Date.now() - parsed.ts < 24 * 60 * 60 * 1000) {
-            processPlaces(parsed.data);
-            return;
-          }
-        }
+  const BACKEND_BASE = import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL.replace('/api', '')
+    : 'http://localhost:5000';
 
-        const query = `
-          [out:json];
-          (
-            node["amenity"~"restaurant|cafe|fast_food"](around:5000, ${latitude}, ${longitude});
-            way["amenity"~"restaurant|cafe|fast_food"](around:5000, ${latitude}, ${longitude});
-          );
-          out center qt limit 40;
-        `;
-        const res = await fetch(`https://overpass-api.de/api/interpreter`, {
-          method: 'POST',
-          body: query
-        });
-
-        if (res.status === 429) {
-          if (retryCount < 3 && !isCancelled) {
-            setTimeout(() => fetchDining(retryCount + 1), 5000);
-          } else {
-            setError(true); setLoading(false);
-          }
-          return;
-        }
-
-        const data = await res.json();
-        if (!isCancelled) {
-          processPlaces(data.elements);
-          localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: data.elements }));
-        }
-      } catch (err) {
-        if (!isCancelled) { setError(true); setLoading(false); }
-      }
-    };
-
-    fetchDining();
-    return () => { isCancelled = true; };
-  }, [latitude, longitude]);
-
-  const processPlaces = (elements) => {
+  const processPlaces = useCallback((elements) => {
     const pList = elements.map(el => {
       const lat = el.lat || el.center?.lat;
       const lon = el.lon || el.center?.lon;
+      if (!lat || !lon) return null;
       const dist = getDistance(latitude, longitude, lat, lon);
       const name = el.tags?.name || 'Local Eatery';
       const cList = (el.tags?.cuisine || el.tags?.amenity || 'Dining').split(/[;,]/)[0];
       const cuisine = cList.charAt(0).toUpperCase() + cList.slice(1).replace('_', ' ');
-      
-      const seed = Math.abs(String(el.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0));
+      const seed = Math.abs(String(el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
       return {
         id: el.id,
         name,
@@ -132,16 +92,74 @@ export default function DiningNearby({ latitude, longitude }) {
         lat, lon
       };
     })
-    .filter(p => p.name && p.name !== 'Local Eatery')
+    .filter(p => p && p.name && p.name !== 'Local Eatery')
     .sort((a, b) => a.distanceKm - b.distanceKm);
 
-    // Extract unique cuisines
     const unique = ['All', ...new Set(pList.map(p => p.cuisine))].slice(0, 6);
     setCuisines(unique);
     setPlaces(pList);
     setLoading(false);
-  };
+  }, [latitude, longitude]);
 
+  const fetchDining = useCallback(async () => {
+    if (!latitude || !longitude) return;
+    setLoading(true);
+    setError(false);
+    setRetryIn(null);
+
+    const cacheKey = `wv_dining_${latitude}_${longitude}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Date.now() - parsed.ts < 24 * CACHE_HOUR) {
+          processPlaces(parsed.data);
+          return;
+        }
+      } catch { /* stale/invalid cache — proceed to fetch */ }
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_BASE}/api/places/dining?lat=${latitude}&lon=${longitude}`);
+
+      if (res.status === 429) {
+        // Write fallback cache to prevent immediate re-request
+        writeFallbackCache(cacheKey);
+        setError('rate_limited');
+        setLoading(false);
+        // Start 30-second countdown
+        let secs = 30;
+        setRetryIn(secs);
+        const timer = setInterval(() => {
+          secs -= 1;
+          setRetryIn(secs);
+          if (secs <= 0) clearInterval(timer);
+        }, 1000);
+        return;
+      }
+
+      if (!res.ok) {
+        setError('network');
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      const elements = data.elements || [];
+      localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: elements }));
+      processPlaces(elements);
+    } catch {
+      setError('network');
+      setLoading(false);
+    }
+  }, [latitude, longitude, BACKEND_BASE, processPlaces]);
+
+  useEffect(() => {
+    fetchDining();
+  }, [fetchDining]);
+
+  /* ── Loading ── */
   if (loading) {
     return (
       <div className="space-y-4 animate-pulse">
@@ -154,12 +172,29 @@ export default function DiningNearby({ latitude, longitude }) {
     );
   }
 
+  /* ── Error State ── */
   if (error) {
+    const isRateLimited = error === 'rate_limited';
     return (
-      <div className="bg-danger-light text-danger p-6 rounded-xl text-center">
-        <p className="font-bold flex items-center justify-center gap-2"><MapPin size={16}/> API Limit Reached</p>
-        <p className="text-sm mt-2">Too many requests to Overpass API. Please try again in a few minutes.</p>
-        <button onClick={() => window.location.reload()} className="mt-4 bg-danger text-white px-4 py-2 rounded-lg text-sm font-semibold border-0 cursor-pointer">Reload Page</button>
+      <div className="bg-amber-50 border border-amber-200 text-amber-900 p-6 rounded-xl text-center">
+        <AlertCircle size={28} className="mx-auto mb-3 text-amber-500" strokeWidth={1.5} />
+        <p className="font-bold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
+          {isRateLimited ? 'Places temporarily unavailable.' : 'Could not load dining places.'}
+        </p>
+        <p className="text-xs mt-1 text-amber-700" style={{ fontFamily: "'Inter', sans-serif" }}>
+          {isRateLimited
+            ? 'Check back in a few minutes. The map service is busy.'
+            : 'A network error occurred. Please check your connection.'}
+        </p>
+        <button
+          onClick={fetchDining}
+          disabled={retryIn !== null && retryIn > 0}
+          className="mt-4 inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2 rounded-lg text-sm font-semibold border-0 cursor-pointer transition-colors"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          <RefreshCw size={14} />
+          {retryIn !== null && retryIn > 0 ? `Try Again (${retryIn}s)` : 'Try Again'}
+        </button>
       </div>
     );
   }
@@ -183,7 +218,7 @@ export default function DiningNearby({ latitude, longitude }) {
         <>
           <div className="flex flex-wrap gap-2 mb-2">
             {cuisines.map(c => (
-              <button 
+              <button
                 key={c} onClick={() => setActiveFilter(c)}
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 cursor-pointer ${activeFilter === c ? 'bg-accent border-accent text-white' : 'bg-white border-navy text-navy hover:bg-navy/5'}`}
                 style={{ fontFamily: "'Inter', sans-serif" }}
@@ -201,7 +236,7 @@ export default function DiningNearby({ latitude, longitude }) {
                     <h4 className="font-bold text-navy text-[15px] line-clamp-1 flex-1 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>{place.name}</h4>
                     <div className="flex items-center gap-0.5 bg-success text-white px-1.5 rounded text-[10px] font-bold shrink-0"><Star size={8} fill="#fff" strokeWidth={0}/> {place.rating}</div>
                   </div>
-                  
+
                   <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>
                     <span className="flex items-center gap-1 font-medium bg-bg px-2 py-0.5 rounded-md"><Tag size={12}/>{place.cuisine}</span>
                     <span className="flex items-center gap-1 font-medium">
@@ -211,14 +246,14 @@ export default function DiningNearby({ latitude, longitude }) {
                       <Clock size={12} className="text-primary"/> {place.timeEst}
                     </span>
                   </div>
-                  
+
                   <p className="text-xs text-text-muted mt-3 line-clamp-1 italic" style={{ fontFamily: "'Inter', sans-serif" }}>
                     "{place.desc}"
                   </p>
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-border-light text-right">
-                  <a href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`} target="_blank" rel="noopener noreferrer" 
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`} target="_blank" rel="noopener noreferrer"
                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-navy text-navy text-[11px] font-bold hover:bg-navy hover:text-white transition-colors duration-150 no-underline">
                     View on Maps <ExternalLink size={10} strokeWidth={2}/>
                   </a>

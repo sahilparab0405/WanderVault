@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Clock, Star, ExternalLink, Compass, Ticket, MountainSnow, Landmark, TreePine, Waves } from 'lucide-react';
+import { MapPin, Clock, Star, ExternalLink, Compass, Ticket, MountainSnow, Landmark, TreePine, Waves, RefreshCw, AlertCircle } from 'lucide-react';
 
 // Fix Leaflet default icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -36,11 +36,11 @@ function getRating(seed) {
 
 /* ─── Categories & Icons ─── */
 const CATEGORY_MAP = {
-  museums: { label: 'Museums', color: '#1a2b4a', Icon: Landmark },
-  parks: { label: 'Parks', color: '#22C55E', Icon: TreePine },
-  temples: { label: 'Temples', color: '#FF6B35', Icon: MountainSnow }, // representation for worship
+  museums:   { label: 'Museums',   color: '#1a2b4a', Icon: Landmark },
+  parks:     { label: 'Parks',     color: '#22C55E', Icon: TreePine },
+  temples:   { label: 'Temples',   color: '#FF6B35', Icon: MountainSnow },
   monuments: { label: 'Monuments', color: '#6B7280', Icon: Compass },
-  beaches: { label: 'Beaches', color: '#2563EB', Icon: Waves },
+  beaches:   { label: 'Beaches',   color: '#2563EB', Icon: Waves },
 };
 
 function getMapIcon(color) {
@@ -58,92 +58,45 @@ function ChangeView({ center }) {
   return null;
 }
 
+/* ─── Cache helpers ─── */
+const CACHE_HOUR = 60 * 60 * 1000;
+
+function writeFallbackCache(cacheKey) {
+  localStorage.setItem(cacheKey, JSON.stringify({
+    ts: Date.now() - (23 * CACHE_HOUR),
+    data: []
+  }));
+}
+
 export default function SightseeingNearby({ latitude, longitude }) {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(false); // false | 'rate_limited' | 'network'
+  const [retryIn, setRetryIn] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All');
 
-  useEffect(() => {
-    if (!latitude || !longitude) return;
-    
-    let isCancelled = false;
-    const fetchSightseeing = async (retryCount = 0) => {
-      try {
-        setLoading(true); setError(false);
-        const cacheKey = `wv_sightseeing_${latitude}_${longitude}`;
-        const cached = localStorage.getItem(cacheKey);
-        
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (Date.now() - parsed.ts < 24 * 60 * 60 * 1000) {
-            setPlaces(processPlaces(parsed.data));
-            setLoading(false);
-            return;
-          }
-        }
+  const BACKEND_BASE = import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL.replace('/api', '')
+    : 'http://localhost:5000';
 
-        const query = `
-          [out:json];
-          (
-            node["tourism"~"museum"](around:8000, ${latitude}, ${longitude});
-            way["tourism"~"museum"](around:8000, ${latitude}, ${longitude});
-            node["leisure"~"park|nature_reserve"](around:8000, ${latitude}, ${longitude});
-            way["leisure"~"park|nature_reserve"](around:8000, ${latitude}, ${longitude});
-            node["amenity"~"place_of_worship"](around:8000, ${latitude}, ${longitude});
-            way["amenity"~"place_of_worship"](around:8000, ${latitude}, ${longitude});
-            node["historic"~"monument|archaeological_site|castle"](around:8000, ${latitude}, ${longitude});
-            way["historic"~"monument|archaeological_site|castle"](around:8000, ${latitude}, ${longitude});
-            node["natural"~"beach"](around:8000, ${latitude}, ${longitude});
-            way["natural"~"beach"](around:8000, ${latitude}, ${longitude});
-          );
-          out center qt limit 60;
-        `;
-        const res = await fetch(`https://overpass-api.de/api/interpreter`, {
-          method: 'POST',
-          body: query
-        });
-
-        if (res.status === 429) {
-          if (retryCount < 3 && !isCancelled) {
-            setTimeout(() => fetchSightseeing(retryCount + 1), 5000);
-          } else {
-            setError(true); setLoading(false);
-          }
-          return;
-        }
-
-        const data = await res.json();
-        if (!isCancelled) {
-          const processed = processPlaces(data.elements);
-          setPlaces(processed);
-          localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: data.elements }));
-          setLoading(false);
-        }
-      } catch (err) {
-        if (!isCancelled) { setError(true); setLoading(false); }
-      }
-    };
-
-    fetchSightseeing();
-    return () => { isCancelled = true; };
-  }, [latitude, longitude]);
-
-  const processPlaces = (elements) => {
+  const processPlaces = useCallback((elements) => {
     return elements.map(el => {
       const lat = el.lat || el.center?.lat;
       const lon = el.lon || el.center?.lon;
+      if (!lat || !lon) return null;
       const dist = getDistance(latitude, longitude, lat, lon);
       const name = el.tags?.name || 'Local Attraction';
-      const seed = Math.abs(String(el.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0));
-      
+      const seed = Math.abs(String(el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
+
       let cat = 'monuments';
       if (el.tags?.tourism === 'museum') cat = 'museums';
       else if (el.tags?.leisure === 'park' || el.tags?.leisure === 'nature_reserve') cat = 'parks';
       else if (el.tags?.amenity === 'place_of_worship') cat = 'temples';
       else if (el.tags?.natural === 'beach') cat = 'beaches';
 
-      const entryFee = el.tags?.fee === 'yes' ? 'Entry fee applies' : el.tags?.fee === 'no' ? 'Free entry' : seed % 3 === 0 ? 'Entry fee varies' : 'Free entry';
+      const entryFee = el.tags?.fee === 'yes' ? 'Entry fee applies'
+        : el.tags?.fee === 'no' ? 'Free entry'
+        : seed % 3 === 0 ? 'Entry fee varies' : 'Free entry';
 
       return {
         id: el.id,
@@ -157,10 +110,69 @@ export default function SightseeingNearby({ latitude, longitude }) {
         lat, lon
       };
     })
-    .filter(p => p.name && p.name.length > 2 && p.name !== 'Local Attraction')
+    .filter(p => p && p.name && p.name.length > 2 && p.name !== 'Local Attraction')
     .sort((a, b) => a.distanceKm - b.distanceKm);
-  };
+  }, [latitude, longitude]);
 
+  const fetchSightseeing = useCallback(async () => {
+    if (!latitude || !longitude) return;
+    setLoading(true);
+    setError(false);
+    setRetryIn(null);
+
+    const cacheKey = `wv_sightseeing_${latitude}_${longitude}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Date.now() - parsed.ts < 24 * CACHE_HOUR) {
+          setPlaces(processPlaces(parsed.data));
+          setLoading(false);
+          return;
+        }
+      } catch { /* stale/invalid — proceed to fetch */ }
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_BASE}/api/places/sightseeing?lat=${latitude}&lon=${longitude}`);
+
+      if (res.status === 429) {
+        writeFallbackCache(cacheKey);
+        setError('rate_limited');
+        setLoading(false);
+        let secs = 30;
+        setRetryIn(secs);
+        const timer = setInterval(() => {
+          secs -= 1;
+          setRetryIn(secs);
+          if (secs <= 0) clearInterval(timer);
+        }, 1000);
+        return;
+      }
+
+      if (!res.ok) {
+        setError('network');
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      const elements = data.elements || [];
+      localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: elements }));
+      setPlaces(processPlaces(elements));
+      setLoading(false);
+    } catch {
+      setError('network');
+      setLoading(false);
+    }
+  }, [latitude, longitude, BACKEND_BASE, processPlaces]);
+
+  useEffect(() => {
+    fetchSightseeing();
+  }, [fetchSightseeing]);
+
+  /* ── Loading ── */
   if (loading) {
     return (
       <div className="space-y-4 animate-pulse">
@@ -173,12 +185,29 @@ export default function SightseeingNearby({ latitude, longitude }) {
     );
   }
 
+  /* ── Error State ── */
   if (error) {
+    const isRateLimited = error === 'rate_limited';
     return (
-      <div className="bg-danger-light text-danger p-6 rounded-xl text-center">
-        <p className="font-bold flex items-center justify-center gap-2"><MapPin size={16}/> API Limit Reached</p>
-        <p className="text-sm mt-2">Too many requests to Overpass API. Please try again in a few minutes.</p>
-        <button onClick={() => window.location.reload()} className="mt-4 bg-danger text-white px-4 py-2 rounded-lg text-sm font-semibold border-0 cursor-pointer">Reload Page</button>
+      <div className="bg-amber-50 border border-amber-200 text-amber-900 p-6 rounded-xl text-center">
+        <AlertCircle size={28} className="mx-auto mb-3 text-amber-500" strokeWidth={1.5} />
+        <p className="font-bold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
+          {isRateLimited ? 'Places temporarily unavailable.' : 'Could not load sightseeing places.'}
+        </p>
+        <p className="text-xs mt-1 text-amber-700" style={{ fontFamily: "'Inter', sans-serif" }}>
+          {isRateLimited
+            ? 'Check back in a few minutes. The map service is busy.'
+            : 'A network error occurred. Please check your connection.'}
+        </p>
+        <button
+          onClick={fetchSightseeing}
+          disabled={retryIn !== null && retryIn > 0}
+          className="mt-4 inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2 rounded-lg text-sm font-semibold border-0 cursor-pointer transition-colors"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          <RefreshCw size={14} />
+          {retryIn !== null && retryIn > 0 ? `Try Again (${retryIn}s)` : 'Try Again'}
+        </button>
       </div>
     );
   }
@@ -203,7 +232,7 @@ export default function SightseeingNearby({ latitude, longitude }) {
         <>
           <div className="flex flex-wrap gap-2 mb-2">
             {categories.map(c => (
-              <button 
+              <button
                 key={c} onClick={() => setActiveFilter(c)}
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 cursor-pointer ${activeFilter === c ? 'bg-accent border-accent text-white' : 'bg-white border-navy text-navy hover:bg-navy/5'}`}
                 style={{ fontFamily: "'Inter', sans-serif" }}
@@ -226,7 +255,7 @@ export default function SightseeingNearby({ latitude, longitude }) {
                       </h4>
                       <div className="flex items-center gap-0.5 bg-success text-white px-1.5 rounded text-[10px] font-bold shrink-0"><Star size={8} fill="#fff" strokeWidth={0}/> {place.rating}</div>
                     </div>
-                    
+
                     <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>
                       <span className="flex items-center gap-1 font-medium bg-bg border border-border-light px-2 py-0.5 rounded-md">
                         <MapPin size={12} className="text-accent"/> {(place.distanceKm).toFixed(1)} km
@@ -235,15 +264,15 @@ export default function SightseeingNearby({ latitude, longitude }) {
                         <Clock size={12} className="text-primary"/> {place.timeEst}
                       </span>
                     </div>
-                    
+
                     <p className="text-xs text-text-muted mt-3 line-clamp-2" style={{ fontFamily: "'Inter', sans-serif" }}>
                       "{place.desc}"
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-border-light flex justify-between items-center text-right">
+                  <div className="mt-4 pt-3 border-t border-border-light flex justify-between items-center">
                     <span className="text-[10px] font-semibold text-text-muted uppercase flex items-center gap-1"><Ticket size={12}/> {place.fee}</span>
-                    <a href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`} target="_blank" rel="noopener noreferrer" 
+                    <a href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`} target="_blank" rel="noopener noreferrer"
                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-navy text-navy text-[11px] font-bold hover:bg-navy hover:text-white transition-colors duration-150 no-underline">
                       View on Maps <ExternalLink size={10} strokeWidth={2}/>
                     </a>
