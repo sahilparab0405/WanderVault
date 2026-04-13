@@ -865,6 +865,7 @@ export default function BudgetTracker({ trip, expenses }) {
                         tick={{ fontSize: 9, fill: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif' }}
                         tickLine={false}
                         axisLine={false}
+                        domain={[0, 'auto']}
                         tickFormatter={(v) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
                       />
                       <RechartsTooltip content={<BarTooltipContent />} cursor={{ fill: 'rgba(37, 99, 235, 0.05)' }} />

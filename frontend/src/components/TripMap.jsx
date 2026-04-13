@@ -9,6 +9,7 @@ import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { Map } from 'lucide-react';
 
 /* ─── Fix Leaflet default marker icon issue in bundlers ─── */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -103,7 +104,11 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
         className="bg-card rounded-xl border border-border p-8 text-center"
         style={{ boxShadow: 'var(--shadow-card)' }}
       >
-        <span className="text-4xl mb-3 block">🗺️</span>
+        <div className="flex justify-center mb-3">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <Map size={24} strokeWidth={1.5} />
+          </div>
+        </div>
         <p className="text-navy font-semibold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
           Map not available
         </p>
@@ -124,7 +129,7 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
       {/* Map header */}
       <div className="px-5 py-3 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-lg">🗺️</span>
+          <Map size={16} strokeWidth={1.5} className="text-primary" />
           <h3 className="font-bold text-navy text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
             Destination Map
           </h3>
@@ -168,7 +173,7 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
             <Popup>
               <div style={{ fontFamily: "'Inter', sans-serif", minWidth: 120 }}>
                 <strong style={{ fontFamily: "'Poppins', sans-serif", display: 'block', marginBottom: 2 }}>
-                  📍 {destination}
+                  {destination}
                 </strong>
                 <span style={{ fontSize: 11, color: '#6B7280' }}>Your destination</span>
               </div>

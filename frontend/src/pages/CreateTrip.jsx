@@ -376,7 +376,9 @@ export default function CreateTrip() {
         <Link to="/dashboard" className="inline-flex items-center gap-1 text-text-secondary hover:text-navy text-sm no-underline transition-colors mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>← Back to Dashboard</Link>
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Plan Your Trip</h1>
-          <p className="text-text-secondary text-sm mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Step {step} of 6 — {STEPS[step-1].label}</p>
+          <p className="text-text-secondary text-sm mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+            Step {step} of 6 <span className="hidden sm:inline">— {STEPS[step-1].label}</span>
+          </p>
         </div>
         <ProgressBar currentStep={step} />
 
