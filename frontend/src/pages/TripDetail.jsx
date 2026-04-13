@@ -384,8 +384,14 @@ export default function TripDetail() {
                   <div className="bg-primary-50 rounded-xl p-5 mb-5 border border-primary-100">
                     <form onSubmit={submitExpenseForm} className="space-y-3" noValidate>
                       <div className="grid grid-cols-2 gap-3">
-                        <div><input type="text" placeholder="Title" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full border border-border rounded-lg px-3 py-2 text-sm" /></div>
-                        <div><input type="number" placeholder="Amount" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} className="w-full border border-border rounded-lg px-3 py-2 text-sm" /></div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-navy uppercase tracking-wider mb-1 px-1" style={{ fontFamily: "'Inter', sans-serif" }}>Expense Title</label>
+                          <input type="text" placeholder="e.g. Dinner at Beach" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-navy uppercase tracking-wider mb-1 px-1" style={{ fontFamily: "'Inter', sans-serif" }}>Amount (₹)</label>
+                          <input type="number" placeholder="0" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all" />
+                        </div>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="w-full border border-border rounded-lg px-3 py-2 text-sm">

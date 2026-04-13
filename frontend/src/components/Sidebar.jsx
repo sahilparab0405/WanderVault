@@ -103,12 +103,26 @@ function SidebarInner({ onClose }) {
 
       {/* ── Settings link ── */}
       <div className="px-3 pb-2">
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/40 text-sm cursor-not-allowed"
-             style={{ fontFamily: "'Inter', sans-serif" }}>
-          <Settings size={18} strokeWidth={1.5} style={{ flexShrink: 0 }} />
+        <Link
+          to="/settings"
+          onClick={onClose}
+          className={`
+            flex items-center gap-3 px-3 py-2.5 rounded-xl no-underline
+            text-sm font-medium transition-all duration-150
+            ${location.pathname === '/settings'
+              ? 'bg-white/10 text-white border-l-[3px] border-accent pl-[9px]'
+              : 'text-white/60 hover:bg-white/8 hover:text-white border-l-[3px] border-transparent pl-[9px]'
+            }
+          `}
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          <Settings
+            size={18}
+            strokeWidth={1.5}
+            style={{ color: location.pathname === '/settings' ? '#FF6B35' : 'currentColor', flexShrink: 0 }}
+          />
           <span>Settings</span>
-          <span className="ml-auto text-[9px] bg-white/10 text-white/40 px-1.5 py-0.5 rounded-full font-semibold">soon</span>
-        </div>
+        </Link>
       </div>
 
       {/* ── User footer ── */}

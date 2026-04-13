@@ -12,6 +12,7 @@ import Itinerary from './pages/Itinerary';
 import BudgetDemo from './pages/BudgetDemo';
 import AccommodationDemo from './pages/AccommodationDemo';
 import DashboardDemo from './pages/DashboardDemo';
+import Settings from './pages/Settings';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -80,6 +81,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <ErrorBoundary><Itinerary /></ErrorBoundary>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <ErrorBoundary><Settings /></ErrorBoundary>
                 </PrivateRoute>
               }
             />

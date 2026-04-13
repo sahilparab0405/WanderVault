@@ -4,7 +4,7 @@ import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import TripCard from '../components/TripCard';
 import { TripCardSkeleton, StatCardSkeleton } from '../components/Skeleton';
-import { Plane, DollarSign, Shield, AlertTriangle, Search, PlusCircle, BarChart2, MapPin } from 'lucide-react';
+import { Plane, DollarSign, Shield, AlertTriangle, Search, PlusCircle, Plus, BarChart2, MapPin } from 'lucide-react';
 
 export default function Dashboard() {
   const [trips, setTrips] = useState([]);
@@ -165,7 +165,7 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
-              Your Itineraries
+              My Trips
             </h2>
             {!loading && filteredTrips.length > 0 && searchQuery && (
               <span className="text-xs text-text-muted bg-border-light px-2 py-1 rounded-md font-semibold">
@@ -215,7 +215,7 @@ export default function Dashboard() {
                   className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-8 py-3.5 rounded-xl font-bold text-sm no-underline transition-all hover:-translate-y-1"
                   style={{ fontFamily: "'Inter', sans-serif", boxShadow: '0 4px 14px rgba(255,107,53,0.4)' }}
                 >
-                  <PlusCircle size={16} strokeWidth={1.5} />
+                  <Plus size={16} strokeWidth={1.5} />
                   Plan your first trip
                 </Link>
               </div>
