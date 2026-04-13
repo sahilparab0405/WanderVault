@@ -76,16 +76,13 @@ export default function Login() {
       <div className="relative z-10 w-full max-w-[400px]">
 
         {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <div className="brightness-0 invert">
-            <Logo size="large" />
-          </div>
-        </div>
-
         <div
           className="bg-white rounded-2xl p-8 border border-white/20"
           style={{ boxShadow: '0 24px 64px rgba(0,0,0,0.3)' }}
         >
+          <div className="flex justify-center mb-8">
+            <Logo size="lg" dark={false} />
+          </div>
           <div className="mb-6">
             <h2 className="text-xl font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
               Sign in

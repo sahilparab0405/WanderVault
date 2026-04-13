@@ -60,7 +60,7 @@ export default function Navbar() {
             id="navbar-logo"
             aria-label="WanderVault Home"
           >
-            <Logo size="default" />
+            <Logo size="sm" dark={false} />
           </Link>
 
           {/* CENTER — Desktop Navigation Links */}

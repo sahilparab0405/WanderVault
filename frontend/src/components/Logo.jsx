@@ -1,76 +1,116 @@
-/**
- * WanderVault Logo — Clean wordmark with hand-crafted compass SVG
- * Style: Yatra / Cleartrip-inspired. No emoji, no clipart.
- * 
- * "Wander" → Poppins Bold #1a2b4a
- * "Vault"  → Poppins Bold #FF6B35
- * Icon     → Compass SVG, #FF6B35, left of text
- * Height   → 32px total
- */
+import React from 'react';
 
-export default function Logo({ size = 'default', showText = true, className = '' }) {
+const Logo = ({ size = 'md', dark = false }) => {
   const sizes = {
-    small:   { icon: 22, text: 13, gap: 6 },
-    default: { icon: 28, text: 16, gap: 7 },
-    large:   { icon: 40, text: 22, gap: 9 },
+    sm: { icon: 32, text: 20, gap: 10, rx: 9 },
+    md: { icon: 40, text: 24, gap: 12, rx: 12 },
+    lg: { icon: 52, text: 34, gap: 14, rx: 14 }
   };
 
-  const s = sizes[size] || sizes.default;
+  const s = sizes[size] || sizes.md;
+  const ic = s.icon;
+  const cx = ic / 2;
+  const cy = ic / 2;
+  const spread = ic * 0.4;
+  const rise = ic * 0.18;
+
+  const iconBg = dark ? '#FF6B35' : '#1a2b4a';
+  const pathStroke = '#FFFFFF';
+  const dotFill = dark ? '#FFFFFF' : '#FF6B35';
+  const wanderColor = dark ? '#FFFFFF' : '#1a2b4a';
+
+  const p1x = cx - spread;
+  const p1y = cy + rise;
+  const p2x = cx - spread * 0.4;
+  const p2y = cy - rise * 1.5;
+  const p3x = cx;
+  const p3y = cy + rise;
+  const p4x = cx + spread * 0.4;
+  const p4y = cy - rise * 1.5;
+  const p5x = cx + spread;
+  const p5y = cy + rise;
 
   return (
-    <div
-      className={`flex items-center ${className}`}
-      style={{ gap: `${s.gap}px` }}
-      aria-label="WanderVault"
-    >
-      {/* Compass icon — hand-crafted SVG, no emoji */}
+    <div className="wv-logo-container" style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: s.gap,
+      userSelect: 'none',
+      cursor: 'default'
+    }}>
       <svg
-        width={s.icon}
-        height={s.icon}
-        viewBox="0 0 32 32"
+        width={ic}
+        height={ic}
+        viewBox={`0 0 ${ic} ${ic}`}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
       >
-        {/* Outer circle */}
-        <circle cx="16" cy="16" r="14" stroke="#FF6B35" strokeWidth="1.8" />
-
-        {/* Compass needle — North (orange) */}
-        <path
-          d="M16 16 L13.5 8 L16 10.5 L18.5 8 Z"
-          fill="#FF6B35"
+        <rect
+          width={ic}
+          height={ic}
+          rx={s.rx}
+          fill={iconBg}
         />
-        {/* Compass needle — South (muted) */}
         <path
-          d="M16 16 L13.5 24 L16 21.5 L18.5 24 Z"
-          fill="#FF6B35"
-          fillOpacity="0.3"
+          d={`M${p1x} ${p1y} 
+              L${p2x} ${p2y} 
+              L${p3x} ${p3y} 
+              L${p4x} ${p4y} 
+              L${p5x} ${p5y}`}
+          stroke={pathStroke}
+          strokeWidth={ic * 0.07} // Results in approx 2.8px for md (40px)
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
         />
-
-        {/* Cardinal dot — center */}
-        <circle cx="16" cy="16" r="2" fill="#FF6B35" />
-
-        {/* Tick marks at E and W */}
-        <line x1="3" y1="16" x2="5.5" y2="16" stroke="#1a2b4a" strokeWidth="1.6" strokeLinecap="round" />
-        <line x1="26.5" y1="16" x2="29" y2="16" stroke="#1a2b4a" strokeWidth="1.6" strokeLinecap="round" />
+        {/* Start dot */}
+        <circle cx={p1x} cy={p1y} 
+          r={ic / 10} fill={dotFill}/>
+        {/* End dot */}
+        <circle cx={p5x} cy={p5y} 
+          r={ic / 10} fill={dotFill}/>
+        {/* End ring */}
+        <circle cx={p5x} cy={p5y}
+          r={ic / 5}
+          stroke={pathStroke}
+          strokeWidth={ic * 0.04}
+          fill="none"
+        />
       </svg>
 
-      {/* Wordmark */}
-      {showText && (
-        <span
-          style={{
-            fontFamily: "'Poppins', sans-serif",
-            fontWeight: 700,
-            fontSize: `${s.text}px`,
-            letterSpacing: '-0.02em',
-            lineHeight: 1,
-            userSelect: 'none',
-          }}
-        >
-          <span style={{ color: '#1a2b4a' }}>Wander</span>
-          <span style={{ color: '#FF6B35' }}>Vault</span>
+      <div style={{ display: 'flex', 
+        flexDirection: 'column', 
+        lineHeight: 1 }}>
+        <span style={{
+          fontFamily: "'Poppins', sans-serif",
+          fontSize: s.text,
+          fontWeight: 700,
+          letterSpacing: '-1px',
+          lineHeight: 1.1,
+          display: 'flex'
+        }}>
+          <span style={{ color: wanderColor }}>
+            Wander
+          </span>
+          <span style={{ color: '#FF6B35' }}>
+            Vault
+          </span>
         </span>
-      )}
+        {size === 'lg' && (
+          <span style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 11,
+            color: '#6B7280',
+            letterSpacing: '3px',
+            marginTop: 4,
+            fontWeight: 400
+          }}>
+            SMART TRAVEL PLANNING
+          </span>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default Logo;

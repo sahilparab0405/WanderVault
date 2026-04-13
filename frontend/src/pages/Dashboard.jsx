@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import TripCard from '../components/TripCard';
 import { TripCardSkeleton, StatCardSkeleton } from '../components/Skeleton';
 import { Plane, DollarSign, Shield, AlertTriangle, Search, PlusCircle, Plus, BarChart2, MapPin } from 'lucide-react';
+import Logo from '../components/Logo';
 
 export default function Dashboard() {
   const [trips, setTrips] = useState([]);
@@ -52,15 +53,23 @@ export default function Dashboard() {
       {/* ── Top bar ── */}
       <div className="bg-white border-b border-border px-6 py-4 flex items-center justify-between"
            style={{ boxShadow: 'var(--shadow-sm)' }}>
-        <div>
-          <h1 className="text-xl font-bold text-navy leading-tight"
-              style={{ fontFamily: "'Poppins', sans-serif" }}>
-            Dashboard
-          </h1>
-          <p className="text-xs text-text-secondary mt-0.5"
-             style={{ fontFamily: "'Inter', sans-serif" }}>
-            Welcome back, {user?.name?.split(' ')[0] || 'Traveler'}
-          </p>
+        <div className="flex items-center gap-4">
+          <div className="hidden lg:block lg:mb-1">
+             <Logo size="sm" dark={false} />
+          </div>
+          <div className="lg:hidden">
+             <Logo size="sm" dark={false} />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-navy leading-tight"
+                style={{ fontFamily: "'Poppins', sans-serif" }}>
+              Dashboard
+            </h1>
+            <p className="text-xs text-text-secondary mt-0.5"
+               style={{ fontFamily: "'Inter', sans-serif" }}>
+              Welcome back, {user?.name?.split(' ')[0] || 'Traveler'}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           {/* Search */}

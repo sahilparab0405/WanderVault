@@ -49,7 +49,7 @@ function SidebarInner({ onClose }) {
       {/* ── Logo ── */}
       <div className="px-5 pt-6 pb-5 flex items-center justify-between border-b border-white/10">
         <Link to="/dashboard" className="no-underline" onClick={onClose}>
-          <Logo size="default" className="brightness-0 invert" showText={true} />
+          <Logo size="md" dark={true} />
         </Link>
         {/* Mobile close button */}
         {onClose && (
@@ -190,7 +190,7 @@ export default function Sidebar() {
         >
           <Menu size={20} strokeWidth={1.5} />
         </button>
-        <Logo size="small" showText={true} className="brightness-0 invert" />
+        <Logo size="sm" dark={true} />
       </div>
 
       {/* Mobile overlay */}
