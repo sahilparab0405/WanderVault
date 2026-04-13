@@ -8,7 +8,7 @@ import {
   Briefcase, Car, Train
 } from 'lucide-react';
 import { StatCardSkeleton, TripCardSkeleton } from '../components/Skeleton';
-import ItineraryTab from '../components/Itinerary';
+import ItineraryTab from '../pages/Itinerary';
 
 // Lazy load heavy components
 const TripMap = lazy(() => import('../components/TripMap'));

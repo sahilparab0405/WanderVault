@@ -27,20 +27,41 @@ export default function Itinerary() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
+    
+    // 1. Optimistic UI Update
+    const optimisticItem = { ...form, _id: 'temp-' + Date.now(), isOptimistic: true };
+    setItems((prev) => [...prev, optimisticItem].sort((a, b) => a.day - b.day));
+    setForm({ day: '', title: '', description: '', location: '', time: '' });
+    setShowForm(false);
+
+    // 2. Background API Sync
     try {
       const { data } = await API.post(`/itinerary/${id}`, form);
-      setItems([...items, data].sort((a, b) => a.day - b.day));
-      setForm({ day: '', title: '', description: '', location: '', time: '' });
-      setShowForm(false);
-    } catch (err) { console.error(err); }
+      setItems((prev) => prev.map(item => item._id === optimisticItem._id ? data : item).sort((a, b) => a.day - b.day));
+    } catch (err) { 
+      console.error(err); 
+      setItems((prev) => prev.filter(item => item._id !== optimisticItem._id)); // Revert on failure
+      alert("Failed to add to itinerary. Please check your connection.");
+    }
   };
 
   const handleDelete = async (itemId) => {
     if (!window.confirm('Delete this item?')) return;
+    
+    // 1. Optimistic UI Update
+    const itemToDelete = items.find(i => i._id === itemId);
+    setItems((prev) => prev.filter(i => i._id !== itemId));
+    
+    // 2. Background API Sync
     try {
       await API.delete(`/itinerary/${itemId}`);
-      setItems(items.filter(i => i._id !== itemId));
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err); 
+      if (itemToDelete) {
+         setItems((prev) => [...prev, itemToDelete].sort((a, b) => a.day - b.day)); // Revert on failure
+         alert("Failed to delete item.");
+      }
+    }
   };
 
   const groupedByDay = items.reduce((acc, item) => {
@@ -121,7 +142,7 @@ export default function Itinerary() {
                 </div>
                 <div className="space-y-3 ml-2">
                   {dayItems.map(item => (
-                    <div key={item._id} className="bg-card rounded-xl p-4 flex justify-between items-start border border-border hover:border-primary-100 transition-all duration-150" style={{ boxShadow: 'var(--shadow-sm)' }}>
+                    <div key={item._id} className={`bg-card rounded-xl p-4 flex justify-between items-start border border-border hover:border-primary-100 transition-all duration-300 ${item.isOptimistic ? 'opacity-60 scale-[0.98]' : 'opacity-100 scale-100'}`} style={{ boxShadow: 'var(--shadow-sm)' }}>
                       <div className="flex gap-3">
                         <div className="w-1 bg-primary rounded-full min-h-full" />
                         <div>
@@ -132,6 +153,7 @@ export default function Itinerary() {
                                 <Clock size={10} strokeWidth={1.5} />{item.time}
                               </span>
                             )}
+                            {item.isOptimistic && <span className="text-[9px] text-text-muted italic ml-2">Saving...</span>}
                           </div>
                           {item.location && (
                             <p className="text-sm text-text-secondary mt-0.5 flex items-center gap-1" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -141,7 +163,7 @@ export default function Itinerary() {
                           {item.description && <p className="text-sm text-text-muted mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>{item.description}</p>}
                         </div>
                       </div>
-                      <button onClick={() => handleDelete(item._id)} className="text-danger/60 hover:text-danger text-sm ml-3 shrink-0 cursor-pointer bg-transparent border-0 p-1">
+                      <button onClick={() => handleDelete(item._id)} disabled={item.isOptimistic} className="text-danger/60 hover:text-danger disabled:opacity-30 text-sm ml-3 shrink-0 cursor-pointer bg-transparent border-0 p-1">
                         <Trash2 size={16} strokeWidth={1.5} />
                       </button>
                     </div>
