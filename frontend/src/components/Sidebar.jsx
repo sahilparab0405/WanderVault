@@ -63,7 +63,6 @@ function SidebarInner({ onClose }) {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
     if (onClose) onClose();
   };
 
@@ -82,6 +81,7 @@ function SidebarInner({ onClose }) {
         </Link>
         {onClose && (
           <button
+            type="button"
             onClick={onClose}
             className="lg:hidden p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border-0 bg-transparent"
             aria-label="Close menu"
@@ -144,7 +144,7 @@ function SidebarInner({ onClose }) {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-white/60 text-[10px] font-medium">{getDaysRemaining(activeTrip.endDate)} days left</span>
-              <Link to={`/trip/${activeTrip._id}`} className="text-accent text-[10px] font-bold no-underline hover:underline">Details →</Link>
+              <Link to={`/trip/${activeTrip._id}`} onClick={onClose} className="text-accent text-[10px] font-bold no-underline hover:underline">Details →</Link>
             </div>
           </div>
         </div>
@@ -196,6 +196,7 @@ function SidebarInner({ onClose }) {
           </div>
         </div>
         <button
+          type="button"
           onClick={handleLogout}
           id="sidebar-logout"
           className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl
