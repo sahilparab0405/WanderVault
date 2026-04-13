@@ -9,16 +9,49 @@ import Dashboard from './pages/Dashboard';
 import CreateTrip from './pages/CreateTrip';
 import TripDetail from './pages/TripDetail';
 import Itinerary from './pages/Itinerary';
-import BudgetDemo from './pages/BudgetDemo';
-import AccommodationDemo from './pages/AccommodationDemo';
-import DashboardDemo from './pages/DashboardDemo';
+import Budget from './pages/Budget';
+import Explore from './pages/Explore';
 import Settings from './pages/Settings';
+import API from './api/axios';
+import { useState, useEffect } from 'react';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <PageSpinner message="Loading..." />;
   return user ? children : <Navigate to="/login" replace />;
 };
+
+/**
+ * GlobalItinerary — Handles the /itinerary route by finding 
+ * the most recent/active trip and redirecting to its itinerary.
+ */
+function GlobalItinerary() {
+  const [loading, setLoading] = useState(true);
+  const [tripId, setTripId] = useState(null);
+
+  useEffect(() => {
+    const findTrip = async () => {
+      try {
+        const { data } = await API.get('/trips');
+        if (data && data.length > 0) {
+          // Find active or most recent
+          const now = new Date();
+          const active = data.find(t => new Date(t.startDate) <= now && new Date(t.endDate) >= now);
+          setTripId(active ? active._id : data[0]._id);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    findTrip();
+  }, []);
+
+  if (loading) return <PageSpinner message="Finding your itinerary..." />;
+  if (!tripId) return <Navigate to="/dashboard" replace />;
+  return <Navigate to={`/trip/${tripId}/itinerary`} replace />;
+}
 
 /*
  * AppShell — wraps authenticated routes in the sidebar layout.
@@ -52,6 +85,7 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            
             <Route
               path="/dashboard"
               element={
@@ -60,6 +94,34 @@ function App() {
                 </PrivateRoute>
               }
             />
+            
+            <Route
+              path="/explore"
+              element={
+                <PrivateRoute>
+                  <ErrorBoundary><Explore /></ErrorBoundary>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/budget"
+              element={
+                <PrivateRoute>
+                  <ErrorBoundary><Budget /></ErrorBoundary>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/itinerary"
+              element={
+                <PrivateRoute>
+                  <ErrorBoundary><GlobalItinerary /></ErrorBoundary>
+                </PrivateRoute>
+              }
+            />
+
             <Route
               path="/create-trip"
               element={
@@ -68,6 +130,12 @@ function App() {
                 </PrivateRoute>
               }
             />
+            
+            <Route
+              path="/trips"
+              element={<Navigate to="/dashboard" replace />}
+            />
+
             <Route
               path="/trip/:id"
               element={
@@ -92,9 +160,6 @@ function App() {
                 </PrivateRoute>
               }
             />
-            <Route path="/budget-demo" element={<BudgetDemo />} />
-            <Route path="/accommodation-demo" element={<AccommodationDemo />} />
-            <Route path="/dashboard-demo" element={<DashboardDemo />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </AppShell>

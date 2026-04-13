@@ -346,7 +346,7 @@ export default function CreateTrip() {
   const renderExternalLinks = () => {
     const dest = encodeURIComponent(form.destination);
     const links = [
-      { l: 'Oyorooms', url: 'https://www.oyorooms.com/' },
+      { l: 'Budget Hotels', url: 'https://www.agoda.com/' },
       { l: 'MakeMyTrip', url: `https://www.makemytrip.com/hotels/hotel-listing/?city=${dest}` },
       { l: 'Booking.com', url: `https://www.booking.com/searchresults.html?ss=${dest}` },
       { l: 'Goibibo', url: `https://www.goibibo.com/hotels/find-hotels-in-${dest}/` }
