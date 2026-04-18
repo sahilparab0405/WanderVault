@@ -346,7 +346,7 @@ export default function CreateTrip() {
   const renderExternalLinks = () => {
     const dest = encodeURIComponent(form.destination);
     const links = [
-      { l: 'Budget Hotels', url: 'https://www.agoda.com/' },
+      { l: 'Budget Hotels', url: 'https://budgethotels.in/' },
       { l: 'MakeMyTrip', url: `https://www.makemytrip.com/hotels/hotel-listing/?city=${dest}` },
       { l: 'Booking.com', url: `https://www.booking.com/searchresults.html?ss=${dest}` },
       { l: 'Goibibo', url: `https://www.goibibo.com/hotels/find-hotels-in-${dest}/` }
@@ -498,7 +498,7 @@ export default function CreateTrip() {
                   {hotelsLoading ? (
                     <div className="py-10 text-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" /></div>
                   ) : hotels.length === 0 ? (
-                    <div className="text-center py-6 text-sm text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>No deterministic hotels found for this location.</div>
+                    <div className="text-center py-6 text-sm text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>No hotels found for this location.</div>
                   ) : (
                     <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                       {hotels.map((h, i) => (
