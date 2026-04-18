@@ -159,7 +159,7 @@ function useHotelSearch(destination) {
             address: item.display_name.split(',').slice(0, 3).join(', '),
             distance: (0.5 + (hash % 40)/10).toFixed(1) + 'km',
             price, rating, image: images[hash % images.length],
-            amenities: [{Icon:Wifi, l:'Wifi'}, {Icon:Bath, l:'Tub'}, {Icon:Flame, l:'BBQ'}, {Icon:ParkingCircle, l:'Parking'}].slice(0, 3 + (hash%2))
+            hash: hash
           };
         });
         setHotels(results);
@@ -513,7 +513,7 @@ export default function CreateTrip() {
                                 <div className="flex items-center gap-0.5 bg-success text-white px-1.5 rounded text-[10px] font-bold"><Star size={8} fill="#fff" strokeWidth={0}/> {h.rating}</div>
                               </div>
                               <div className="flex items-center gap-3 mt-2 text-text-secondary">
-                                {h.amenities.map((am, idx) => {
+                                {[{Icon:Wifi, l:'Wifi'}, {Icon:Bath, l:'Tub'}, {Icon:Flame, l:'BBQ'}, {Icon:ParkingCircle, l:'Parking'}].slice(0, 3 + ((h.hash || 0)%2)).map((am, idx) => {
                                   const AIcon = am.Icon; return <div key={idx} className="flex flex-col items-center gap-0.5"><AIcon size={12} strokeWidth={1.5} /><span className="text-[8px]">{am.l}</span></div>
                                 })}
                               </div>

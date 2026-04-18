@@ -92,30 +92,39 @@ export default function DiningNearby({ latitude, longitude }) {
         rating: f.rating,
         desc: f.desc,
         lat: latitude + f.lat_off,
-        lon: longitude + f.lon_off
+        lon: longitude + f.lon_off,
+        photo: null
       }));
     } else {
       pList = elements.map(el => {
-        const lat = el.lat || el.center?.lat;
-        const lon = el.lon || el.center?.lon;
+        const lat = el.geocodes?.main?.latitude;
+        const lon = el.geocodes?.main?.longitude;
         if (!lat || !lon) return null;
-        const dist = getDistance(latitude, longitude, lat, lon);
-        const name = el.tags?.name || 'Local Eatery';
-        const cList = (el.tags?.cuisine || el.tags?.amenity || 'Dining').split(/[;,]/)[0];
-        const cuisine = cList.charAt(0).toUpperCase() + cList.slice(1).replace('_', ' ');
-        const seed = Math.abs(String(el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
+        
+        const dist = (el.distance / 1000) || getDistance(latitude, longitude, lat, lon);
+        const name = el.name || 'Local Eatery';
+        const cuisine = el.categories?.[0]?.name || 'Dining';
+        const seed = Math.abs(String(el.fsq_id || el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
+        
+        let rating = el.rating ? (el.rating / 2).toFixed(1) : getRating(seed);
+        const desc = el.location?.formatted_address || `Popular ${cuisine.toLowerCase()} spot in the area.`;
+        const photo = el.photos && el.photos.length > 0 ? `${el.photos[0].prefix}400x300${el.photos[0].suffix}` : null;
+        const priceTier = el.price ? '$'.repeat(el.price) : '$$';
+
         return {
-          id: el.id,
+          id: el.fsq_id || el.id,
           name,
           cuisine,
           distanceKm: dist,
           timeEst: formatTime(dist),
-          rating: el.tags?.rating ? parseFloat(el.tags.rating).toFixed(1) : getRating(seed),
-          desc: el.tags?.description || `Popular ${cuisine.toLowerCase()} spot in the area.`,
-          lat, lon
+          rating,
+          desc,
+          lat, lon,
+          photo,
+          priceTier
         };
       })
-      .filter(p => p && p.name && p.name !== 'Local Eatery');
+      .filter(p => p && p.name);
     }
 
     pList = pList.sort((a, b) => a.distanceKm - b.distanceKm);
@@ -134,7 +143,7 @@ export default function DiningNearby({ latitude, longitude }) {
     setRetryIn(null);
     setUsingFallback(false);
 
-    const cacheKey = `wv_dining_${latitude}_${longitude}`;
+    const cacheKey = `wv_fsq_dining_${latitude}_${longitude}`;
     const cached = localStorage.getItem(cacheKey);
 
     if (cached) {
@@ -148,7 +157,15 @@ export default function DiningNearby({ latitude, longitude }) {
     }
 
     try {
-      const res = await fetch(`${BACKEND_BASE}/api/places/dining?lat=${latitude}&lon=${longitude}`);
+      const fsqKey = import.meta.env.VITE_FOURSQUARE_KEY;
+      if (!fsqKey) throw new Error("Missing FSQ key");
+
+      const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude},${longitude}&categories=13065&limit=10&radius=5000&fields=fsq_id,name,categories,distance,rating,geocodes,location,photos,price`, {
+        headers: {
+          'Authorization': fsqKey,
+          'Accept': 'application/json'
+        }
+      });
 
       if (res.status === 429) {
         writeFallbackCache(cacheKey);
@@ -172,18 +189,19 @@ export default function DiningNearby({ latitude, longitude }) {
       }
 
       const data = await res.json();
-      const elements = data.elements || [];
+      const elements = data.results || [];
       if (elements.length === 0) {
         processPlaces(DINING_FALLBACK, true);
       } else {
         localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: elements }));
         processPlaces(elements);
       }
-    } catch {
+    } catch (e) {
+      console.warn("Foursquare fetch failed, using fallback:", e);
       setError('network');
       processPlaces(DINING_FALLBACK, true);
     }
-  }, [latitude, longitude, BACKEND_BASE, processPlaces]);
+  }, [latitude, longitude, processPlaces]);
 
   useEffect(() => {
     fetchDining();
@@ -282,6 +300,11 @@ export default function DiningNearby({ latitude, longitude }) {
                     </span>
                   </div>
 
+                  {place.photo && (
+                    <div className="mt-3 w-full h-24 rounded-lg overflow-hidden border border-border-light">
+                      <img src={place.photo} alt={place.name} className="w-full h-full object-cover" />
+                    </div>
+                  )}
                   <p className="text-xs text-text-muted mt-3 line-clamp-1 italic" style={{ fontFamily: "'Inter', sans-serif" }}>
                     "{place.desc}"
                   </p>

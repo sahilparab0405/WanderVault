@@ -9,6 +9,8 @@
  */
 
 import { Component } from 'react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
+
 
 export default class ErrorBoundary extends Component {
   constructor(props) {
@@ -26,7 +28,7 @@ export default class ErrorBoundary extends Component {
 
   handleReset = () => {
     this.setState({ hasError: false, error: null });
-    window.location.href = '/dashboard';
+    window.location.reload();
   };
 
   render() {
@@ -37,37 +39,32 @@ export default class ErrorBoundary extends Component {
           role="alert"
         >
           <div
-            className="bg-card rounded-2xl p-8 w-full max-w-md text-center border border-border"
+            className="bg-card rounded-2xl p-10 w-full max-w-md text-center border border-border"
             style={{ boxShadow: 'var(--shadow-lg)' }}
           >
-            <div className="text-5xl mb-4">⚠️</div>
+            <div className="flex justify-center mb-6">
+               <div className="w-20 h-20 bg-accent/10 rounded-[2rem] flex items-center justify-center text-accent">
+                 <AlertCircle size={40} strokeWidth={2} />
+               </div>
+            </div>
             <h1
-              className="text-xl font-bold text-navy mb-2"
+              className="text-2xl font-black text-navy mb-3"
               style={{ fontFamily: "'Poppins', sans-serif" }}
             >
               Something went wrong
             </h1>
             <p
-              className="text-text-secondary text-sm mb-6 leading-relaxed"
+              className="text-text-secondary text-sm mb-8 leading-relaxed font-medium"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              An unexpected error occurred. Don't worry — your data is safe.
+              Please refresh the page to try again. Your data is safe.
             </p>
-            {/* Show error details only in development */}
-            {import.meta.env.DEV && this.state.error && (
-              <pre
-                className="text-left bg-danger-light text-danger text-xs p-3 rounded-lg mb-5 overflow-auto max-h-32"
-                style={{ fontFamily: 'monospace' }}
-              >
-                {this.state.error.toString()}
-              </pre>
-            )}
             <button
               onClick={this.handleReset}
-              className="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-150 cursor-pointer border-0"
+              className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white px-6 py-4 rounded-xl text-sm font-black transition-colors duration-150 cursor-pointer border-0 shadow-lg shadow-accent/20"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              ← Go to Dashboard
+              <RefreshCw size={18} /> Refresh Page
             </button>
           </div>
         </div>

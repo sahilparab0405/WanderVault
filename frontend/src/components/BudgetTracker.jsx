@@ -343,12 +343,12 @@ async function exportToPDF(trip, expenses, categoryTotals, totalSpent, remaining
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(107, 114, 128);
-  doc.text(`📍 ${trip.destination}`, 14, y);
+  doc.text(`Dest: ${trip.destination}`, 14, y);
 
   y += 6;
   const startStr = new Date(trip.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   const endStr = new Date(trip.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-  doc.text(`📅 ${startStr} → ${endStr}`, 14, y);
+  doc.text(`Dates: ${startStr} - ${endStr}`, 14, y);
 
   // ─── Budget Summary Box ───
   y += 12;

@@ -85,9 +85,6 @@ export default function SightseeingNearby({ latitude, longitude }) {
   const [usingFallback, setUsingFallback] = useState(false);
 
   const BACKEND_BASE = import.meta.env.VITE_API_URL
-    ? import.meta.env.VITE_API_URL.replace('/api', '')
-    : 'http://localhost:5000';
-
   const processPlaces = useCallback((elements, isFallback = false) => {
     let pList = [];
     if (isFallback) {
@@ -101,40 +98,47 @@ export default function SightseeingNearby({ latitude, longitude }) {
         desc: f.desc,
         fee: 'Free entry',
         lat: latitude + f.lat_off,
-        lon: longitude + f.lon_off
+        lon: longitude + f.lon_off,
+        photo: null
       }));
     } else {
       pList = elements.map(el => {
-        const lat = el.lat || el.center?.lat;
-        const lon = el.lon || el.center?.lon;
+        const lat = el.geocodes?.main?.latitude;
+        const lon = el.geocodes?.main?.longitude;
         if (!lat || !lon) return null;
-        const dist = getDistance(latitude, longitude, lat, lon);
-        const name = el.tags?.name || 'Local Attraction';
-        const seed = Math.abs(String(el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
+        
+        const dist = (el.distance / 1000) || getDistance(latitude, longitude, lat, lon);
+        const name = el.name || 'Local Attraction';
+        const seed = Math.abs(String(el.fsq_id || el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
 
         let cat = 'monuments';
-        if (el.tags?.tourism === 'museum') cat = 'museums';
-        else if (el.tags?.leisure === 'park' || el.tags?.leisure === 'nature_reserve') cat = 'parks';
-        else if (el.tags?.amenity === 'place_of_worship') cat = 'temples';
-        else if (el.tags?.natural === 'beach') cat = 'beaches';
+        if (el.categories) {
+          const catStr = el.categories.map(c => c.name.toLowerCase()).join(' ');
+          if (catStr.includes('museum')) cat = 'museums';
+          else if (catStr.includes('park') || catStr.includes('forest') || catStr.includes('nature')) cat = 'parks';
+          else if (catStr.includes('temple') || catStr.includes('church') || catStr.includes('shrine')) cat = 'temples';
+          else if (catStr.includes('beach')) cat = 'beaches';
+        }
 
-        const entryFee = el.tags?.fee === 'yes' ? 'Entry fee applies'
-          : el.tags?.fee === 'no' ? 'Free entry'
-          : seed % 3 === 0 ? 'Entry fee varies' : 'Free entry';
+        const entryFee = el.price ? 'Entry fee applies' : (seed % 3 === 0 ? 'Entry fee varies' : 'Free entry');
+        let rating = el.rating ? (el.rating / 2).toFixed(1) : getRating(seed);
+        const desc = el.location?.formatted_address || `Famous ${CATEGORY_MAP[cat].label.toLowerCase()} in the area.`;
+        const photo = el.photos && el.photos.length > 0 ? `${el.photos[0].prefix}400x300${el.photos[0].suffix}` : null;
 
         return {
-          id: el.id,
+          id: el.fsq_id || el.id,
           name,
           category: cat,
           distanceKm: dist,
           timeEst: formatTime(dist),
-          rating: el.tags?.rating ? parseFloat(el.tags.rating).toFixed(1) : getRating(seed),
-          desc: el.tags?.description || `Famous ${CATEGORY_MAP[cat].label.toLowerCase()} in the area.`,
+          rating,
+          desc,
           fee: entryFee,
-          lat, lon
+          lat, lon,
+          photo
         };
       })
-      .filter(p => p && p.name && p.name.length > 2 && p.name !== 'Local Attraction');
+      .filter(p => p && p.name && p.name.length > 2);
     }
     
     return pList.sort((a, b) => a.distanceKm - b.distanceKm);
@@ -147,7 +151,7 @@ export default function SightseeingNearby({ latitude, longitude }) {
     setRetryIn(null);
     setUsingFallback(false);
 
-    const cacheKey = `wv_sightseeing_${latitude}_${longitude}`;
+    const cacheKey = `wv_fsq_sightseeing_${latitude}_${longitude}`;
     const cached = localStorage.getItem(cacheKey);
 
     if (cached) {
@@ -162,7 +166,15 @@ export default function SightseeingNearby({ latitude, longitude }) {
     }
 
     try {
-      const res = await fetch(`${BACKEND_BASE}/api/places/sightseeing?lat=${latitude}&lon=${longitude}`);
+      const fsqKey = import.meta.env.VITE_FOURSQUARE_KEY;
+      if (!fsqKey) throw new Error("Missing FSQ key");
+
+      const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude},${longitude}&categories=16000&limit=10&radius=5000&fields=fsq_id,name,categories,distance,rating,geocodes,location,photos,price`, {
+        headers: {
+          'Authorization': fsqKey,
+          'Accept': 'application/json'
+        }
+      });
 
       if (res.status === 429) {
         writeFallbackCache(cacheKey);
@@ -190,7 +202,7 @@ export default function SightseeingNearby({ latitude, longitude }) {
       }
 
       const data = await res.json();
-      const elements = data.elements || [];
+      const elements = data.results || [];
       if (elements.length === 0) {
         setPlaces(processPlaces(SIGHTSEEING_FALLBACK, true));
         setUsingFallback(true);
@@ -200,13 +212,14 @@ export default function SightseeingNearby({ latitude, longitude }) {
         setPlaces(processPlaces(elements));
         setLoading(false);
       }
-    } catch {
+    } catch (e) {
+      console.warn("Foursquare fetch failed, using fallback:", e);
       setError('network');
       setPlaces(processPlaces(SIGHTSEEING_FALLBACK, true));
       setUsingFallback(true);
       setLoading(false);
     }
-  }, [latitude, longitude, BACKEND_BASE, processPlaces]);
+  }, [latitude, longitude, processPlaces]);
 
   useEffect(() => {
     fetchSightseeing();
@@ -309,6 +322,12 @@ export default function SightseeingNearby({ latitude, longitude }) {
                         <Clock size={12} className="text-primary"/> {place.timeEst}
                       </span>
                     </div>
+                    
+                    {place.photo && (
+                      <div className="mt-3 w-full h-24 rounded-lg overflow-hidden border border-border-light">
+                        <img src={place.photo} alt={place.name} className="w-full h-full object-cover" />
+                      </div>
+                    )}
 
                     <p className="text-xs text-text-muted mt-3 line-clamp-2" style={{ fontFamily: "'Inter', sans-serif" }}>
                       "{place.desc}"

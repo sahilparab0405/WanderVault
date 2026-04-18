@@ -5,7 +5,7 @@ import {
   Plane, Calendar, MapPin, DollarSign, Wallet, MoreVertical, 
   Trash2, Plus, Info, ChevronRight, Utensils, Compass, Building,
   Navigation, CheckCircle, Clock, Hotel, ArrowRight, X, Search,
-  Briefcase, Car, Train
+  Briefcase, Car, Train, AlertTriangle, Star
 } from 'lucide-react';
 import { StatCardSkeleton, TripCardSkeleton } from '../components/Skeleton';
 import ItineraryTab from '../pages/Itinerary';
@@ -33,6 +33,27 @@ export default function TripDetail() {
   const [hotelSearch, setHotelSearch] = useState('');
   const [hotelResults, setHotelResults] = useState([]);
   const [isSearchingHotels, setIsSearchingHotels] = useState(false);
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [expenseForm, setExpenseForm] = useState({ title: '', amount: '', category: 'Food' });
+  const [isAddingExpense, setIsAddingExpense] = useState(false);
+
+  const handleAddExpense = async (e) => {
+    e.preventDefault();
+    setIsAddingExpense(true);
+    try {
+      await API.post(`/expenses/${id}`, {
+        title: expenseForm.title,
+        amount: Number(expenseForm.amount),
+        category: expenseForm.category
+      });
+      setShowExpenseForm(false);
+      setExpenseForm({ title: '', amount: '', category: 'Food' });
+      fetchTrip();
+    } catch (err) {
+      alert('Failed to add expense');
+    }
+    setIsAddingExpense(false);
+  };
 
   useEffect(() => {
     fetchTrip();
@@ -181,15 +202,52 @@ export default function TripDetail() {
                  </div>
               </div>
               <div className="flex items-center gap-3">
-                 <div className="bg-navy rounded-2xl p-4 text-white shadow-xl shadow-navy/20 min-w-[160px]">
+                 <div className="bg-navy rounded-2xl p-4 text-white shadow-xl shadow-navy/20 min-w-[160px] relative">
                     <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">Total Spent</p>
                     <div className="flex items-baseline gap-1">
                        <span className="text-2xl font-black">₹{trip.totalExpense?.toLocaleString()}</span>
                        <span className="text-[10px] text-white/60">/ ₹{trip.budget?.toLocaleString()}</span>
                     </div>
                  </div>
+                 <button 
+                   onClick={() => setShowExpenseForm(!showExpenseForm)}
+                   className="bg-accent hover:bg-accent-dark text-white px-5 py-4 rounded-2xl text-sm font-bold border-0 cursor-pointer shadow-lg shadow-accent/20 transition-all whitespace-nowrap"
+                 >
+                   {showExpenseForm ? '✕ Cancel' : '+ Add Expense'}
+                 </button>
               </div>
            </div>
+           
+           {/* Add Expense Form Modal/Inline */}
+           {showExpenseForm && (
+              <div className="mt-6 bg-white p-6 rounded-2xl border border-border shadow-lg animate-in fade-in slide-in-from-top-2">
+                 <h4 className="font-bold text-navy mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>Log an Expense</h4>
+                 <form onSubmit={handleAddExpense} className="flex flex-wrap items-end gap-4">
+                    <div className="flex-1 min-w-[200px]">
+                       <label className="block text-xs font-bold text-navy mb-1">Title</label>
+                       <input type="text" required placeholder="e.g. Dinner at Seaside" className="w-full border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-bg" value={expenseForm.title} onChange={e => setExpenseForm({...expenseForm, title: e.target.value})} />
+                    </div>
+                    <div className="w-32">
+                       <label className="block text-xs font-bold text-navy mb-1">Amount (₹)</label>
+                       <input type="number" required min="1" placeholder="0" className="w-full border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-bg" value={expenseForm.amount} onChange={e => setExpenseForm({...expenseForm, amount: e.target.value})} />
+                    </div>
+                    <div className="w-40">
+                       <label className="block text-xs font-bold text-navy mb-1">Category</label>
+                       <select className="w-full border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-bg" value={expenseForm.category} onChange={e => setExpenseForm({...expenseForm, category: e.target.value})}>
+                          <option value="Food">Food</option>
+                          <option value="Transport">Transport</option>
+                          <option value="Hotel">Hotel</option>
+                          <option value="Activities">Activities</option>
+                          <option value="Shopping">Shopping</option>
+                          <option value="Other">Other</option>
+                       </select>
+                    </div>
+                    <button type="submit" disabled={isAddingExpense} className="bg-navy hover:bg-navy-dark text-white px-6 py-2.5 rounded-xl font-bold border-0 cursor-pointer h-[42px] min-w-[120px]">
+                       {isAddingExpense ? 'Saving...' : 'Save Expense'}
+                    </button>
+                 </form>
+              </div>
+           )}
         </div>
 
         {/* ── Tabs Navigation ── */}
@@ -310,7 +368,7 @@ export default function TripDetail() {
                                    >
                                       Change Hotel
                                    </button>
-                                   <a href={`https://www.google.com/maps/search/?api=1&query=${bookedHotel.title}`} target="_blank" className="flex-1 bg-bg text-navy py-3 rounded-xl text-xs font-black text-center no-underline border border-border hover:bg-white transition-all">
+                                   <a href={`https://www.google.com/maps/search/?api=1&query=${bookedHotel.title}`} target="_blank" rel="noopener noreferrer" className="flex-1 bg-bg text-navy py-3 rounded-xl text-xs font-black text-center no-underline border border-border hover:bg-white transition-all">
                                       Directions
                                    </a>
                                 </div>
