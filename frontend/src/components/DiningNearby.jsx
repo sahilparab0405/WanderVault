@@ -158,7 +158,12 @@ export default function DiningNearby({ latitude, longitude }) {
 
     try {
       const fsqKey = import.meta.env.VITE_FOURSQUARE_KEY;
-      if (!fsqKey) throw new Error("Missing FSQ key");
+      if (!fsqKey) {
+        console.warn('Foursquare key missing, using fallback data automatically.');
+        setError('network');
+        processPlaces(DINING_FALLBACK, true);
+        return;
+      }
 
       const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude},${longitude}&categories=13065&limit=10&radius=5000&fields=fsq_id,name,categories,distance,rating,geocodes,location,photos,price`, {
         headers: {

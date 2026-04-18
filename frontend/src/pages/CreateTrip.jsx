@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import DatePicker from 'react-datepicker';
+import BudgetScoreCard from '../components/BudgetScoreCard';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
   Pen, MapPin, Navigation, Calendar, Wallet, Building2,
@@ -140,31 +141,54 @@ function useHotelSearch(destination) {
       const cached = getCachedData(cacheKey);
       if (cached) { setHotels(cached); setLoading(false); return; }
       try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=hotel+in+${encodeURIComponent(destination)}&limit=6`);
-        const data = await res.json();
-        const results = data.map(item => {
-          const hash = String(item.place_id).split('').reduce((a,c)=>a+c.charCodeAt(0),0) + (item.name||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-          const price = Math.round((800 + (hash % 4700)) / 50) * 50;
-          const rating = (3.0 + ((hash % 20) / 10)).toFixed(1);
-          const images = [
-            'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80',
-            'https://images.unsplash.com/photo-1551882547-ff40c0d1398c?w=600&h=360&fit=crop&q=80',
-            'https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?w=600&h=360&fit=crop&q=80',
-            'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&h=360&fit=crop&q=80',
-            'https://images.unsplash.com/photo-1542314831-c6a4d27ce6a2?w=600&h=360&fit=crop&q=80',
-          ];
-          return {
-            id: item.place_id,
-            name: item.name || 'Hotel',
-            address: item.display_name.split(',').slice(0, 3).join(', '),
-            distance: (0.5 + (hash % 40)/10).toFixed(1) + 'km',
-            price, rating, image: images[hash % images.length],
-            hash: hash
-          };
+        const fsqKey = import.meta.env.VITE_FOURSQUARE_KEY;
+        if (!fsqKey) {
+          console.warn('Foursquare key missing for hotel search, using fallback');
+          throw new Error('No Key');
+        }
+
+        const res = await fetch(`https://api.foursquare.com/v3/places/search?near=${encodeURIComponent(destination)}&categories=19014,19009,19010&limit=6&fields=fsq_id,name,location,distance,rating,price,photos`, {
+          headers: { 'Authorization': fsqKey, 'Accept': 'application/json' }
         });
-        setHotels(results);
-        setCachedData(cacheKey, results);
-      } catch { setHotels([]); }
+
+        if (!res.ok) throw new Error('FSQ Error');
+        const data = await res.json();
+        const results = (data.results || []).map(item => {
+          const hash = String(item.fsq_id).split('').reduce((a,c)=>a+c.charCodeAt(0),0) + (item.name||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+          const priceTier = item.price || (1 + (hash % 3)); 
+          const price = Math.round((800 + (hash % 4700)) / 50) * 50 * priceTier;
+          const rating = item.rating ? (item.rating / 2).toFixed(1) : (3.0 + ((hash % 20) / 10)).toFixed(1);
+          
+          let photo = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80';
+          if (item.photos && item.photos.length > 0) {
+             photo = `${item.photos[0].prefix}600x400${item.photos[0].suffix}`;
+          }
+
+          return {
+            id: item.fsq_id,
+            name: item.name || 'Hotel',
+            address: item.location?.formatted_address || destination,
+            distance: ((item.distance || (500 + hash % 5000)) / 1000).toFixed(1) + 'km',
+            price, rating, image: photo,
+            hash
+          };
+        }).filter(h => h && h.name);
+        
+        if (results.length > 0) {
+          setHotels(results);
+          setCachedData(cacheKey, results);
+        } else {
+          throw new Error('Empty');
+        }
+      } catch { 
+        // Fallback dummy hotel
+        const dummy = {
+            id: 'fallback', name: 'Premium Standard Hotel', address: destination,
+            distance: '1.2km', price: 2500, rating: '4.2', hash: 1234,
+            image: `https://ui-avatars.com/api/?name=H&background=1a2b4a&color=fff&size=600`
+        };
+        setHotels([dummy]); 
+      }
       setLoading(false);
     };
     fetchHotels();
@@ -561,6 +585,7 @@ export default function CreateTrip() {
               <StepHeader Icon={Wallet} title="Set your budget" subtitle="We'll track your spending against this" />
               <div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy font-bold text-lg" style={{ fontFamily: "'Poppins', sans-serif" }}>₹</span><input type="number" autoFocus placeholder="10000" min="1" step="1" className={inputCls(false) + ' pl-10 text-xl font-bold text-center'} style={{ fontFamily: "'Poppins', sans-serif" }} value={form.budget} onChange={e => { const v = e.target.value; if (v === '' || Number(v) >= 0) setForm(p => ({ ...p, budget: v })); }} onKeyDown={handleKey} /></div>
               <div className="flex flex-wrap gap-2 mt-4 justify-center">{[5000, 10000, 15000, 25000, 50000].map(amount => (<button key={amount} type="button" onClick={() => setForm(p => ({ ...p, budget: String(amount) }))} className={`px-3 py-1.5 rounded-full text-xs font-semibold border cursor-pointer transition-all duration-150 ${form.budget === String(amount) ? 'bg-primary text-white border-primary' : 'bg-white text-text-secondary border-border hover:border-primary hover:text-primary'}`} style={{ fontFamily: "'Inter', sans-serif" }}>₹{amount.toLocaleString()}</button>))}</div>
+              {form.budget && <BudgetScoreCard budget={Number(form.budget)} days={totalDays || 1} destination={form.destination} />}
             </div>
           )}
 

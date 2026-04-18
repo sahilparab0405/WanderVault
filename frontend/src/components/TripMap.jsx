@@ -62,9 +62,9 @@ function createDestinationIcon() {
 
 /* ─── Category → color mapping ─── */
 const CATEGORY_COLORS = {
-  restaurant: '#EF4444',
-  hotel: '#8B5CF6',
-  attraction: '#F59E0B',
+  restaurant: '#FF6B35', 
+  attraction: '#1a2b4a',
+  hotel: '#2563EB',
   default: '#6B7280',
 };
 
@@ -140,16 +140,16 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
             <span className="text-[10px] text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>Destination</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: CATEGORY_COLORS.restaurant }} />
-            <span className="text-[10px] text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>Food</span>
+             <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#FF6B35' }}/>
+             <span className="text-[10px] text-text-muted">Dining</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: CATEGORY_COLORS.hotel }} />
-            <span className="text-[10px] text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>Hotel</span>
+             <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#1a2b4a' }}/>
+             <span className="text-[10px] text-text-muted">Sightseeing</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: CATEGORY_COLORS.attraction }} />
-            <span className="text-[10px] text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>Attraction</span>
+             <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#2563EB' }}/>
+             <span className="text-[10px] text-text-muted">Hotels</span>
           </div>
         </div>
       </div>
@@ -181,25 +181,53 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
           </Marker>
 
           {/* Nearby place markers */}
-          {nearbyPlaces.map((place, idx) => (
+          {nearbyPlaces.map((place, idx) => {
+            const lat = place.geocodes?.main?.latitude || place.lat;
+            const lon = place.geocodes?.main?.longitude || place.lon;
+            if (!lat || !lon) return null;
+            
+            const categoryName = place.categories?.[0]?.name || place.categoryLabel || place.pin_type;
+            const distance = place.distance ? (place.distance / 1000).toFixed(1) + 'km' : '';
+            const price = place.price ? '₹'.repeat(place.price) : '';
+            
+            return (
             <Marker
-              key={place.id || idx}
-              position={[place.lat, place.lon]}
-              icon={createColoredIcon(CATEGORY_COLORS[place.category] || CATEGORY_COLORS.default)}
+              key={place.fsq_id || place.id || idx}
+              position={[lat, lon]}
+              icon={createColoredIcon(CATEGORY_COLORS[place.pin_type] || CATEGORY_COLORS.default)}
             >
               <Popup>
-                <div style={{ fontFamily: "'Inter', sans-serif", minWidth: 140 }}>
-                  <strong style={{ fontFamily: "'Poppins', sans-serif", display: 'block', marginBottom: 2 }}>
-                    {place.icon} {place.name}
+                <div style={{ fontFamily: "'Inter', sans-serif", minWidth: 160 }}>
+                  <strong style={{ fontFamily: "'Poppins', sans-serif", display: 'block', marginBottom: 4, color: '#1a2b4a', fontSize: '14px' }}>
+                    {place.name}
                   </strong>
-                  <span style={{ fontSize: 11, color: '#6B7280' }}>
-                    {place.categoryLabel}
-                    {place.distance && ` • ${place.distance}`}
-                  </span>
+                  <div style={{ fontSize: '11px', color: '#6B7280', marginBottom: 6, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{fontWeight: 600}}>{categoryName}</span>
+                    <span>{distance} {price ? `· ${price}` : ''}</span>
+                  </div>
+                  <a 
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + (place.location?.formatted_address || ''))}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ 
+                      display: 'block', 
+                      background: '#1a2b4a', 
+                      color: 'white', 
+                      textAlign: 'center', 
+                      padding: '6px 0', 
+                      borderRadius: '6px', 
+                      textDecoration: 'none',
+                      fontSize: '11px',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    View on Maps
+                  </a>
                 </div>
               </Popup>
             </Marker>
-          ))}
+            );
+          })}
         </MapContainer>
       </div>
     </div>

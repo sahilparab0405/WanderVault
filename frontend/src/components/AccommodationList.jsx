@@ -2,28 +2,24 @@ import { useState, useMemo } from 'react';
 import API from '../api/axios';
 import { Wifi, Bath, Flame, ParkingCircle, Star, MapPin, CheckCircle2, Building2, SlidersHorizontal } from 'lucide-react';
 
-/* ─── Deterministic stats from OSM id+name ─── */
-function getHotelStats(id, name) {
-  const hash = String(id).split('').reduce((a, c) => a + c.charCodeAt(0), 0)
-             + name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const price = Math.round((800 + (hash % 4700)) / 50) * 50;
-  const rating = (3.0 + ((hash % 20) / 10)).toFixed(1);
+/* ─── Deterministic stats from FSQ fallback ─── */
+function getHotelStats(place) {
+  if (place.hash === 1234 || !place.image) {
+     const hash = place.hash || (String(place.id).split('').reduce((a, c) => a + c.charCodeAt(0), 0) + place.name.split('').reduce((a, c) => a + c.charCodeAt(0), 0));
+     const images = [
+       'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80',
+       'https://images.unsplash.com/photo-1551882547-ff40c0d1398c?w=600&h=360&fit=crop&q=80',
+       'https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?w=600&h=360&fit=crop&q=80',
+       'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&h=360&fit=crop&q=80',
+     ];
+     place.image = images[hash % images.length];
+  }
+  
   let budgetLevel = '₹';
-  if (price > 3500) budgetLevel = '₹₹₹';
-  else if (price > 1800) budgetLevel = '₹₹';
-  const images = [
-    'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1551882547-ff40c0d1398c?w=600&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?w=600&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1542314831-c6a4d27ce6a2?w=600&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=600&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=600&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=600&h=360&fit=crop&q=80',
-  ];
-  return { price, rating, budgetLevel, image: images[hash % images.length] };
+  if (place.price > 6000) budgetLevel = '₹₹₹';
+  else if (place.price > 3500) budgetLevel = '₹₹';
+  
+  return { price: place.price, rating: place.rating, budgetLevel, image: place.image };
 }
 
 /* ─── Amenity icons deterministically assigned ─── */
@@ -99,7 +95,7 @@ function AccommodationCard({ place, stats, tripId }) {
           src={stats.image} alt={place.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
-          onError={e => { e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80'; }}
+          onError={e => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(place.name)}&background=f3f4f6&color=1a2b4a&size=600`; }}
         />
         {/* Rating badge overlay */}
         <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-lg shadow-md">
@@ -177,7 +173,7 @@ export default function AccommodationList({ places, tripId }) {
   const [filterDist, setFilterDist] = useState('All');
 
   const items = useMemo(() => {
-    return places.map(p => ({ place: p, stats: getHotelStats(p.id, p.name) }))
+    return places.map(p => ({ place: p, stats: getHotelStats(p) }))
       .filter(({ place, stats }) => {
         if (filterBudget !== 'All' && stats.budgetLevel !== filterBudget) return false;
         if (filterRating !== 'All') {

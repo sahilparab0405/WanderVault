@@ -97,26 +97,45 @@ export default function TripDetail() {
     if (!hotelSearch.trim()) return;
     setIsSearchingHotels(true);
     try {
-      const q = encodeURIComponent(`${hotelSearch} in ${trip.destination}`);
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&addressdetails=1`);
+      const fsqKey = import.meta.env.VITE_FOURSQUARE_KEY;
+      if (!fsqKey) throw new Error('Missing Foursquare Key');
+      const q = encodeURIComponent(`${hotelSearch} near ${trip.destination}`);
+      const res = await fetch(`https://api.foursquare.com/v3/places/search?query=${q}&categories=19014&limit=5&fields=fsq_id,name,location,geocodes,price,rating`, {
+        headers: { 'Authorization': fsqKey, 'Accept': 'application/json' }
+      });
       const data = await res.json();
-      setHotelResults(data.map(h => {
-          const lat = parseFloat(h.lat);
-          const lon = parseFloat(h.lon);
-          // Deterministic price/rating based on ID
-          const seed = parseInt(h.place_id) || 0;
+      setHotelResults((data.results || []).map(h => {
+          const lat = h.geocodes?.main?.latitude;
+          const lon = h.geocodes?.main?.longitude;
+          const seed = parseInt((h.fsq_id.replace(/\D/g, '')).slice(0,6)) || 0;
           return {
-            id: h.place_id,
-            name: h.display_name.split(',')[0],
-            address: h.display_name,
+            id: h.fsq_id,
+            name: h.name,
+            address: h.location?.formatted_address || '',
             lat, lon,
             price: 800 + (seed % 4000),
-            rating: (3.5 + (seed % 15) / 10).toFixed(1)
+            rating: h.rating ? (h.rating / 2).toFixed(1) : (3.5 + (seed % 15) / 10).toFixed(1)
           };
       }));
     } catch (err) { console.error(err); }
     setIsSearchingHotels(false);
   };
+  
+  const getFsqCache = (type) => {
+     if (!trip?.latitude) return [];
+     const key = `wv_fsq_${type}_${trip.latitude}_${trip.longitude}`;
+     try {
+       const cached = localStorage.getItem(key);
+       if (cached) return JSON.parse(cached).data || [];
+     } catch(e) {}
+     return [];
+  };
+  
+  const allNearbyPins = useMemo(() => {
+     const dining = getFsqCache('dining').map(p => ({ ...p, pin_type: 'restaurant' }));
+     const sights = getFsqCache('sightseeing').map(p => ({ ...p, pin_type: 'attraction' }));
+     return [...dining, ...sights];
+  }, [trip, activeTab]);
 
   const bookHotel = async (hotel) => {
     try {
@@ -534,11 +553,7 @@ export default function TripDetail() {
                <div className="max-w-6xl mx-auto space-y-8 h-[75vh]">
                   <div className="bg-white rounded-[3rem] overflow-hidden border border-border shadow-2xl h-full relative">
                      <Suspense fallback={<div className="h-full w-full bg-border/20 animate-pulse flex items-center justify-center text-text-muted text-sm font-bold">CALIBRATING GPS SATELLITES...</div>}>
-                        <TripMap 
-                           latitude={trip.latitude} 
-                           longitude={trip.longitude} 
-                           destination={trip.destination} 
-                        />
+                        <TripMap latitude={Number(trip.latitude)} longitude={Number(trip.longitude)} destination={trip.destination} nearbyPlaces={allNearbyPins} />
                      </Suspense>
                   </div>
                </div>
