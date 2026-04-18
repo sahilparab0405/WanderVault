@@ -162,7 +162,7 @@ export default function TripDetail() {
           <Trash2 size={40} />
        </div>
        <h2 className="text-2xl font-black text-navy mb-2">Trip Not Found</h2>
-       <p className="text-text-secondary max-w-sm mb-8">{error || 'This trip may have been removed or you don\\'t have access.'}</p>
+       <p className="text-text-secondary max-w-sm mb-8">{error || "This trip may have been removed or you don't have access."}</p>
        <button onClick={() => navigate('/dashboard')} className="bg-navy text-white px-8 py-3 rounded-xl font-bold border-0 cursor-pointer">Back to Dashboard</button>
     </div>
   );
