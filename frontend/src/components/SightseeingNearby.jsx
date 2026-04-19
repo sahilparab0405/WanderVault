@@ -84,7 +84,6 @@ export default function SightseeingNearby({ latitude, longitude }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const [usingFallback, setUsingFallback] = useState(false);
 
-  const BACKEND_BASE = import.meta.env.VITE_API_URL
   const processPlaces = useCallback((elements, isFallback = false) => {
     let pList = [];
     if (isFallback) {
@@ -103,30 +102,29 @@ export default function SightseeingNearby({ latitude, longitude }) {
       }));
     } else {
       pList = elements.map(el => {
-        const lat = el.geocodes?.main?.latitude;
-        const lon = el.geocodes?.main?.longitude;
+        const lat = el.lat;
+        const lon = el.lon;
         if (!lat || !lon) return null;
         
-        const dist = (el.distance / 1000) || getDistance(latitude, longitude, lat, lon);
-        const name = el.name || 'Local Attraction';
-        const seed = Math.abs(String(el.fsq_id || el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
+        const dist = getDistance(latitude, longitude, lat, lon);
+        const name = el.tags?.name || 'Local Attraction';
+        const seed = Math.abs(String(el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
 
         let cat = 'monuments';
-        if (el.categories) {
-          const catStr = el.categories.map(c => c.name.toLowerCase()).join(' ');
-          if (catStr.includes('museum')) cat = 'museums';
-          else if (catStr.includes('park') || catStr.includes('forest') || catStr.includes('nature')) cat = 'parks';
-          else if (catStr.includes('temple') || catStr.includes('church') || catStr.includes('shrine')) cat = 'temples';
-          else if (catStr.includes('beach')) cat = 'beaches';
-        }
+        if (el.tags?.tourism === 'museum') cat = 'museums';
+        else if (el.tags?.leisure === 'park') cat = 'parks';
+        else if (el.tags?.amenity === 'place_of_worship' || el.tags?.historic === 'temple') cat = 'temples';
+        else if (el.tags?.historic === 'monument' || el.tags?.tourism === 'attraction') cat = 'monuments';
+        
+        // extra safe checks mapping
+        if (el.tags?.name && (el.tags.name.toLowerCase().includes('beach'))) cat = 'beaches';
 
-        const entryFee = el.price ? 'Entry fee applies' : (seed % 3 === 0 ? 'Entry fee varies' : 'Free entry');
-        let rating = el.rating ? (el.rating / 2).toFixed(1) : getRating(seed);
-        const desc = el.location?.formatted_address || `Famous ${CATEGORY_MAP[cat].label.toLowerCase()} in the area.`;
-        const photo = el.photos && el.photos.length > 0 ? `${el.photos[0].prefix}400x300${el.photos[0].suffix}` : null;
+        const entryFee = el.tags?.fee && el.tags.fee !== 'no' ? 'Entry fee applies' : (seed % 3 === 0 ? 'Entry fee varies' : 'Free entry');
+        let rating = getRating(seed);
+        const desc = `Famous ${CATEGORY_MAP[cat].label.toLowerCase()} in the area.`;
 
         return {
-          id: el.fsq_id || el.id,
+          id: el.id,
           name,
           category: cat,
           distanceKm: dist,
@@ -135,10 +133,10 @@ export default function SightseeingNearby({ latitude, longitude }) {
           desc,
           fee: entryFee,
           lat, lon,
-          photo
+          photo: null
         };
       })
-      .filter(p => p && p.name && p.name.length > 2);
+      .filter(p => p && p.name && p.name !== 'Local Attraction');
     }
     
     return pList.sort((a, b) => a.distanceKm - b.distanceKm);
@@ -151,7 +149,7 @@ export default function SightseeingNearby({ latitude, longitude }) {
     setRetryIn(null);
     setUsingFallback(false);
 
-    const cacheKey = `wv_fsq_sightseeing_${latitude}_${longitude}`;
+    const cacheKey = `wv_osm_sightseeing_${latitude}_${longitude}`;
     const cached = localStorage.getItem(cacheKey);
 
     if (cached) {
@@ -166,21 +164,23 @@ export default function SightseeingNearby({ latitude, longitude }) {
     }
 
     try {
-      const fsqKey = import.meta.env.VITE_FOURSQUARE_KEY;
-      if (!fsqKey) {
-        console.warn('Foursquare key missing, using fallback data automatically.');
-        setError('network');
-        setPlaces(processPlaces(SIGHTSEEING_FALLBACK, true));
-        setUsingFallback(true);
-        setLoading(false);
-        return;
-      }
+      const query = `[out:json][timeout:25];
+(
+  node["tourism"="attraction"]
+  (around:3000,${latitude},${longitude});
+  node["tourism"="museum"]
+  (around:3000,${latitude},${longitude});
+  node["historic"="monument"]
+  (around:3000,${latitude},${longitude});
+  node["leisure"="park"]
+  (around:3000,${latitude},${longitude});
+);
+out body 15;`;
 
-      const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude},${longitude}&categories=16000&limit=10&radius=5000&fields=fsq_id,name,categories,distance,rating,geocodes,location,photos,price`, {
-        headers: {
-          'Authorization': fsqKey,
-          'Accept': 'application/json'
-        }
+      const res = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `data=${encodeURIComponent(query)}`
       });
 
       if (res.status === 429) {
@@ -200,16 +200,8 @@ export default function SightseeingNearby({ latitude, longitude }) {
         return;
       }
 
-      if (!res.ok) {
-        setError('network');
-        setPlaces(processPlaces(SIGHTSEEING_FALLBACK, true));
-        setUsingFallback(true);
-        setLoading(false);
-        return;
-      }
-
       const data = await res.json();
-      const elements = data.results || [];
+      const elements = data.elements || [];
       if (elements.length === 0) {
         setPlaces(processPlaces(SIGHTSEEING_FALLBACK, true));
         setUsingFallback(true);
@@ -220,7 +212,7 @@ export default function SightseeingNearby({ latitude, longitude }) {
         setLoading(false);
       }
     } catch (e) {
-      console.warn("Foursquare fetch failed, using fallback:", e);
+      console.warn("Overpass fetch failed, using fallback:", e);
       setError('network');
       setPlaces(processPlaces(SIGHTSEEING_FALLBACK, true));
       setUsingFallback(true);
@@ -330,9 +322,13 @@ export default function SightseeingNearby({ latitude, longitude }) {
                       </span>
                     </div>
                     
-                    {place.photo && (
+                    {place.photo ? (
                       <div className="mt-3 w-full h-24 rounded-lg overflow-hidden border border-border-light">
                         <img src={place.photo} alt={place.name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="mt-3 w-full h-24 rounded-lg overflow-hidden border border-border-light bg-bg flex items-center justify-center">
+                        <Compass size={32} className="text-border" />
                       </div>
                     )}
 

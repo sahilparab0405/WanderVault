@@ -18,6 +18,18 @@ router.post('/', protect, async (req, res) => {
   try {
     const { name, destination, startDate, endDate, budget, travelMode, latitude, longitude, accommodation } = req.body;
 
+    const initialItinerary = [];
+    if (accommodation && accommodation.length > 0) {
+      accommodation.forEach(acc => {
+        initialItinerary.push({
+          day: parseInt(acc.fromDay) || 1,
+          title: `Stay: ${acc.name}`,
+          location: destination,
+          description: `Check-in: ${acc.checkIn || 'TBD'}`
+        });
+      });
+    }
+
     const trip = await Trip.create({
       user: req.user._id,
       name,
@@ -28,7 +40,8 @@ router.post('/', protect, async (req, res) => {
       travelMode: travelMode || 'flight',
       latitude: latitude || null,
       longitude: longitude || null,
-      accommodation: accommodation || []
+      accommodation: accommodation || [],
+      itinerary: initialItinerary
     });
 
     res.status(201).json(trip);

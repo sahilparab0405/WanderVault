@@ -54,10 +54,10 @@ export default class ErrorBoundary extends Component {
               Something went wrong
             </h1>
             <p
-              className="text-text-secondary text-sm mb-8 leading-relaxed font-medium"
+              className="text-text-secondary text-sm mb-8 leading-relaxed font-medium break-words whitespace-normal px-4"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              Please refresh the page to try again. Your data is safe.
+              {this.state.error?.message || "Please refresh the page to try again. Your data is safe."}
             </p>
             <button
               onClick={this.handleReset}

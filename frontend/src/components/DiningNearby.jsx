@@ -76,10 +76,6 @@ export default function DiningNearby({ latitude, longitude }) {
   const [cuisines, setCuisines] = useState(['All']);
   const [usingFallback, setUsingFallback] = useState(false);
 
-  const BACKEND_BASE = import.meta.env.VITE_API_URL
-    ? import.meta.env.VITE_API_URL.replace('/api', '')
-    : 'http://localhost:5000';
-
   const processPlaces = useCallback((elements, isFallback = false) => {
     let pList = [];
     if (isFallback) {
@@ -97,22 +93,28 @@ export default function DiningNearby({ latitude, longitude }) {
       }));
     } else {
       pList = elements.map(el => {
-        const lat = el.geocodes?.main?.latitude;
-        const lon = el.geocodes?.main?.longitude;
+        const lat = el.lat;
+        const lon = el.lon;
         if (!lat || !lon) return null;
         
-        const dist = (el.distance / 1000) || getDistance(latitude, longitude, lat, lon);
-        const name = el.name || 'Local Eatery';
-        const cuisine = el.categories?.[0]?.name || 'Dining';
-        const seed = Math.abs(String(el.fsq_id || el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
+        const dist = getDistance(latitude, longitude, lat, lon);
+        const name = el.tags?.name || 'Local Eatery';
+        let cuisine = 'Dining';
+        if (el.tags?.cuisine) {
+          cuisine = el.tags.cuisine.split(';')[0];
+          cuisine = cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
+        } else if (el.tags?.amenity) {
+          cuisine = el.tags.amenity.replace('_', ' ');
+          cuisine = cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
+        }
         
-        let rating = el.rating ? (el.rating / 2).toFixed(1) : getRating(seed);
-        const desc = el.location?.formatted_address || `Popular ${cuisine.toLowerCase()} spot in the area.`;
-        const photo = el.photos && el.photos.length > 0 ? `${el.photos[0].prefix}400x300${el.photos[0].suffix}` : null;
-        const priceTier = el.price ? '$'.repeat(el.price) : '$$';
+        const seed = Math.abs(String(el.id).split('').reduce((a,c) => a + c.charCodeAt(0), 0));
+        
+        let rating = getRating(seed);
+        const desc = `Popular ${cuisine.toLowerCase()} spot in the area.`;
 
         return {
-          id: el.fsq_id || el.id,
+          id: el.id,
           name,
           cuisine,
           distanceKm: dist,
@@ -120,11 +122,10 @@ export default function DiningNearby({ latitude, longitude }) {
           rating,
           desc,
           lat, lon,
-          photo,
-          priceTier
+          photo: null
         };
       })
-      .filter(p => p && p.name);
+      .filter(p => p && p.name && p.name !== 'Local Eatery');
     }
 
     pList = pList.sort((a, b) => a.distanceKm - b.distanceKm);
@@ -143,7 +144,7 @@ export default function DiningNearby({ latitude, longitude }) {
     setRetryIn(null);
     setUsingFallback(false);
 
-    const cacheKey = `wv_fsq_dining_${latitude}_${longitude}`;
+    const cacheKey = `wv_osm_dining_${latitude}_${longitude}`;
     const cached = localStorage.getItem(cacheKey);
 
     if (cached) {
@@ -157,19 +158,21 @@ export default function DiningNearby({ latitude, longitude }) {
     }
 
     try {
-      const fsqKey = import.meta.env.VITE_FOURSQUARE_KEY;
-      if (!fsqKey) {
-        console.warn('Foursquare key missing, using fallback data automatically.');
-        setError('network');
-        processPlaces(DINING_FALLBACK, true);
-        return;
-      }
+      const query = `[out:json][timeout:25];
+(
+  node["amenity"="restaurant"]
+  (around:2000,${latitude},${longitude});
+  node["amenity"="cafe"]
+  (around:2000,${latitude},${longitude});
+  node["amenity"="food_court"]
+  (around:2000,${latitude},${longitude});
+);
+out body 15;`;
 
-      const res = await fetch(`https://api.foursquare.com/v3/places/search?ll=${latitude},${longitude}&categories=13065&limit=10&radius=5000&fields=fsq_id,name,categories,distance,rating,geocodes,location,photos,price`, {
-        headers: {
-          'Authorization': fsqKey,
-          'Accept': 'application/json'
-        }
+      const res = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `data=${encodeURIComponent(query)}`
       });
 
       if (res.status === 429) {
@@ -194,7 +197,7 @@ export default function DiningNearby({ latitude, longitude }) {
       }
 
       const data = await res.json();
-      const elements = data.results || [];
+      const elements = data.elements || [];
       if (elements.length === 0) {
         processPlaces(DINING_FALLBACK, true);
       } else {
@@ -202,7 +205,7 @@ export default function DiningNearby({ latitude, longitude }) {
         processPlaces(elements);
       }
     } catch (e) {
-      console.warn("Foursquare fetch failed, using fallback:", e);
+      console.warn("Overpass fetch failed, using fallback:", e);
       setError('network');
       processPlaces(DINING_FALLBACK, true);
     }
@@ -305,9 +308,13 @@ export default function DiningNearby({ latitude, longitude }) {
                     </span>
                   </div>
 
-                  {place.photo && (
+                  {place.photo ? (
                     <div className="mt-3 w-full h-24 rounded-lg overflow-hidden border border-border-light">
                       <img src={place.photo} alt={place.name} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="mt-3 w-full h-24 rounded-lg overflow-hidden border border-border-light bg-bg flex items-center justify-center">
+                      <Utensils size={32} className="text-border" />
                     </div>
                   )}
                   <p className="text-xs text-text-muted mt-3 line-clamp-1 italic" style={{ fontFamily: "'Inter', sans-serif" }}>

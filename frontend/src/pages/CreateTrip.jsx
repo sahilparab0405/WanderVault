@@ -129,53 +129,69 @@ function useLocationSearch() {
 /* ══════════════════════════════════════════════════════
    HOTEL SEARCH HOOK
 ══════════════════════════════════════════════════════ */
-function useHotelSearch(destination) {
+function useHotelSearch(destination, lat, lon) {
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!destination) return;
+    if (!destination || !lat || !lon) return;
     const fetchHotels = async () => {
       setLoading(true);
-      const cacheKey = 'wv_hotels_' + destination.toLowerCase();
+      const cacheKey = 'wv_osm_hotels_' + destination.toLowerCase();
       const cached = getCachedData(cacheKey);
       if (cached) { setHotels(cached); setLoading(false); return; }
       try {
-        const fsqKey = import.meta.env.VITE_FOURSQUARE_KEY;
-        if (!fsqKey) {
-          console.warn('Foursquare key missing for hotel search, using fallback');
-          throw new Error('No Key');
-        }
+        const query = `[out:json][timeout:25];
+(
+  node["tourism"="hotel"](around:5000,${lat},${lon});
+  node["tourism"="hostel"](around:5000,${lat},${lon});
+  node["tourism"="guest_house"](around:5000,${lat},${lon});
+  node["tourism"="resort"](around:5000,${lat},${lon});
+);
+out body 10;`;
 
-        const res = await fetch(`https://api.foursquare.com/v3/places/search?near=${encodeURIComponent(destination)}&categories=19014,19009,19010&limit=6&fields=fsq_id,name,location,distance,rating,price,photos`, {
-          headers: { 'Authorization': fsqKey, 'Accept': 'application/json' }
+        const res = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `data=${encodeURIComponent(query)}`
         });
 
-        if (!res.ok) throw new Error('FSQ Error');
+        if (!res.ok) throw new Error('OSM Error');
         const data = await res.json();
-        const results = (data.results || []).map(item => {
-          const hash = String(item.fsq_id).split('').reduce((a,c)=>a+c.charCodeAt(0),0) + (item.name||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-          const priceTier = item.price || (1 + (hash % 3)); 
-          const price = Math.round((800 + (hash % 4700)) / 50) * 50 * priceTier;
-          const rating = item.rating ? (item.rating / 2).toFixed(1) : (3.0 + ((hash % 20) / 10)).toFixed(1);
+        const results = (data.elements || []).map(item => {
+          const name = item.tags?.name;
+          if (!name) return null;
           
-          let photo = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80';
-          if (item.photos && item.photos.length > 0) {
-             photo = `${item.photos[0].prefix}600x400${item.photos[0].suffix}`;
-          }
+          const hash = String(item.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0) + name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+          const priceTier = (1 + (hash % 3)); 
+          const price = Math.round((800 + (hash % 4700)) / 50) * 50 * priceTier;
+          const rating = (3.5 + ((hash % 15) / 10)).toFixed(1);
+          
+          // Generate a pseudo-realistic image URL based on id
+          const photoId = (item.id % 20) + 1; // Unsplash source with seeds
+          let photo = `https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80`;
+          if (hash % 2 === 0) photo = `https://images.unsplash.com/photo-1551882547-ff40c0d5b5df?w=600&h=360&fit=crop&q=80`;
+          else if (hash % 3 === 0) photo = `https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=360&fit=crop&q=80`;
+
+          // Calculate distance via Haversine
+          const R = 6371;
+          const dLat = (item.lat - lat) * Math.PI / 180;
+          const dLon = (item.lon - lon) * Math.PI / 180;
+          const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat * Math.PI / 180) * Math.cos(item.lat * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          const distKm = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
           return {
-            id: item.fsq_id,
-            name: item.name || 'Hotel',
-            address: item.location?.formatted_address || destination,
-            distance: ((item.distance || (500 + hash % 5000)) / 1000).toFixed(1) + 'km',
+            id: item.id,
+            name,
+            address: item.tags?.['addr:street'] ? `${item.tags['addr:street']}, ${destination}` : destination,
+            distance: (distKm).toFixed(1) + 'km',
             price, rating, image: photo,
             hash
           };
         }).filter(h => h && h.name);
         
         if (results.length > 0) {
-          setHotels(results);
+          setHotels(results.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance)));
           setCachedData(cacheKey, results);
         } else {
           throw new Error('Empty');
@@ -183,16 +199,16 @@ function useHotelSearch(destination) {
       } catch { 
         // Fallback dummy hotel
         const dummy = {
-            id: 'fallback', name: 'Premium Standard Hotel', address: destination,
+            id: 'fallback', name: 'Standard Tourist Hotel', address: destination,
             distance: '1.2km', price: 2500, rating: '4.2', hash: 1234,
-            image: `https://ui-avatars.com/api/?name=H&background=1a2b4a&color=fff&size=600`
+            image: `https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80`
         };
         setHotels([dummy]); 
       }
       setLoading(false);
     };
     fetchHotels();
-  }, [destination]);
+  }, [destination, lat, lon]);
 
   return { hotels, loading };
 }
@@ -305,7 +321,7 @@ export default function CreateTrip() {
   const suggestionsRef = useRef(null);
   const inputRef = useRef(null);
 
-  const { hotels, loading: hotelsLoading } = useHotelSearch(form.destination);
+  const { hotels, loading: hotelsLoading } = useHotelSearch(form.destination, form.latitude, form.longitude);
   const [accMode, setAccMode] = useState(''); // 'browse', 'booked', ''
   const [accForm, setAccForm] = useState({ name: '', checkIn: '', checkOut: '', pricePerNight: '', fromDay: '', toDay: '', bookedVia: '' });
 

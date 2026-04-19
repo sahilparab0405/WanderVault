@@ -94,29 +94,59 @@ export default function TripDetail() {
   }, [trip]);
 
   const searchHotels = async () => {
-    if (!hotelSearch.trim()) return;
+    if (!hotelSearch.trim() || !trip?.latitude || !trip?.longitude) return;
     setIsSearchingHotels(true);
     try {
-      const fsqKey = import.meta.env.VITE_FOURSQUARE_KEY;
-      if (!fsqKey) throw new Error('Missing Foursquare Key');
-      const q = encodeURIComponent(`${hotelSearch} near ${trip.destination}`);
-      const res = await fetch(`https://api.foursquare.com/v3/places/search?query=${q}&categories=19014&limit=5&fields=fsq_id,name,location,geocodes,price,rating`, {
-        headers: { 'Authorization': fsqKey, 'Accept': 'application/json' }
+      const q = hotelSearch.toLowerCase();
+      const query = `[out:json][timeout:25];
+(
+  node["tourism"="hotel"]["name"~"${q}", i](around:10000,${trip.latitude},${trip.longitude});
+  node["tourism"="hostel"]["name"~"${q}", i](around:10000,${trip.latitude},${trip.longitude});
+  node["tourism"="resort"]["name"~"${q}", i](around:10000,${trip.latitude},${trip.longitude});
+  node["tourism"="guest_house"]["name"~"${q}", i](around:10000,${trip.latitude},${trip.longitude});
+);
+out body 5;`;
+
+      const res = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `data=${encodeURIComponent(query)}`
       });
+      if (!res.ok) throw new Error('OSM Error');
       const data = await res.json();
-      setHotelResults((data.results || []).map(h => {
-          const lat = h.geocodes?.main?.latitude;
-          const lon = h.geocodes?.main?.longitude;
-          const seed = parseInt((h.fsq_id.replace(/\D/g, '')).slice(0,6)) || 0;
+      
+      let results = (data.elements || []).map(h => {
+          const lat = h.lat;
+          const lon = h.lon;
+          const name = h.tags?.name;
+          if (!name) return null;
+          const seed = parseInt(String(h.id).slice(0,6)) || 0;
           return {
-            id: h.fsq_id,
-            name: h.name,
-            address: h.location?.formatted_address || '',
+            id: String(h.id),
+            name,
+            address: h.tags?.['addr:street'] ? `${h.tags['addr:street']}, ${trip.destination}` : trip.destination,
             lat, lon,
             price: 800 + (seed % 4000),
-            rating: h.rating ? (h.rating / 2).toFixed(1) : (3.5 + (seed % 15) / 10).toFixed(1)
+            rating: (3.5 + (seed % 15) / 10).toFixed(1)
           };
-      }));
+      }).filter(h => h && h.name);
+      
+      // If Overpass exact name search fails or returns nothing, just do a generic search nearby
+      if (results.length === 0) {
+          const fbQuery = `[out:json][timeout:25];(node["tourism"="hotel"](around:5000,${trip.latitude},${trip.longitude}););out body 5;`;
+          const fbRes = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `data=${encodeURIComponent(fbQuery)}`});
+          const fbData = await fbRes.json();
+          results = (fbData.elements || []).map(h => {
+             const name = h.tags?.name || 'Local Hotel';
+             const seed = parseInt(String(h.id).slice(0,6)) || 0;
+             return {
+                id: String(h.id), name, address: h.tags?.['addr:street'] ? `${h.tags['addr:street']}, ${trip.destination}` : trip.destination,
+                lat: h.lat, lon: h.lon, price: 800 + (seed % 4000), rating: (3.5 + (seed % 15) / 10).toFixed(1)
+             };
+          }).filter(h => h && h.name && h.name.toLowerCase().includes(q));
+      }
+      
+      setHotelResults(results);
     } catch (err) { console.error(err); }
     setIsSearchingHotels(false);
   };
@@ -181,7 +211,7 @@ export default function TripDetail() {
           <Trash2 size={40} />
        </div>
        <h2 className="text-2xl font-black text-navy mb-2">Trip Not Found</h2>
-       <p className="text-text-secondary max-w-sm mb-8">{error || "This trip may have been removed or you don't have access."}</p>
+       <p className="text-text-secondary max-w-sm mb-8 break-words whitespace-normal px-4">{error || "This trip may have been removed or you don't have access."}</p>
        <button onClick={() => navigate('/dashboard')} className="bg-navy text-white px-8 py-3 rounded-xl font-bold border-0 cursor-pointer">Back to Dashboard</button>
     </div>
   );
@@ -269,6 +299,19 @@ export default function TripDetail() {
            )}
         </div>
 
+        {/* ── Budget Alert ── */}
+        {trip.totalExpense > trip.budget && (
+           <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-6 mt-4">
+              <div className="bg-danger/10 border-l-4 border-danger p-4 rounded-r-xl flex items-center gap-3 shadow-sm">
+                 <AlertTriangle size={24} className="text-danger shrink-0" />
+                 <div>
+                    <h4 className="text-sm font-bold text-danger uppercase tracking-wide">Warning: Budget Exceeded</h4>
+                    <p className="text-sm text-danger/90 mt-0.5 font-medium">You have exceeded your budget by ₹{(trip.totalExpense - trip.budget).toLocaleString()}!</p>
+                 </div>
+              </div>
+           </div>
+        )}
+
         {/* ── Tabs Navigation ── */}
         <div className="max-w-7xl mx-auto px-6 lg:px-8 overflow-x-auto no-scrollbar">
            <div className="flex items-center gap-1">
@@ -304,13 +347,37 @@ export default function TripDetail() {
                           <div className="space-y-3">
                              <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Transport Status</p>
                              <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center shadow-inner">
-                                   <Car size={24} />
-                                </div>
-                                <div>
-                                   <p className="font-black text-navy text-lg">Local Transit</p>
-                                   <p className="text-[11px] text-text-secondary">Self-commute mode active</p>
-                                </div>
+                                {(() => {
+                                   let Icon = Car;
+                                   let title = 'Road Trip';
+                                   let subtitle = 'Self-commute mode active';
+                                   
+                                   if (trip.travelMode === 'flight') {
+                                      Icon = Plane;
+                                      title = 'Flight Booked';
+                                      subtitle = 'Air travel selected';
+                                   } else if (trip.travelMode === 'train') {
+                                      Icon = Train;
+                                      title = 'Train Journey';
+                                      subtitle = 'Rail travel selected';
+                                   } else if (trip.travelMode === 'bus') {
+                                      Icon = Bus;
+                                      title = 'Bus Travel';
+                                      subtitle = 'Roadway travel selected';
+                                   }
+
+                                   return (
+                                      <>
+                                         <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center shadow-inner">
+                                            <Icon size={24} />
+                                         </div>
+                                         <div>
+                                            <p className="font-black text-navy text-lg">{title}</p>
+                                            <p className="text-[11px] text-text-secondary">{subtitle}</p>
+                                         </div>
+                                      </>
+                                   );
+                                })()}
                              </div>
                           </div>
                           <div className="space-y-3">
