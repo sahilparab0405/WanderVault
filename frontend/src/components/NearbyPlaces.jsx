@@ -109,7 +109,7 @@ function PlaceCard({ place }) {
 }
 
 /* ─── Main NearbyPlaces Component ─── */
-export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded, tripId }) {
+export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded, tripId, destination }) {
   const [places, setPlaces] = useState({ restaurant: [], hotel: [], attraction: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -206,7 +206,7 @@ export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded, trip
           </div>
         ) : (
           activeTab === 'hotel' ? (
-            <AccommodationList places={activePlaces} tripId={tripId} />
+            <AccommodationList places={activePlaces} tripId={tripId} destination={destination} />
           ) : (
             <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
               {activePlaces.map(place => <PlaceCard key={place.id} place={place} />)}

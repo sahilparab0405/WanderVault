@@ -12,6 +12,7 @@ import Itinerary from './pages/Itinerary';
 import Budget from './pages/Budget';
 import Explore from './pages/Explore';
 import Settings from './pages/Settings';
+import PublicTrip from './pages/PublicTrip';
 import API from './api/axios';
 import { useState, useEffect } from 'react';
 
@@ -60,7 +61,7 @@ function GlobalItinerary() {
 function AppShell({ children }) {
   const { user } = useAuth();
   const location = useLocation();
-  const isAuthPage = ['/login', '/register'].includes(location.pathname);
+  const isAuthPage = ['/login', '/register'].includes(location.pathname) || location.pathname.startsWith('/trip/public');
 
   if (!user || isAuthPage) {
     return <>{children}</>;
@@ -85,6 +86,7 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/trip/public/:id" element={<PublicTrip />} />
             
             <Route
               path="/dashboard"

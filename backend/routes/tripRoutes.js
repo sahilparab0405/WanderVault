@@ -13,6 +13,34 @@ router.get('/', protect, async (req, res) => {
   }
 });
 
+// GET public trip (NO auth required) — must be before /:id
+router.get('/public/:id', async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id).populate('user', 'name');
+    if (!trip) return res.status(404).json({ message: 'Trip not found' });
+    if (!trip.isPublic) return res.status(403).json({ message: 'This trip is private' });
+
+    // Return trip data WITHOUT budget/expense info
+    const publicTrip = {
+      _id: trip._id,
+      name: trip.name,
+      destination: trip.destination,
+      latitude: trip.latitude,
+      longitude: trip.longitude,
+      travelMode: trip.travelMode,
+      startDate: trip.startDate,
+      endDate: trip.endDate,
+      itinerary: trip.itinerary,
+      accommodation: trip.accommodation,
+      userName: trip.user?.name || 'A Traveler',
+      isPublic: trip.isPublic
+    };
+    res.json(publicTrip);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // POST create new trip
 router.post('/', protect, async (req, res) => {
   try {
@@ -61,6 +89,63 @@ router.get('/:id', protect, async (req, res) => {
     }
 
     res.json(trip);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PATCH toggle trip visibility (public/private)
+router.patch('/:id/visibility', protect, async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+    if (!trip) return res.status(404).json({ message: 'Trip not found' });
+    if (trip.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    trip.isPublic = !trip.isPublic;
+    await trip.save();
+    res.json(trip);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// POST clone trip
+router.post('/:id/clone', protect, async (req, res) => {
+  try {
+    const original = await Trip.findById(req.params.id);
+    if (!original) return res.status(404).json({ message: 'Trip not found' });
+    if (original.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    // Clone itinerary items (without _id)
+    const clonedItinerary = (original.itinerary || []).map(item => ({
+      day: item.day,
+      title: item.title,
+      location: item.location,
+      description: item.description
+    }));
+
+    const clonedTrip = await Trip.create({
+      user: req.user._id,
+      name: `Copy of ${original.name}`,
+      destination: original.destination,
+      latitude: original.latitude,
+      longitude: original.longitude,
+      travelMode: original.travelMode,
+      startDate: original.startDate,
+      endDate: original.endDate,
+      budget: original.budget,
+      totalExpense: 0,
+      budgetExceeded: false,
+      accommodation: original.accommodation || [],
+      itinerary: clonedItinerary,
+      isPublic: false
+    });
+
+    res.status(201).json(clonedTrip);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

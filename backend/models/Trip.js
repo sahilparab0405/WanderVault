@@ -48,6 +48,10 @@ const tripSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isPublic: {
+    type: Boolean,
+    default: false
+  },
   accommodation: [{
     name: String,
     address: String,

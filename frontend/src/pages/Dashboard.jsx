@@ -6,7 +6,8 @@ import TripCard from '../components/TripCard';
 import { TripCardSkeleton, StatCardSkeleton } from '../components/Skeleton';
 import { 
   Plane, DollarSign, Shield, AlertTriangle, Search, PlusCircle, 
-  MapPin, Calendar, ArrowRight, BarChart2, CheckCircle, TrendingUp, Info
+  MapPin, Calendar, ArrowRight, BarChart2, CheckCircle, TrendingUp, Info,
+  Copy
 } from 'lucide-react';
 import Logo from '../components/Logo';
 
@@ -18,6 +19,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [cloneTarget, setCloneTarget] = useState(null);
+  const [isCloning, setIsCloning] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -38,6 +41,20 @@ export default function Dashboard() {
       setTrips(trips.filter(t => t._id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (err) { console.error(err); }
+  };
+
+  const handleClone = async () => {
+    if (!cloneTarget) return;
+    setIsCloning(true);
+    try {
+      const { data: newTrip } = await API.post(`/trips/${cloneTarget._id}/clone`);
+      setCloneTarget(null);
+      navigate(`/trip/${newTrip._id}`);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to clone trip.');
+    }
+    setIsCloning(false);
   };
 
   const totalSpent = trips.reduce((sum, t) => sum + (t.totalExpense || 0), 0);
@@ -226,6 +243,13 @@ export default function Dashboard() {
                       <Link to={`/trip/${trip._id}`} className="bg-bg hover:bg-navy hover:text-white p-2.5 rounded-xl transition-all border border-border">
                         <ArrowRight size={16} />
                       </Link>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setCloneTarget(trip); }}
+                        className="bg-bg hover:bg-primary hover:text-white text-text-muted p-2 rounded-xl transition-all border border-border cursor-pointer"
+                        title="Clone trip"
+                      >
+                        <Copy size={14} />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -338,6 +362,38 @@ export default function Dashboard() {
                 className="py-4 rounded-2xl font-bold text-white bg-danger hover:bg-red-600 transition-all cursor-pointer border-0 shadow-lg shadow-danger/20"
               >
                 Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clone Confirmation Modal (Area 5 Feature C) */}
+      {cloneTarget && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-4">
+          <div className="bg-white rounded-[2.5rem] max-w-md w-full p-10 border border-white/20 shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="flex items-center justify-center w-20 h-20 rounded-3xl bg-primary/10 text-primary mb-6 mx-auto">
+              <Copy size={32} />
+            </div>
+            <h3 className="text-2xl font-black text-navy text-center mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              Clone {cloneTarget.name}?
+            </h3>
+            <p className="text-text-secondary text-center mb-8 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Creates a copy with same itinerary but empty expenses. You can edit everything after cloning.
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <button 
+                onClick={() => setCloneTarget(null)}
+                className="py-4 rounded-2xl font-bold bg-bg text-navy hover:bg-border transition-all cursor-pointer border-0"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleClone}
+                disabled={isCloning}
+                className="py-4 rounded-2xl font-bold text-white bg-primary hover:bg-primary-dark transition-all cursor-pointer border-0 shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+              >
+                {isCloning ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Cloning...</> : <><Copy size={16} /> Clone Trip</>}
               </button>
             </div>
           </div>

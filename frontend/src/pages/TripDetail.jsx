@@ -5,7 +5,8 @@ import {
   Plane, Calendar, MapPin, DollarSign, Wallet, MoreVertical, 
   Trash2, Plus, Info, ChevronRight, Utensils, Compass, Building,
   Navigation, CheckCircle, Clock, Hotel, ArrowRight, X, Search,
-  Briefcase, Car, Train, AlertTriangle, Star
+  Briefcase, Car, Train, AlertTriangle, Star, Bus,
+  Share2, MessageCircle, Globe, Copy, Link2
 } from 'lucide-react';
 import { StatCardSkeleton, TripCardSkeleton } from '../components/Skeleton';
 import ItineraryTab from '../pages/Itinerary';
@@ -36,6 +37,11 @@ export default function TripDetail() {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [expenseForm, setExpenseForm] = useState({ title: '', amount: '', category: 'Food' });
   const [isAddingExpense, setIsAddingExpense] = useState(false);
+
+  // Share modal state (Area 5)
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [togglingVisibility, setTogglingVisibility] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const handleAddExpense = async (e) => {
     e.preventDefault();
@@ -258,12 +264,18 @@ out body 5;`;
                        <span className="text-[10px] text-white/60">/ ₹{trip.budget?.toLocaleString()}</span>
                     </div>
                  </div>
-                 <button 
-                   onClick={() => setShowExpenseForm(!showExpenseForm)}
-                   className="bg-accent hover:bg-accent-dark text-white px-5 py-4 rounded-2xl text-sm font-bold border-0 cursor-pointer shadow-lg shadow-accent/20 transition-all whitespace-nowrap"
-                 >
-                   {showExpenseForm ? '✕ Cancel' : '+ Add Expense'}
-                 </button>
+                  <button 
+                    onClick={() => setShowExpenseForm(!showExpenseForm)}
+                    className="bg-accent hover:bg-accent-dark text-white px-5 py-4 rounded-2xl text-sm font-bold border-0 cursor-pointer shadow-lg shadow-accent/20 transition-all whitespace-nowrap"
+                  >
+                    {showExpenseForm ? '✕ Cancel' : '+ Add Expense'}
+                  </button>
+                  <button
+                    onClick={() => setShowShareModal(true)}
+                    className="bg-bg border border-border text-navy px-4 py-4 rounded-2xl text-sm font-bold cursor-pointer hover:bg-white transition-all flex items-center gap-2"
+                  >
+                    <Share2 size={16} /> Share
+                  </button>
               </div>
            </div>
            
@@ -628,6 +640,95 @@ out body 5;`;
 
          </div>
       </main>
+
+      {/* ── Share Trip Modal (Area 5) ── */}
+      {showShareModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-4">
+          <div className="bg-white rounded-[2rem] max-w-md w-full p-8 border border-border shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-black text-navy flex items-center gap-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                <Share2 size={20} className="text-accent" /> Share Trip
+              </h3>
+              <button onClick={() => { setShowShareModal(false); setLinkCopied(false); }} className="w-8 h-8 bg-bg rounded-lg flex items-center justify-center text-text-muted hover:text-navy transition-colors border-0 cursor-pointer">
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Public Toggle */}
+            <div className="bg-bg rounded-xl p-4 border border-border mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${trip.isPublic ? 'bg-success/10 text-success' : 'bg-text-muted/10 text-text-muted'}`}>
+                    <Globe size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-navy">Make trip public</p>
+                    <p className="text-[10px] text-text-muted">{trip.isPublic ? 'Anyone with the link can view' : 'Only you can see this trip'}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={async () => {
+                    setTogglingVisibility(true);
+                    try {
+                      const { data } = await API.patch(`/trips/${id}/visibility`);
+                      setTrip(data);
+                    } catch (err) { console.error(err); }
+                    setTogglingVisibility(false);
+                  }}
+                  disabled={togglingVisibility}
+                  className={`relative w-12 h-7 rounded-full transition-colors duration-200 border-0 cursor-pointer ${trip.isPublic ? 'bg-success' : 'bg-border'}`}
+                >
+                  <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200 ${trip.isPublic ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Share Link */}
+            {trip.isPublic && (
+              <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-300">
+                <div className="bg-bg rounded-xl p-3 border border-border flex items-center gap-2">
+                  <Link2 size={14} className="text-text-muted shrink-0" />
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${window.location.origin}/trip/public/${id}`}
+                    className="flex-1 bg-transparent border-0 text-xs text-navy font-medium outline-none truncate"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${window.location.origin}/trip/public/${id}`);
+                      setLinkCopied(true);
+                      setTimeout(() => setLinkCopied(false), 2000);
+                    }}
+                    className={`shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold border-0 cursor-pointer transition-all ${linkCopied ? 'bg-success text-white' : 'bg-navy text-white hover:bg-navy-dark'}`}
+                  >
+                    <Copy size={12} /> {linkCopied ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+
+                {/* WhatsApp Share (Feature B) */}
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/trip/public/${id}`;
+                    const text = `Check out my trip to ${trip.destination}! ${url}`;
+                    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white border-0 cursor-pointer transition-all hover:brightness-110"
+                  style={{ backgroundColor: '#25D366', fontFamily: "'Inter', sans-serif" }}
+                >
+                  <MessageCircle size={16} /> Share on WhatsApp
+                </button>
+              </div>
+            )}
+
+            {!trip.isPublic && (
+              <p className="text-xs text-text-muted text-center mt-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                Enable the toggle above to generate a shareable link.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

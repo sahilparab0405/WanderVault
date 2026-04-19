@@ -3,11 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import DatePicker from 'react-datepicker';
 import BudgetScoreCard from '../components/BudgetScoreCard';
+import STARTER_ITINERARIES from '../data/starterItineraries';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
   Pen, MapPin, Navigation, Calendar, Wallet, Building2,
   Plane, Train, Bus, Car, Search, AlertTriangle, ExternalLink,
-  ChevronDown, ChevronUp, X, Wifi, Bath, Flame, ParkingCircle, Star
+  ChevronDown, ChevronUp, X, Wifi, Bath, Flame, ParkingCircle, Star,
+  Sparkles, CheckCircle2
 } from 'lucide-react';
 
 /* ══════════════════════════════════════════════════════
@@ -314,6 +316,9 @@ export default function CreateTrip() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [starterModal, setStarterModal] = useState(null); // { tripId, destination, matchKey }
+  const [addingStarter, setAddingStarter] = useState(false);
+  const [starterDone, setStarterDone] = useState(false);
   const navigate = useNavigate();
 
   const locationSearch = useLocationSearch();
@@ -350,11 +355,21 @@ export default function CreateTrip() {
   const nextStep = () => { if (canProceed() && step < 6) { setStep(s => s + 1); setError(''); } };
   const prevStep = () => { if (step > 1) { setStep(s => s - 1); setError(''); } };
 
+  /* ── Detect starter itinerary match ── */
+  const findStarterMatch = (dest) => {
+    if (!dest) return null;
+    const d = dest.toLowerCase();
+    for (const key of Object.keys(STARTER_ITINERARIES)) {
+      if (d.includes(key)) return key;
+    }
+    return null;
+  };
+
   const handleSubmit = async () => {
     if (!canProceed()) return;
     setLoading(true); setError('');
     try {
-      await API.post('/trips', {
+      const { data: newTrip } = await API.post('/trips', {
         name: form.name.trim(), destination: form.destination.trim(),
         latitude: form.latitude, longitude: form.longitude,
         travelMode: form.travelMode,
@@ -362,9 +377,40 @@ export default function CreateTrip() {
         budget: Number(form.budget),
         accommodation: form.accommodation
       });
-      navigate('/dashboard');
+
+      // Check for starter itinerary match
+      const matchKey = findStarterMatch(form.destination);
+      if (matchKey) {
+        setStarterModal({ tripId: newTrip._id, destination: form.destination, matchKey });
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) { setError(err.response?.data?.message || 'Failed to create trip.'); }
     finally { setLoading(false); }
+  };
+
+  const handleAddStarter = async () => {
+    if (!starterModal) return;
+    setAddingStarter(true);
+    try {
+      const items = STARTER_ITINERARIES[starterModal.matchKey];
+      for (const item of items) {
+        await API.post(`/itinerary/${starterModal.tripId}`, {
+          day: item.day,
+          title: item.title,
+          location: item.location,
+          description: `${item.time} — ${item.description}`
+        });
+      }
+      setStarterDone(true);
+      setTimeout(() => {
+        navigate(`/trip/${starterModal.tripId}?tab=itinerary`);
+      }, 1200);
+    } catch (err) {
+      console.error('Failed to add starter itinerary:', err);
+      navigate(`/trip/${starterModal.tripId}`);
+    }
+    setAddingStarter(false);
   };
 
   const handleLocationSelect = (s) => {
@@ -617,6 +663,52 @@ export default function CreateTrip() {
           </div>
         </div>
       </div>
+
+      {/* ── Starter Itinerary Modal (Area 3) ── */}
+      {starterModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-4">
+          <div className="bg-white rounded-[2rem] max-w-md w-full p-8 border border-border shadow-2xl animate-in fade-in zoom-in duration-300 text-center">
+            {starterDone ? (
+              <>
+                <div className="w-16 h-16 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle2 size={32} />
+                </div>
+                <h3 className="text-xl font-black text-navy mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>Starter plan added!</h3>
+                <p className="text-sm text-text-secondary">Redirecting to your itinerary...</p>
+              </>
+            ) : (
+              <>
+                <div className="w-16 h-16 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Sparkles size={32} />
+                </div>
+                <h3 className="text-xl font-black text-navy mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                  Plan your {starterModal.destination.split(',')[0]} trip
+                </h3>
+                <p className="text-sm text-text-secondary mb-6 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  We have a starter itinerary for <span className="font-bold text-navy">{starterModal.destination.split(',')[0]}</span>. Want us to add it? You can edit or delete anytime.
+                </p>
+                <div className="grid gap-3">
+                  <button
+                    onClick={handleAddStarter}
+                    disabled={addingStarter}
+                    className="w-full bg-accent hover:bg-accent-dark text-white py-3.5 rounded-xl font-bold text-sm border-0 cursor-pointer transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-2"
+                    style={{ fontFamily: "'Inter', sans-serif" }}
+                  >
+                    {addingStarter ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Adding...</> : <><Sparkles size={16} /> Yes, add starter plan</>}
+                  </button>
+                  <button
+                    onClick={() => navigate(`/trip/${starterModal.tripId}`)}
+                    className="w-full bg-white border-2 border-navy text-navy py-3.5 rounded-xl font-bold text-sm cursor-pointer transition-all hover:bg-navy hover:text-white"
+                    style={{ fontFamily: "'Inter', sans-serif" }}
+                  >
+                    I'll plan myself
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

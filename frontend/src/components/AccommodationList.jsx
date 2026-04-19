@@ -1,8 +1,47 @@
 import { useState, useMemo } from 'react';
 import API from '../api/axios';
-import { Wifi, Bath, Flame, ParkingCircle, Star, MapPin, CheckCircle2, Building2, SlidersHorizontal } from 'lucide-react';
+import { Wifi, Bath, Flame, ParkingCircle, Star, MapPin, CheckCircle2, Building2, SlidersHorizontal, Trophy, Car, Waves, Utensils, Wind } from 'lucide-react';
 
-/* ─── Deterministic stats from FSQ fallback ─── */
+/* ══════════════════════════════════════════════════════
+   CITY TIER PRICING DATA (Area 1 — Price Pulse)
+══════════════════════════════════════════════════════ */
+const CITY_TIERS = {
+  tier1: {
+    cities: ['paris', 'london', 'dubai', 'singapore', 'new york', 'tokyo', 'sydney', 'mumbai', 'delhi', 'bangalore'],
+    range: '₹8,000 – ₹25,000',
+    label: 'per night'
+  },
+  tier2: {
+    cities: ['goa', 'jaipur', 'bangkok', 'bali', 'phuket', 'kuala lumpur', 'colombo', 'kathmandu', 'pune', 'hyderabad', 'chennai', 'kolkata'],
+    range: '₹3,000 – ₹8,000',
+    label: 'per night'
+  },
+  tier3: {
+    cities: ['manali', 'shimla', 'rishikesh', 'mcleod ganj', 'coorg', 'munnar', 'ooty', 'lonavala', 'mahabaleshwar'],
+    range: '₹1,500 – ₹4,000',
+    label: 'per night'
+  }
+};
+
+function detectCityTier(destination) {
+  if (!destination) return CITY_TIERS.tier2;
+  const dest = destination.toLowerCase();
+  for (const [, tier] of Object.entries(CITY_TIERS)) {
+    if (tier.cities.some(city => dest.includes(city))) return tier;
+  }
+  return CITY_TIERS.tier2;
+}
+
+/* ── Amenity mapping from Overpass tags ── */
+const TAG_AMENITIES = [
+  { tagKey: 'internet_access', Icon: Wifi, label: 'Wifi' },
+  { tagKey: 'parking',         Icon: Car,  label: 'Parking' },
+  { tagKey: 'swimming_pool',   Icon: Waves, label: 'Pool' },
+  { tagKey: 'restaurant',      Icon: Utensils, label: 'Dining' },
+  { tagKey: 'air_conditioning', Icon: Wind, label: 'AC' },
+];
+
+/* ─── Deterministic stats from OSM/Fallback ─── */
 function getHotelStats(place) {
   if (place.hash === 1234 || !place.image) {
      const hash = place.hash || (String(place.id).split('').reduce((a, c) => a + c.charCodeAt(0), 0) + place.name.split('').reduce((a, c) => a + c.charCodeAt(0), 0));
@@ -22,7 +61,7 @@ function getHotelStats(place) {
   return { price: place.price, rating: place.rating, budgetLevel, image: place.image };
 }
 
-/* ─── Amenity icons deterministically assigned ─── */
+/* ─── Fallback amenity icons deterministically assigned ─── */
 const AMENITIES_POOL = [
   { Icon: Wifi,          label: 'Wifi' },
   { Icon: Bath,          label: 'Tub' },
@@ -30,10 +69,46 @@ const AMENITIES_POOL = [
   { Icon: ParkingCircle, label: 'Parking' },
 ];
 
-function getAmenities(hash) {
-  // Show 3-4 amenities based on hash
+function getFallbackAmenities(hash) {
   const count = 3 + (hash % 2);
   return AMENITIES_POOL.slice(0, count);
+}
+
+/* ─── Get amenities from Overpass tags or fallback ─── */
+function getAmenities(place) {
+  // If the place object has raw Overpass tags, extract real amenities
+  if (place.tags && typeof place.tags === 'object') {
+    const found = [];
+    for (const { tagKey, Icon, label } of TAG_AMENITIES) {
+      if (place.tags[tagKey] && place.tags[tagKey] !== 'no') {
+        found.push({ Icon, label });
+      }
+    }
+    if (found.length > 0) return found.slice(0, 4);
+  }
+  // Fallback: deterministic from hash
+  const hash = place.hash || (String(place.id).split('').reduce((a, c) => a + c.charCodeAt(0), 0) + place.name.split('').reduce((a, c) => a + c.charCodeAt(0), 0));
+  return getFallbackAmenities(hash);
+}
+
+/* ─── Value Score Algorithm (Area 1 — Addition 1) ─── */
+function computeValueScore(place) {
+  const stars = parseFloat(place.tags?.stars) || 0;
+  const distanceKm = place.distanceKm || parseFloat(place.distance) || 2;
+  
+  // Count amenities from tags
+  let amenitiesCount = 0;
+  if (place.tags && typeof place.tags === 'object') {
+    for (const { tagKey } of TAG_AMENITIES) {
+      if (place.tags[tagKey] && place.tags[tagKey] !== 'no') amenitiesCount++;
+    }
+  } else {
+    // Fallback: use hash to simulate
+    const hash = place.hash || 0;
+    amenitiesCount = 2 + (hash % 3);
+  }
+
+  return (stars * 20) + (100 - distanceKm * 10) + (amenitiesCount * 5);
 }
 
 /* ─── Star Rating ─── */
@@ -57,14 +132,58 @@ function StarRating({ rating }) {
   );
 }
 
+/* ─── Price Pulse Card (Area 1 — Addition 2) ─── */
+function PricePulseCard({ destination }) {
+  const tier = detectCityTier(destination);
+  const cityName = destination ? destination.split(',')[0] : 'your destination';
+
+  return (
+    <div className="bg-white rounded-xl border border-border p-4 flex items-center gap-4 mb-4"
+         style={{ boxShadow: 'var(--shadow-sm)' }}>
+      <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0">
+        <Building2 size={20} strokeWidth={1.5} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-medium text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>
+          Estimated stay cost in <span className="font-bold text-navy">{cityName}</span>
+        </p>
+        <p className="text-lg font-black text-navy leading-tight mt-0.5" style={{ fontFamily: "'Poppins', sans-serif" }}>
+          {tier.range}
+        </p>
+        <p className="text-[10px] text-text-muted mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>
+          {tier.label} — Prices vary by season and availability
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Value Badge ─── */
+function ValueBadge({ rank }) {
+  if (rank === 0) {
+    return (
+      <div className="absolute top-3 left-3 z-10 flex items-center gap-1 bg-navy text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-md">
+        <Trophy size={11} strokeWidth={2} /> Best Value
+      </div>
+    );
+  }
+  if (rank === 1) {
+    return (
+      <div className="absolute top-3 left-3 z-10 flex items-center gap-1 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-md"
+           style={{ backgroundColor: '#FF6B35' }}>
+        <Star size={11} strokeWidth={2} /> Recommended
+      </div>
+    );
+  }
+  return null;
+}
+
 /* ─── Hotel Card (reference: feature_6_accommodation) ─── */
-function AccommodationCard({ place, stats, tripId }) {
+function AccommodationCard({ place, stats, tripId, valueRank }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const hash = String(place.id).split('').reduce((a, c) => a + c.charCodeAt(0), 0)
-             + place.name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const amenities = getAmenities(hash);
+  const amenities = getAmenities(place);
 
   const handleSave = async () => {
     if (!tripId) return;
@@ -104,10 +223,8 @@ function AccommodationCard({ place, stats, tripId }) {
             {stats.rating}
           </span>
         </div>
-        {/* Budget tier badge */}
-        <div className="absolute top-3 left-3 bg-navy/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-          {stats.budgetLevel}
-        </div>
+        {/* Value badge (Area 1 — Addition 1) */}
+        <ValueBadge rank={valueRank} />
       </div>
 
       {/* ── Card body ── */}
@@ -123,11 +240,11 @@ function AccommodationCard({ place, stats, tripId }) {
           {place.distance} away{place.address ? ` · ${place.address.slice(0, 28)}…` : ''}
         </p>
 
-        {/* Amenities row */}
+        {/* Amenities row (Area 1 — Addition 3: real Overpass amenities) */}
         <div className="flex items-center gap-4 mb-4 py-3 border-t border-b border-border-light">
           {amenities.map(({ Icon, label }) => (
             <div key={label} className="flex flex-col items-center gap-1">
-              <Icon size={16} strokeWidth={1.5} className="text-text-secondary" />
+              <Icon size={14} strokeWidth={1.5} className="text-text-secondary" />
               <span className="text-[9px] text-text-muted font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
                 {label}
               </span>
@@ -167,13 +284,13 @@ function AccommodationCard({ place, stats, tripId }) {
 }
 
 /* ─── Main AccommodationList ─── */
-export default function AccommodationList({ places, tripId }) {
+export default function AccommodationList({ places, tripId, destination }) {
   const [filterBudget, setFilterBudget] = useState('All');
   const [filterRating, setFilterRating] = useState('All');
   const [filterDist, setFilterDist] = useState('All');
 
   const items = useMemo(() => {
-    return places.map(p => ({ place: p, stats: getHotelStats(p) }))
+    return places.map(p => ({ place: p, stats: getHotelStats(p), valueScore: computeValueScore(p) }))
       .filter(({ place, stats }) => {
         if (filterBudget !== 'All' && stats.budgetLevel !== filterBudget) return false;
         if (filterRating !== 'All') {
@@ -189,11 +306,14 @@ export default function AccommodationList({ places, tripId }) {
         }
         return true;
       })
-      .sort((a, b) => a.place.distanceKm - b.place.distanceKm);
+      .sort((a, b) => b.valueScore - a.valueScore); // Sort by value score descending
   }, [places, filterBudget, filterRating, filterDist]);
 
   return (
     <div className="space-y-4">
+      {/* ── Price Pulse Card (Area 1 — Addition 2) ── */}
+      {destination && <PricePulseCard destination={destination} />}
+
       {/* ── Filter bar ── */}
       <div className="flex flex-wrap items-center gap-2 bg-white border border-border p-3 rounded-xl"
            style={{ boxShadow: 'var(--shadow-sm)' }}>
@@ -237,8 +357,8 @@ export default function AccommodationList({ places, tripId }) {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[680px] overflow-y-auto pr-1">
-          {items.map(({ place, stats }) => (
-            <AccommodationCard key={place.id} place={place} stats={stats} tripId={tripId} />
+          {items.map(({ place, stats }, idx) => (
+            <AccommodationCard key={place.id} place={place} stats={stats} tripId={tripId} valueRank={idx} />
           ))}
         </div>
       )}
