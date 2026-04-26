@@ -544,35 +544,55 @@ out body 5;`;
 
                      {hotelResults.length > 0 ? (
                         <div className="grid md:grid-cols-2 gap-8">
-                           {hotelResults.map(hotel => (
-                              <div key={hotel.id} className="group bg-bg rounded-[2.5rem] p-8 border border-border hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/5 transition-all relative overflow-hidden">
-                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-                                 <div className="relative z-10">
-                                    <div className="flex justify-between items-start mb-6">
-                                       <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                                          <Building size={32} />
+                           {hotelResults.map(hotel => {
+                              const gradient = hotel.price > 5000
+                                ? 'linear-gradient(135deg, #f59e0b, #fbbf24)'
+                                : hotel.price > 2000
+                                ? 'linear-gradient(135deg, #3b82f6, #6366f1)'
+                                : 'linear-gradient(135deg, #22c55e, #14b8a6)';
+                              return (
+                              <div key={hotel.id} className="group bg-bg rounded-[2.5rem] overflow-hidden border border-border hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/5 transition-all relative">
+                                 {/* Gradient banner */}
+                                 <div className="h-20 relative" style={{ background: gradient }}>
+                                    <div className="absolute inset-0 flex items-center justify-between px-8">
+                                       <div className="flex items-center gap-3">
+                                          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                             <Building size={24} className="text-white" />
+                                          </div>
+                                          <div>
+                                            <p className="text-white font-black text-sm line-clamp-1">{hotel.name}</p>
+                                            <p className="text-white/70 text-[10px] font-bold">Verified Stay</p>
+                                          </div>
                                        </div>
-                                       <div className="text-right">
-                                          <p className="text-2xl font-black text-navy">₹{hotel.price.toLocaleString()}</p>
-                                          <p className="text-[10px] font-bold text-text-muted uppercase">per night</p>
+                                       <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                                          <Star size={11} fill="#fff" strokeWidth={0} />
+                                          <span className="text-white text-xs font-bold">{hotel.rating}</span>
                                        </div>
                                     </div>
-                                    <h4 className="font-bold text-navy text-xl leading-tight mb-2 line-clamp-1">{hotel.name}</h4>
-                                    <p className="text-xs text-text-muted flex items-center gap-1 mb-8">
-                                       <MapPin size={12} className="text-accent" /> {hotel.address.split(',').slice(0, 3).join(',')}
-                                    </p>
-                                    <div className="flex items-center gap-4 mb-8">
-                                       <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full border border-border text-[11px] font-bold text-navy">
-                                          <Star size={12} fill="#F59E0B" className="text-amber-500" /> {hotel.rating}
+                                 </div>
+                                 <div className="p-8 relative">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
+                                    <div className="relative z-10">
+                                       <div className="flex justify-between items-start mb-6">
+                                          <p className="text-xs text-text-muted flex items-center gap-1">
+                                             <MapPin size={12} className="text-accent" /> {hotel.address.split(',').slice(0, 3).join(',')}
+                                          </p>
+                                          <div className="text-right">
+                                             <p className="text-2xl font-black text-navy">₹{hotel.price.toLocaleString()}</p>
+                                             <p className="text-[10px] font-bold text-text-muted uppercase">per night</p>
+                                          </div>
                                        </div>
-                                       <div className="text-[11px] font-bold text-success uppercase tracking-widest">Available Now</div>
+                                       <div className="flex items-center gap-4 mb-6">
+                                          <div className="text-[11px] font-bold text-success uppercase tracking-widest">Available Now</div>
+                                       </div>
+                                       <button onClick={() => bookHotel(hotel)} className="w-full bg-navy text-white py-5 rounded-[1.25rem] text-sm font-black transition-all border-0 cursor-pointer shadow-lg shadow-navy/20 active:scale-95">
+                                          BOOK THIS STAY
+                                       </button>
                                     </div>
-                                    <button onClick={() => bookHotel(hotel)} className="w-full bg-navy text-white py-5 rounded-[1.25rem] text-sm font-black transition-all border-0 cursor-pointer shadow-lg shadow-navy/20 active:scale-95">
-                                       BOOK THIS STAY
-                                    </button>
                                  </div>
                               </div>
-                           ))}
+                           );
+                           })}
                         </div>
                      ) : (
                         <div className="text-center py-20 bg-bg rounded-[2.5rem] border-2 border-dashed border-border">

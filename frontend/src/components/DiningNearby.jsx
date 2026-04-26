@@ -313,8 +313,24 @@ out body 15;`;
                       <img src={place.photo} alt={place.name} className="w-full h-full object-cover" />
                     </div>
                   ) : (
-                    <div className="mt-3 w-full h-24 rounded-lg overflow-hidden border border-border-light bg-bg flex items-center justify-center">
-                      <Utensils size={32} className="text-border" />
+                    <div className="mt-3 w-full h-24 rounded-lg overflow-hidden relative" style={{
+                      background: (() => {
+                        const c = (place.cuisine || '').toLowerCase();
+                        if (c.includes('italian') || c.includes('pizza')) return 'linear-gradient(135deg, #f87171, #fdba74)';
+                        if (c.includes('indian') || c.includes('curry')) return 'linear-gradient(135deg, #f97316, #fbbf24)';
+                        if (c.includes('chinese') || c.includes('asian')) return 'linear-gradient(135deg, #ef4444, #fb7185)';
+                        if (c.includes('cafe') || c.includes('coffee') || c.includes('breakfast')) return 'linear-gradient(135deg, #fbbf24, #fde047)';
+                        if (c.includes('seafood') || c.includes('fish')) return 'linear-gradient(135deg, #60a5fa, #67e8f9)';
+                        return 'linear-gradient(135deg, #94a3b8, #9ca3af)';
+                      })()
+                    }}>
+                      <div className="absolute inset-0 flex flex-col items-start justify-end p-3">
+                        <span className="bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1">{place.cuisine}</span>
+                        <p className="text-white font-bold text-xs leading-tight line-clamp-1 drop-shadow-sm">{place.name}</p>
+                      </div>
+                      <div className="absolute top-3 right-3">
+                        <Utensils size={20} className="text-white/30" />
+                      </div>
                     </div>
                   )}
                   <p className="text-xs text-text-muted mt-3 line-clamp-1 italic" style={{ fontFamily: "'Inter', sans-serif" }}>

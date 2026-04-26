@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { 
   Compass, Utensils, MapPin, Building2, ExternalLink, 
   Plane, ArrowRight, Star, Heart, PlusCircle, Search,
-  TrendingUp, Landmark, Map
+  TrendingUp, Landmark, Map, Calendar
 } from 'lucide-react';
 import { TripCardSkeleton } from '../components/Skeleton';
 
@@ -20,19 +20,44 @@ const POPULAR_DESTINATIONS = [
 const SEASONAL_HIGHLIGHTS = [
   { 
     name: 'Shimla', 
-    image: 'https://images.unsplash.com/photo-1562670338-d1e432a472c3?w=800&h=500&fit=crop', 
-    budget: '₹12,000+', 
-    desc: 'The Queen of Hills comes alive this summer with pleasant weather and colonial charm.',
+    budget: '₹12,000 - ₹20,000', 
+    days: '3-4 days',
+    tag: 'Hills',
+    description: 'Queen of Hills',
+    gradientFrom: '#94a3b8', // slate-400
+    gradientTo: '#93c5fd',   // blue-300
     rating: 4.8
   },
   { 
     name: 'Pondicherry', 
-    image: 'https://images.unsplash.com/photo-1589735496660-318e8df5e27a?w=800&h=500&fit=crop', 
-    budget: '₹10,000+', 
-    desc: 'Stroll through the French Quarter and enjoy the coastal vibe of this unique territory.',
+    budget: '₹10,000 - ₹18,000', 
+    days: '3-4 days',
+    tag: 'Coastal',
+    description: 'French Riviera of India',
+    gradientFrom: '#2dd4bf', // teal-400
+    gradientTo: '#67e8f9',   // cyan-300
     rating: 4.7
   },
 ];
+
+/* ── Contextual Discovery place names ── */
+const PLACE_NAMES = {
+  dining: [
+    { name: 'Popular Local Restaurant', desc: 'Authentic regional cuisine with top ratings from travelers.' },
+    { name: 'Cozy Cafe & Bakery', desc: 'Fresh pastries and artisan coffee in a charming setting.' },
+    { name: 'Street Food Corner', desc: 'Quick bites and local delicacies loved by the community.' },
+  ],
+  sightseeing: [
+    { name: 'Heritage Monument', desc: 'Historical landmark with rich cultural significance.' },
+    { name: 'Scenic Viewpoint', desc: 'Panoramic views of the surrounding landscape.' },
+    { name: 'Local Museum', desc: 'Curated exhibits showcasing regional art and history.' },
+  ],
+  accommodation: [
+    { name: 'Budget Stays Nearby', desc: 'Affordable and comfortable options close to major attractions.' },
+    { name: 'Boutique Guesthouse', desc: 'Unique stay with personalized hospitality.' },
+    { name: 'Hotel Near Center', desc: 'Centrally located with easy access to dining and sights.' },
+  ],
+};
 
 export default function Explore() {
   const [trips, setTrips] = useState([]);
@@ -110,67 +135,93 @@ export default function Explore() {
       <main className="flex-1 max-w-7xl mx-auto w-full p-6 lg:p-8 space-y-12 animate-in fade-in duration-700">
         
         {/* SECTION 1 — ACTIVE TRIP CONTEXT */}
-        {activeTrip && (
-          <section className="space-y-6">
-            <div className="flex items-center gap-3">
-              <TrendingUp size={24} className="text-accent" />
-              <h2 className="text-2xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Contextual Discovery</h2>
-            </div>
-            
-            <div className="bg-white rounded-[2.5rem] border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[300px]">
-              <div className="lg:col-span-2 bg-navy p-10 text-white flex flex-col justify-between">
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <TrendingUp size={24} className="text-accent" />
+            <h2 className="text-2xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Contextual Discovery</h2>
+          </div>
+          
+          <div className="bg-white rounded-[2.5rem] border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[300px]">
+            <div className="lg:col-span-2 bg-navy p-10 text-white flex flex-col justify-between">
+              {activeTrip ? (
                 <div>
                    <div className="inline-flex items-center gap-2 bg-white/10 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">
                       Active Trip Proximity
                    </div>
-                   <h3 className="text-3xl font-black mb-2 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>{activeTrip.destination}</h3>
-                   <p className="text-sm text-white/60 mb-8 font-medium italic">Explore the local staples near your current location.</p>
+                   <h3 className="text-3xl font-black mb-3 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>{activeTrip.name}</h3>
+                   <div className="flex items-center gap-2 mb-2 text-white/80">
+                     <MapPin size={14} className="text-accent shrink-0" />
+                     <span className="text-sm font-medium">{activeTrip.destination}</span>
+                   </div>
+                   <div className="flex items-center gap-2 text-white/60">
+                     <Calendar size={14} className="shrink-0" />
+                     <span className="text-xs font-medium">{new Date(activeTrip.startDate).toLocaleDateString()} — {new Date(activeTrip.endDate).toLocaleDateString()}</span>
+                   </div>
                 </div>
-                <Link to={`/trip/${activeTrip._id}`} className="bg-white text-navy px-6 py-4 rounded-2xl text-xs font-black no-underline text-center hover:bg-white/90 transition-all">
-                   OPEN COMPASS VIEW
+              ) : (
+                <div>
+                   <div className="inline-flex items-center gap-2 bg-white/10 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">
+                      Discovery
+                   </div>
+                   <h3 className="text-2xl font-black mb-3 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>No Trip Yet</h3>
+                   <p className="text-sm text-white/60 mb-6 font-medium">Create a trip to see nearby recommendations</p>
+                </div>
+              )}
+              {activeTrip ? (
+                <Link to={`/trip/${activeTrip._id}`} className="bg-white text-navy px-6 py-4 rounded-2xl text-xs font-black no-underline text-center hover:bg-white/90 transition-all mt-6">
+                   VIEW TRIP DETAILS
                 </Link>
+              ) : (
+                <Link to="/create-trip" className="bg-accent text-white px-6 py-4 rounded-2xl text-xs font-black no-underline text-center hover:bg-accent-dark transition-all mt-6">
+                   CREATE FIRST TRIP
+                </Link>
+              )}
+            </div>
+            
+            <div className="lg:col-span-3 p-8 lg:p-10">
+              <div className="flex gap-6 border-b border-border mb-8 overflow-x-auto no-scrollbar">
+                {[
+                  { id: 'dining', label: 'Cuisine', icon: Utensils },
+                  { id: 'sightseeing', label: 'Landmarks', icon: Landmark },
+                  { id: 'accommodation', label: 'Budget Stays', icon: Building2 },
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`pb-4 px-1 text-xs font-black tracking-widest uppercase transition-all relative border-0 bg-transparent cursor-pointer flex items-center gap-2 whitespace-nowrap
+                      ${activeTab === tab.id ? 'text-navy' : 'text-text-muted hover:text-navy'}
+                    `}
+                  >
+                    <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
+                    {tab.label}
+                    {activeTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-full" />}
+                  </button>
+                ))}
               </div>
-              
-              <div className="lg:col-span-3 p-8 lg:p-10">
-                <div className="flex gap-6 border-b border-border mb-8 overflow-x-auto no-scrollbar">
-                  {[
-                    { id: 'dining', label: 'Cuisine', icon: Utensils },
-                    { id: 'sightseeing', label: 'Landmarks', icon: Landmark },
-                    { id: 'accommodation', label: 'Budget Stays', icon: Building2 },
-                  ].map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`pb-4 px-1 text-xs font-black tracking-widest uppercase transition-all relative border-0 bg-transparent cursor-pointer flex items-center gap-2 whitespace-nowrap
-                        ${activeTab === tab.id ? 'text-navy' : 'text-text-muted hover:text-navy'}
-                      `}
-                    >
-                      <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
-                      {tab.label}
-                      {activeTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-full" />}
-                    </button>
-                  ))}
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* Simplified cards for Explore page */}
-                    {[1,2,3].map(i => (
-                       <div key={i} className="bg-bg rounded-2xl p-6 border border-border hover:border-primary/50 transition-colors cursor-pointer group">
-                          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                             {activeTab === 'dining' ? <Utensils size={18} /> : activeTab === 'sightseeing' ? <Landmark size={18} /> : <Building2 size={18} />}
-                          </div>
-                          <p className="font-bold text-navy text-sm leading-tight mb-1">Local Favorite #{i}</p>
-                          <p className="text-[11px] text-text-secondary line-clamp-2">A top-rated {activeTab} spot verified by our community in {activeTrip.destination}.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {PLACE_NAMES[activeTab].map((item, i) => (
+                     <div key={i} className="bg-bg rounded-2xl p-6 border border-border hover:border-primary/50 transition-colors cursor-pointer group">
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                           {activeTab === 'dining' ? <Utensils size={18} /> : activeTab === 'sightseeing' ? <Landmark size={18} /> : <Building2 size={18} />}
+                        </div>
+                        <p className="font-bold text-navy text-sm leading-tight mb-1">{item.name}</p>
+                        <p className="text-[11px] text-text-secondary line-clamp-2">{item.desc}</p>
+                        {activeTrip ? (
                           <Link to={`/trip/${activeTrip._id}?tab=${activeTab}`} className="inline-flex items-center gap-1.5 text-[10px] font-black text-accent mt-6 no-underline uppercase tracking-widest">
                              View Details <ArrowRight size={12} />
                           </Link>
-                       </div>
-                    ))}
-                </div>
+                        ) : (
+                          <Link to="/create-trip" className="inline-flex items-center gap-1.5 text-[10px] font-black text-accent mt-6 no-underline uppercase tracking-widest">
+                             Create Trip <ArrowRight size={12} />
+                          </Link>
+                        )}
+                     </div>
+                  ))}
               </div>
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         {/* SECTION 2 — DISCOVER NEW HORIZONS */}
         <section className="space-y-8">
@@ -208,32 +259,45 @@ export default function Explore() {
               ))}
             </div>
 
-            {/* Featured Seasonal */}
+            {/* Featured Seasonal — Shimla + Pondicherry with CSS gradient backgrounds */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
               {SEASONAL_HIGHLIGHTS.map(dest => (
                 <div key={dest.name} className="relative rounded-[2.5rem] overflow-hidden h-80 shadow-2xl group cursor-pointer" onClick={() => handlePlanTrip(dest.name)}>
-                  <img src={dest.image} alt={dest.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-                  <div className="absolute inset-0 p-10 flex flex-col justify-end">
-                    <div className="bg-white/95 backdrop-blur-md p-8 rounded-[2rem] transform translate-y-8 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 shadow-2xl">
-                      <div className="flex justify-between items-center mb-2">
-                        <h4 className="text-navy font-black text-2xl" style={{ fontFamily: "'Poppins', sans-serif" }}>{dest.name}</h4>
-                        <div className="flex items-center gap-1.5 text-accent">
-                          <Star size={18} fill="currentColor" />
-                          <span className="text-sm font-black">{dest.rating}</span>
-                        </div>
-                      </div>
-                      <p className="text-text-secondary text-sm mb-6 leading-relaxed font-medium">{dest.desc}</p>
-                      <div className="flex items-center justify-between">
-                         <span className="text-navy font-black text-lg">{dest.budget}</span>
-                         <button className="bg-navy hover:bg-accent text-white px-8 py-3 rounded-2xl text-[11px] font-black transition-all border-0 shadow-lg shadow-navy/20">
-                           BOOK ADVENTURE <ArrowRight size={14} className="inline ml-1" />
-                         </button>
-                      </div>
+                  {/* CSS Gradient Background instead of broken image */}
+                  <div 
+                    className="absolute inset-0"
+                    style={{ background: `linear-gradient(135deg, ${dest.gradientFrom}, ${dest.gradientTo})` }}
+                  />
+                  {/* Decorative circles */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000" />
+                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24 group-hover:scale-125 transition-transform duration-700" />
+                  
+                  {/* Always visible content — no hover-to-preview */}
+                  <div className="absolute inset-0 p-8 lg:p-10 flex flex-col justify-between relative z-10">
+                    <div>
+                      <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold rounded-full uppercase tracking-widest border border-white/20">
+                        {dest.tag}
+                      </span>
                     </div>
-                    {/* Hover indicator for mobile/idle */}
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 group-hover:opacity-0 transition-opacity">
-                       <span className="text-white text-[10px] font-black uppercase tracking-widest bg-navy/40 px-4 py-2 rounded-full backdrop-blur-sm border border-white/20">Hover to Preview</span>
+
+                    <div>
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <p className="text-white/70 text-xs font-bold mb-1">{dest.description}</p>
+                          <h4 className="text-white font-black text-3xl mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>{dest.name}</h4>
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="flex items-center gap-1.5 text-white/90">
+                              <Star size={14} fill="currentColor" />
+                              <span className="text-sm font-black">{dest.rating}</span>
+                            </div>
+                            <span className="text-white/60 text-xs font-bold">{dest.days}</span>
+                          </div>
+                          <p className="text-white font-black text-lg">{dest.budget}</p>
+                        </div>
+                        <button className="bg-white text-navy hover:bg-accent hover:text-white px-6 py-3 rounded-2xl text-[11px] font-black transition-all border-0 shadow-lg shadow-black/10 cursor-pointer">
+                          PLAN TRIP <ArrowRight size={14} className="inline ml-1" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

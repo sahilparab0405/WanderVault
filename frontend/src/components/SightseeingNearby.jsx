@@ -327,8 +327,24 @@ out body 15;`;
                         <img src={place.photo} alt={place.name} className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="mt-3 w-full h-24 rounded-lg overflow-hidden border border-border-light bg-bg flex items-center justify-center">
-                        <Compass size={32} className="text-border" />
+                      <div className="mt-3 w-full h-24 rounded-lg overflow-hidden relative" style={{
+                        background: (() => {
+                          const cat = place.category || '';
+                          if (cat === 'museums') return 'linear-gradient(135deg, #a855f7, #8b5cf6)';
+                          if (cat === 'parks') return 'linear-gradient(135deg, #22c55e, #34d399)';
+                          if (cat === 'temples') return 'linear-gradient(135deg, #f97316, #fbbf24)';
+                          if (cat === 'monuments') return 'linear-gradient(135deg, #64748b, #9ca3af)';
+                          if (cat === 'beaches') return 'linear-gradient(135deg, #60a5fa, #67e8f9)';
+                          return 'linear-gradient(135deg, #2dd4bf, #67e8f9)';
+                        })()
+                      }}>
+                        <div className="absolute inset-0 flex flex-col items-start justify-end p-3">
+                          <span className="bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1">{CATEGORY_MAP[place.category]?.label || 'Attraction'}</span>
+                          <p className="text-white font-bold text-xs leading-tight line-clamp-1 drop-shadow-sm">{place.name}</p>
+                        </div>
+                        <div className="absolute top-3 right-3">
+                          <CatIcon size={20} className="text-white/30" />
+                        </div>
                       </div>
                     )}
 
