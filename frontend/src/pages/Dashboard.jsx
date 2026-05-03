@@ -170,7 +170,7 @@ export default function Dashboard() {
         ) : (
           <>
           {/* ── Spotlight: Active Trip ── */}
-          {activeTrip && (
+          {activeTrip ? (
             <section className="bg-white rounded-3xl border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[400px]">
             <div className="lg:col-span-2 p-8 lg:p-10 flex flex-col justify-between space-y-8">
               <div>
@@ -360,7 +360,6 @@ export default function Dashboard() {
                     </div>
                  </div>
               </div>
-            </div>
             </div>
           </div>
         </div>
