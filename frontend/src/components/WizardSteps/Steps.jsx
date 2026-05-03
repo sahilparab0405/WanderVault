@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pen, MapPin, Search, X, Navigation, Calendar, Building2, Wallet, Wifi, Bath, Flame, ParkingCircle, Star, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import DatePicker from 'react-datepicker';
-import BudgetScoreCard from './BudgetScoreCard';
+import BudgetScoreCard from '../BudgetScoreCard';
 
 export const StepHeader = ({ Icon, title, subtitle }) => (
   <div className="text-center mb-6">
