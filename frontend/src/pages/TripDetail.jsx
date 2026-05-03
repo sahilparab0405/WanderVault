@@ -649,12 +649,10 @@ out body 5;`;
 
             {/* MAP TAB */}
             {activeTab === 'map' && (
-               <div className="max-w-6xl mx-auto space-y-8 h-[75vh]">
-                  <div className="bg-white rounded-[3rem] overflow-hidden border border-border shadow-2xl h-full relative">
-                     <Suspense fallback={<div className="h-full w-full bg-border/20 animate-pulse flex items-center justify-center text-text-muted text-sm font-bold">CALIBRATING GPS SATELLITES...</div>}>
-                        <TripMap latitude={Number(trip.latitude)} longitude={Number(trip.longitude)} destination={trip.destination} nearbyPlaces={allNearbyPins} />
-                     </Suspense>
-                  </div>
+               <div className="max-w-6xl mx-auto h-[75vh]">
+                  <Suspense fallback={<div className="h-full w-full bg-white rounded-[2rem] border border-border animate-pulse flex items-center justify-center text-text-muted text-sm font-bold">CALIBRATING GPS SATELLITES...</div>}>
+                     <TripMap latitude={Number(trip.latitude)} longitude={Number(trip.longitude)} destination={trip.destination} nearbyPlaces={allNearbyPins} />
+                  </Suspense>
                </div>
             )}
 

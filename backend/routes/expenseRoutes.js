@@ -4,6 +4,8 @@ const Expense = require('../models/Expense');
 const Trip = require('../models/Trip');
 const User = require('../models/User');
 const { protect } = require('../middleware/authMiddleware');
+const { body } = require('express-validator');
+const { handleValidationErrors } = require('../middleware/validate');
 const { sendBudgetAlert } = require('../config/mailer');
 
 // GET all expenses for a trip
@@ -17,7 +19,13 @@ router.get('/:tripId', protect, async (req, res) => {
 });
 
 // POST add expense to trip
-router.post('/:tripId', protect, async (req, res) => {
+router.post('/:tripId', protect, [
+  body('title').trim().notEmpty().withMessage('Title is required').isLength({ max: 100 }).withMessage('Title must be less than 100 characters'),
+  body('amount').isNumeric().withMessage('Amount must be a number').custom(value => value > 0).withMessage('Amount must be greater than 0'),
+  body('category').optional().isIn(['Food', 'Transport', 'Hotel', 'Activities', 'Shopping', 'Other']).withMessage('Invalid category'),
+  body('date').optional().isISO8601().toDate().withMessage('Invalid date format'),
+  handleValidationErrors
+], async (req, res) => {
   try {
     const { title, amount, category, date } = req.body;
     const trip = await Trip.findById(req.params.tripId);

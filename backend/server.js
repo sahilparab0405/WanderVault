@@ -15,8 +15,8 @@ connectDB();
 const cors = require('cors');
 
 app.use(cors({
-  origin: "https://wandervault-frontend.vercel.app",
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: process.env.FRONTEND_URL || "https://wandervault-frontend.vercel.app",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   credentials: true
 }));
 

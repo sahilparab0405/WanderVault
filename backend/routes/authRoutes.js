@@ -2,7 +2,18 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { body } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 const User = require('../models/User');
+const { handleValidationErrors } = require('../middleware/validate');
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 requests per windowMs
+  message: { message: 'Too many login attempts, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Generate JWT
 const generateToken = (id) => {
@@ -10,7 +21,12 @@ const generateToken = (id) => {
 };
 
 // @route POST /api/auth/register
-router.post('/register', async (req, res) => {
+router.post('/register', [
+  body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 50 }).withMessage('Name must be less than 50 characters'),
+  body('email').trim().isEmail().withMessage('Must be a valid email address').normalizeEmail(),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+  handleValidationErrors
+], async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -44,7 +60,11 @@ router.post('/register', async (req, res) => {
 });
 
 // @route POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, [
+  body('email').trim().isEmail().withMessage('Must be a valid email address').normalizeEmail(),
+  body('password').notEmpty().withMessage('Password is required'),
+  handleValidationErrors
+], async (req, res) => {
   try {
     const { email, password } = req.body;
 

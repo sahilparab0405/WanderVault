@@ -123,8 +123,7 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
 
   return (
     <div
-      className="bg-card rounded-xl overflow-hidden border border-border"
-      style={{ boxShadow: 'var(--shadow-card)' }}
+      className="bg-card rounded-[2rem] overflow-hidden border border-border h-full flex flex-col shadow-2xl"
     >
       {/* Map header */}
       <div className="px-5 py-3 border-b border-border flex items-center justify-between">
@@ -154,8 +153,8 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
         </div>
       </div>
 
-      {/* Map container */}
-      <div style={{ height: '350px', width: '100%' }}>
+      {/* Map container — flex-1 fills all remaining height */}
+      <div className="flex-1 min-h-0" style={{ width: '100%' }}>
         <MapContainer
           center={center}
           zoom={13}

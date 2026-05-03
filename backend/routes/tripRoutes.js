@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Trip = require('../models/Trip');
 const { protect } = require('../middleware/authMiddleware');
+const { body } = require('express-validator');
+const { handleValidationErrors } = require('../middleware/validate');
 
 // GET all trips for logged in user
 router.get('/', protect, async (req, res) => {
@@ -42,7 +44,18 @@ router.get('/public/:id', async (req, res) => {
 });
 
 // POST create new trip
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, [
+  body('name').trim().notEmpty().withMessage('Trip name is required').isLength({ max: 100 }).withMessage('Trip name too long'),
+  body('destination').trim().notEmpty().withMessage('Destination is required'),
+  body('startDate').isISO8601().toDate().withMessage('Valid start date is required'),
+  body('endDate').isISO8601().toDate().withMessage('Valid end date is required'),
+  body('budget').isNumeric().withMessage('Budget must be a number').custom(val => val >= 0).withMessage('Budget cannot be negative'),
+  body('travelMode').optional().isIn(['flight', 'train', 'bus', 'car']).withMessage('Invalid travel mode'),
+  body('latitude').optional().isNumeric(),
+  body('longitude').optional().isNumeric(),
+  body('accommodation').optional().isArray(),
+  handleValidationErrors
+], async (req, res) => {
   try {
     const { name, destination, startDate, endDate, budget, travelMode, latitude, longitude, accommodation } = req.body;
 
@@ -152,7 +165,14 @@ router.post('/:id/clone', protect, async (req, res) => {
 });
 
 // PUT full accommodation to trip (adds single accommodation to array)
-router.put('/:id/accommodation', protect, async (req, res) => {
+router.put('/:id/accommodation', protect, [
+  body('name').trim().notEmpty().withMessage('Accommodation name is required'),
+  body('address').optional().trim(),
+  body('fromDay').optional().isInt(),
+  body('toDay').optional().isInt(),
+  body('pricePerNight').optional().isNumeric(),
+  handleValidationErrors
+], async (req, res) => {
   try {
     const trip = await Trip.findById(req.params.id);
 
