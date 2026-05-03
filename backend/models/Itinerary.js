@@ -30,4 +30,6 @@ const itinerarySchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+itinerarySchema.index({ trip: 1 });
+
 module.exports = mongoose.model('Itinerary', itinerarySchema);

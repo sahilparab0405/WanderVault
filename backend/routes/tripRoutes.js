@@ -91,6 +91,52 @@ router.post('/', protect, [
   }
 });
 
+// PUT edit trip
+router.put('/:id', protect, [
+  body('name').optional().trim().notEmpty().withMessage('Trip name cannot be empty').isLength({ max: 100 }).withMessage('Trip name too long'),
+  body('destination').optional().trim().notEmpty().withMessage('Destination cannot be empty'),
+  body('startDate').optional().isISO8601().toDate().withMessage('Valid start date is required'),
+  body('endDate').optional().isISO8601().toDate().withMessage('Valid end date is required'),
+  body('budget').optional().isNumeric().withMessage('Budget must be a number').custom(val => val >= 0).withMessage('Budget cannot be negative'),
+  body('travelMode').optional().isIn(['flight', 'train', 'bus', 'car']).withMessage('Invalid travel mode'),
+  body('latitude').optional().isNumeric(),
+  body('longitude').optional().isNumeric(),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) return res.status(404).json({ message: 'Trip not found' });
+    if (trip.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    const { name, destination, startDate, endDate, budget, travelMode, latitude, longitude } = req.body;
+
+    if (name !== undefined) trip.name = name;
+    if (destination !== undefined) trip.destination = destination;
+    if (startDate !== undefined) trip.startDate = startDate;
+    if (endDate !== undefined) trip.endDate = endDate;
+    if (travelMode !== undefined) trip.travelMode = travelMode;
+    if (latitude !== undefined) trip.latitude = latitude;
+    if (longitude !== undefined) trip.longitude = longitude;
+    
+    if (budget !== undefined) {
+      trip.budget = budget;
+      if (trip.totalExpense >= trip.budget) {
+        trip.budgetExceeded = true;
+      } else {
+        trip.budgetExceeded = false;
+      }
+    }
+
+    await trip.save();
+    res.json(trip);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // GET single trip
 router.get('/:id', protect, async (req, res) => {
   try {

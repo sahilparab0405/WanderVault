@@ -31,4 +31,6 @@ const expenseSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+expenseSchema.index({ trip: 1 });
+
 module.exports = mongoose.model('Expense', expenseSchema);
