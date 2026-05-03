@@ -5,7 +5,7 @@ import { ItinerarySkeleton } from '../components/Skeleton';
 import ConfirmModal from '../components/ConfirmModal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Calendar, MapPin, Clock, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, Clock, Trash2, AlertTriangle } from 'lucide-react';
 
 export default function Itinerary() {
   const { id } = useParams();
@@ -15,6 +15,7 @@ export default function Itinerary() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ day: '', title: '', description: '', location: '', time: '' });
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => { fetchData(); }, [id]);
 
@@ -43,7 +44,8 @@ export default function Itinerary() {
     } catch (err) { 
       console.error(err); 
       setItems((prev) => prev.filter(item => item._id !== optimisticItem._id)); // Revert on failure
-      alert("Failed to add to itinerary. Please check your connection.");
+      setErrorMsg("Failed to add to itinerary. Please check your connection.");
+      setTimeout(() => setErrorMsg(''), 5000);
     }
   };
 
@@ -63,7 +65,8 @@ export default function Itinerary() {
       console.error(err); 
       if (itemToDeleteObj) {
          setItems((prev) => [...prev, itemToDeleteObj].sort((a, b) => a.day - b.day)); // Revert on failure
-         alert("Failed to delete item.");
+         setErrorMsg("Failed to delete item. Please try again.");
+         setTimeout(() => setErrorMsg(''), 5000);
       }
     }
   };
@@ -82,6 +85,15 @@ export default function Itinerary() {
       <div className="max-w-3xl mx-auto px-6 sm:px-6 py-8">
 
         <Link to={`/trip/${id}`} className="inline-flex items-center gap-1 text-text-secondary hover:text-navy text-sm no-underline transition-colors duration-150 mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>← Back to Trip</Link>
+
+        {/* Error Message */}
+        {errorMsg && (
+          <div className="mb-6 bg-danger/10 border border-danger text-danger p-4 rounded-xl flex items-center gap-3">
+            <AlertTriangle size={18} className="shrink-0" />
+            <p className="text-sm font-semibold">{errorMsg}</p>
+            <button onClick={() => setErrorMsg('')} className="ml-auto text-danger hover:text-danger-dark border-0 bg-transparent cursor-pointer">✕</button>
+          </div>
+        )}
 
         <div className="flex justify-between items-center mb-6">
           <div>

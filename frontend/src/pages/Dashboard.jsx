@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [cloneTarget, setCloneTarget] = useState(null);
   const [isCloning, setIsCloning] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -52,7 +53,8 @@ export default function Dashboard() {
       navigate(`/trip/${newTrip._id}`);
     } catch (err) {
       console.error(err);
-      alert('Failed to clone trip.');
+      setErrorMsg('Failed to clone trip. Please try again.');
+      setTimeout(() => setErrorMsg(''), 5000);
     }
     setIsCloning(false);
   };
@@ -141,9 +143,35 @@ export default function Dashboard() {
 
       <main className="flex-1 p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
         
-        {/* ── Spotlight: Active Trip ── */}
-        {activeTrip ? (
-          <section className="bg-white rounded-3xl border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[400px]">
+        {/* Error Message */}
+        {errorMsg && (
+          <div className="bg-danger/10 border border-danger text-danger p-6 rounded-xl flex items-center gap-3">
+            <AlertTriangle size={20} className="shrink-0" />
+            <p className="text-sm font-semibold">{errorMsg}</p>
+            <button onClick={() => setErrorMsg('')} className="ml-auto text-danger hover:text-danger-dark border-0 bg-transparent cursor-pointer">✕</button>
+          </div>
+        )}
+
+        {trips.length === 0 ? (
+          <div className="bg-white rounded-3xl border-2 border-dashed border-border p-12 text-center space-y-6 max-w-3xl mx-auto mt-10 shadow-sm">
+            <div className="w-24 h-24 bg-accent/10 text-accent rounded- flex items-center justify-center mx-auto">
+              <Plane size={48} strokeWidth={1.5} />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Welcome to WanderVault! 🌍</h2>
+              <p className="text-text-secondary mt-3 text-lg" style={{ fontFamily: "'Inter', sans-serif" }}>
+                You don't have any trips yet. Start planning your first adventure to track your expenses, itinerary, and memories all in one place.
+              </p>
+            </div>
+            <Link to="/create-trip" className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-8 py-6 rounded-xl font-black text-sm no-underline shadow-xl shadow-accent/20 transition-all hover:-translate-y-1">
+              <PlusCircle size={18} /> Plan Your First Trip
+            </Link>
+          </div>
+        ) : (
+          <>
+          {/* ── Spotlight: Active Trip ── */}
+          {activeTrip && (
+            <section className="bg-white rounded-3xl border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[400px]">
             <div className="lg:col-span-2 p-8 lg:p-10 flex flex-col justify-between space-y-8">
               <div>
                 <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-4">
@@ -333,8 +361,11 @@ export default function Dashboard() {
                  </div>
               </div>
             </div>
+            </div>
           </div>
         </div>
+        </>
+        )}
       </main>
 
       {/* Delete Confirmation Modal */}

@@ -40,6 +40,7 @@ export default function TripDetail() {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [expenseForm, setExpenseForm] = useState({ title: '', amount: '', category: 'Food' });
   const [isAddingExpense, setIsAddingExpense] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   // Share modal state (Area 5)
   const [showShareModal, setShowShareModal] = useState(false);
@@ -61,7 +62,8 @@ export default function TripDetail() {
       setExpenseForm({ title: '', amount: '', category: 'Food' });
       fetchTrip();
     } catch (err) {
-      alert('Failed to add expense');
+      setActionError('Failed to add expense. Please try again.');
+      setTimeout(() => setActionError(''), 5000);
     }
     setIsAddingExpense(false);
   };
@@ -202,7 +204,10 @@ out body 5;`;
       setHotelResults([]);
       setHotelSearch('');
       setActiveTab('itinerary');
-    } catch (err) { alert('Failed to save booking.'); }
+    } catch (err) { 
+      setActionError('Failed to save booking. Please try again.'); 
+      setTimeout(() => setActionError(''), 5000);
+    }
   };
 
   const confirmRemoveHotel = async () => {
@@ -212,7 +217,10 @@ out body 5;`;
     try {
       await API.delete(`/itinerary/${id}/${itineraryId}`);
       fetchTrip();
-    } catch (err) { alert('Failed to remove hotel.'); }
+    } catch (err) { 
+      setActionError('Failed to remove hotel. Please try again.'); 
+      setTimeout(() => setActionError(''), 5000);
+    }
   };
 
   if (loading) return (
@@ -324,6 +332,17 @@ out body 5;`;
               </div>
            )}
         </div>
+
+        {/* Action Error */}
+        {actionError && (
+           <div className="max-w-7xl mx-auto px-6 lg:px-8 mt-4">
+             <div className="bg-danger/10 border border-danger text-danger p-4 rounded-xl flex items-center gap-3 animate-in fade-in zoom-in duration-300 shadow-sm">
+               <AlertTriangle size={18} className="shrink-0" />
+               <p className="text-sm font-semibold">{actionError}</p>
+               <button onClick={() => setActionError('')} className="ml-auto text-danger hover:text-danger-dark border-0 bg-transparent cursor-pointer">✕</button>
+             </div>
+           </div>
+        )}
 
         {/* ── Budget Alert ── */}
         {trip.totalExpense > trip.budget && (
