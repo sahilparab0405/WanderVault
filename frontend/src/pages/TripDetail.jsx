@@ -13,10 +13,11 @@ import ItineraryTab from '../pages/Itinerary';
 import ConfirmModal from '../components/ConfirmModal';
 import PromptModal from '../components/PromptModal';
 
-// Lazy load heavy components
-const TripMap = lazy(() => import('../components/TripMap'));
-const DiningNearby = lazy(() => import('../components/DiningNearby'));
-const SightseeingNearby = lazy(() => import('../components/SightseeingNearby'));
+import OverviewTab from '../components/TripTabs/OverviewTab';
+import HotelsTab from '../components/TripTabs/HotelsTab';
+import DiningTab from '../components/TripTabs/DiningTab';
+import SightseeingTab from '../components/TripTabs/SightseeingTab';
+import MapTab from '../components/TripTabs/MapTab';
 
 export default function TripDetail() {
   const { id } = useParams();
@@ -64,6 +65,12 @@ export default function TripDetail() {
     }
     setIsAddingExpense(false);
   };
+
+  useEffect(() => {
+    const handleHotelChange = (e) => setHotelConfirmTarget(e.detail);
+    window.addEventListener('changeHotel', handleHotelChange);
+    return () => window.removeEventListener('changeHotel', handleHotelChange);
+  }, []);
 
   useEffect(() => {
     fetchTrip();
@@ -357,162 +364,7 @@ out body 5;`;
             
             {/* OVERVIEW TAB */}
             {activeTab === 'overview' && (
-              <div className="grid lg:grid-cols-3 gap-8">
-                 <div className="lg:col-span-2 space-y-8">
-                    {/* Key Highlights Card */}
-                    <div className="bg-white rounded-3xl p-8 border border-border shadow-sm">
-                       <h3 className="text-xl font-black text-navy mb-8 flex items-center gap-2">
-                          <Info size={24} className="text-primary" /> Trip Essentials
-                       </h3>
-                       <div className="grid sm:grid-cols-2 gap-8">
-                          <div className="space-y-3">
-                             <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Transport Status</p>
-                             <div className="flex items-center gap-4">
-                                {(() => {
-                                   let Icon = Car;
-                                   let title = 'Road Trip';
-                                   let subtitle = 'Self-commute mode active';
-                                   
-                                   if (trip.travelMode === 'flight') {
-                                      Icon = Plane;
-                                      title = 'Flight Booked';
-                                      subtitle = 'Air travel selected';
-                                   } else if (trip.travelMode === 'train') {
-                                      Icon = Train;
-                                      title = 'Train Journey';
-                                      subtitle = 'Rail travel selected';
-                                   } else if (trip.travelMode === 'bus') {
-                                      Icon = Bus;
-                                      title = 'Bus Travel';
-                                      subtitle = 'Roadway travel selected';
-                                   }
-
-                                   return (
-                                      <>
-                                         <div className="w-12 h-12 bg-primary/10 text-primary rounded- flex items-center justify-center shadow-inner">
-                                            <Icon size={24} />
-                                         </div>
-                                         <div>
-                                            <p className="font-black text-navy text-lg">{title}</p>
-                                            <p className="text-[11px] text-text-secondary">{subtitle}</p>
-                                         </div>
-                                      </>
-                                   );
-                                })()}
-                             </div>
-                          </div>
-                          <div className="space-y-3">
-                             <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">Accommodation</p>
-                             <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 ${bookedHotel ? 'bg-success/10 text-success' : 'bg-amber-100 text-amber-600'} rounded- flex items-center justify-center shadow-inner`}>
-                                   <Hotel size={24} />
-                                </div>
-                                <div>
-                                   <p className="font-black text-navy text-lg">{bookedHotel ? 'Stay Blocked' : 'Not Reserved'}</p>
-                                   <p className="text-[11px] text-text-secondary">{bookedHotel ? 'Booking found in itinerary' : 'Find stays in hotel tab'}</p>
-                                </div>
-                             </div>
-                          </div>
-                       </div>
-
-                       <div className="mt-10 pt-10 border-t border-border flex flex-col sm:flex-row gap-4">
-                          <button onClick={() => handleTabChange('itinerary')} className="flex-1 bg-navy text-white py-6 rounded-3xl font-black flex items-center justify-center gap-3 hover:bg-navy-dark transition-all border-0 cursor-pointer shadow-lg shadow-navy/20">
-                             VIEW DAILY ITINERARY <ArrowRight size={18} />
-                          </button>
-                          <button onClick={() => handleTabChange('map')} className="flex-1 bg-bg border border-border text-navy py-6 rounded-3xl font-black flex items-center justify-center gap-3 hover:bg-white transition-all border-0 cursor-pointer">
-                             OPEN INTERACTIVE MAP <MapPin size={18} />
-                          </button>
-                       </div>
-                    </div>
-
-                    {/* Quick Stats Grid */}
-                    <div className="grid sm:grid-cols-3 gap-6">
-                       <div className="bg-white p-8 rounded-3xl border border-border shadow-sm text-center group hover:border-primary/50 transition-colors">
-                          <div className="w-14 h-14 bg-accent/10 text-accent rounded- flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                             <Clock size={28} />
-                          </div>
-                          <p className="text-2xl font-black text-navy">{Math.ceil((new Date(trip.endDate) - new Date(trip.startDate))/(1000*60*60*24))} Days</p>
-                          <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-2">Duration</p>
-                       </div>
-                       <div className="bg-white p-8 rounded-3xl border border-border shadow-sm text-center group hover:border-success/50 transition-colors">
-                          <div className="w-14 h-14 bg-success/10 text-success rounded- flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                             <DollarSign size={28} />
-                          </div>
-                          <p className="text-2xl font-black text-navy">₹{Math.round(trip.totalExpense / Math.ceil((new Date(trip.endDate) - new Date(trip.startDate))/(1000*60*60*24)) || 1)}</p>
-                          <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-2">Daily Avg</p>
-                       </div>
-                       <div className="bg-white p-8 rounded-3xl border border-border shadow-sm text-center group hover:border-primary/50 transition-colors">
-                          <div className="w-14 h-14 bg-primary/10 text-primary rounded- flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                             <Building size={28} />
-                          </div>
-                          <p className="text-2xl font-black text-navy">{trip.itinerary?.length || 0}</p>
-                          <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-2">Activities</p>
-                       </div>
-                    </div>
-                 </div>
-
-                 {/* Sidebar Col: Active Hotel + Map Preview */}
-                 <div className="space-y-8">
-                    <div className="bg-white rounded-3xl overflow-hidden border border-border shadow-sm">
-                       <div className="p-6 border-b border-border bg-bg/50">
-                          <h4 className="font-bold text-navy flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]">
-                             <Hotel size={14} className="text-accent" /> Booked Stay
-                          </h4>
-                       </div>
-                       <div className="p-8">
-                          {bookedHotel ? (
-                             <div className="space-y-6">
-                                <div>
-                                   <p className="text-xl font-black text-navy leading-tight">{bookedHotel.title.replace('Stay: ', '').replace('Hotel: ', '')}</p>
-                                   <p className="text-xs text-text-secondary mt-2 flex items-center gap-1">
-                                      <MapPin size={12} className="text-accent" /> {bookedHotel.location || trip.destination}
-                                   </p>
-                                </div>
-                                <div className="pt-6 flex gap-3">
-                                   <button 
-                                      onClick={() => setHotelConfirmTarget(bookedHotel._id)}
-                                      className="flex-1 bg-danger/5 hover:bg-danger text-danger hover:text-white py-6 rounded- text-xs font-black transition-all border-0 cursor-pointer"
-                                   >
-                                      Change Hotel
-                                   </button>
-                                   <a href={`https://www.google.com/maps/search/?api=1&query=${bookedHotel.title}`} target="_blank" rel="noopener noreferrer" className="flex-1 bg-bg text-navy py-6 rounded- text-xs font-black text-center no-underline border border-border hover:bg-white transition-all">
-                                      Directions
-                                   </a>
-                                </div>
-                             </div>
-                          ) : (
-                             <div className="text-center py-6 space-y-6">
-                                <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded- flex items-center justify-center mx-auto">
-                                   <AlertTriangle size={32} />
-                                </div>
-                                <div>
-                                   <p className="font-bold text-navy">No Hotel Found</p>
-                                   <p className="text-[11px] text-text-muted mt-1 leading-relaxed">You haven't added a hotel for this trip yet.</p>
-                                </div>
-                                <button onClick={() => handleTabChange('hotels')} className="w-full bg-accent text-white py-6.5 rounded- text-xs font-black border-0 cursor-pointer shadow-lg shadow-accent/20">Find Budget Stays</button>
-                             </div>
-                          )}
-                       </div>
-                    </div>
-
-                    <div className="bg-navy rounded-3xl p-10 text-white relative overflow-hidden shadow-2xl shadow-navy/40">
-                       <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded- -mr-20 -mt-20" />
-                       <div className="relative z-10">
-                          <Compass size={48} className="mb-6 text-accent" />
-                          <h4 className="text-2xl font-black mb-3">Around Your Stay</h4>
-                          <p className="text-sm text-white/70 mb-8 font-medium leading-relaxed">Find the best dining and spots near your booked hotel for convenience.</p>
-                          <div className="grid gap-3">
-                             <button onClick={() => handleTabChange('dining')} className="w-full bg-white text-navy py-6 rounded- text-xs font-black border-0 cursor-pointer hover:bg-white/90 transition-all flex items-center justify-center gap-2">
-                                <Utensils size={14} /> NEARBY FOOD
-                             </button>
-                             <button onClick={() => handleTabChange('sightseeing')} className="w-full bg-white/10 text-white py-6 rounded- text-xs font-black border border-white/20 cursor-pointer hover:bg-white/20 transition-all flex items-center justify-center gap-2">
-                                <Compass size={14} /> EXPLORE AREA
-                             </button>
-                          </div>
-                       </div>
-                    </div>
-                 </div>
-              </div>
+               <OverviewTab trip={trip} bookedHotel={bookedHotel} handleTabChange={handleTabChange} />
             )}
 
             {/* ITINERARY TAB */}
@@ -522,147 +374,22 @@ out body 5;`;
 
             {/* HOTELS TAB */}
             {activeTab === 'hotels' && (
-               <div className="space-y-8 max-w-5xl mx-auto">
-                  <div className="bg-white rounded-3xl p-8 lg:p-14 border border-border shadow-xl">
-                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-                        <div>
-                           <div className="inline-flex items-center gap-2 bg-success/10 text-success px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-3">
-                              <Building size={12} /> Budget Accommodations
-                           </div>
-                           <h2 className="text-4xl font-black text-navy mb-3" style={{ fontFamily: "'Poppins', sans-serif" }}>Find Your Stay</h2>
-                           <p className="text-text-secondary text-lg">Search and book verified budget hotels in {trip.destination}.</p>
-                        </div>
-                        <div className="flex gap-3 bg-bg p-2 rounded- border border-border w-full md:w-auto">
-                           <input 
-                              type="text" 
-                              placeholder="Search hotel name..."
-                              value={hotelSearch}
-                              onChange={e => setHotelSearch(e.target.value)}
-                              onKeyDown={e => e.key === 'Enter' && searchHotels()}
-                              className="px-6 py-6 rounded- border border-border bg-white text-sm focus:ring-4 focus:ring-primary/10 transition-all w-full md:w-72"
-                           />
-                           <button 
-                              onClick={searchHotels}
-                              disabled={isSearchingHotels}
-                              className="bg-navy text-white px-6 py-6 rounded- hover:bg-navy-dark transition-all border-0 cursor-pointer shrink-0 shadow-lg shadow-navy/20"
-                           >
-                              {isSearchingHotels ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded- animate-spin block"></span> : <Search size={20} />}
-                           </button>
-                        </div>
-                     </div>
-
-                     {hotelResults.length > 0 ? (
-                        <div className="grid md:grid-cols-2 gap-8">
-                           {hotelResults.map(hotel => {
-                              const gradient = hotel.price > 5000
-                                ? 'linear-gradient(135deg, #f59e0b, #fbbf24)'
-                                : hotel.price > 2000
-                                ? 'linear-gradient(135deg, #3b82f6, #6366f1)'
-                                : 'linear-gradient(135deg, #22c55e, #14b8a6)';
-                              return (
-                              <div key={hotel.id} className="group bg-bg rounded-3xl overflow-hidden border border-border hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/5 transition-all relative">
-                                 {/* Gradient banner */}
-                                 <div className="h-20 relative" style={{ background: gradient }}>
-                                    <div className="absolute inset-0 flex items-center justify-between px-8">
-                                       <div className="flex items-center gap-3">
-                                          <div className="w-12 h-12 bg-white/20 rounded- flex items-center justify-center backdrop-blur-sm">
-                                             <Building size={24} className="text-white" />
-                                          </div>
-                                          <div>
-                                            <p className="text-white font-black text-sm line-clamp-1">{hotel.name}</p>
-                                            <p className="text-white/70 text-[10px] font-bold">Verified Stay</p>
-                                          </div>
-                                       </div>
-                                       <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-">
-                                          <Star size={11} fill="#fff" strokeWidth={0} />
-                                          <span className="text-white text-xs font-bold">{hotel.rating}</span>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <div className="p-8 relative">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded- -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-                                    <div className="relative z-10">
-                                       <div className="flex justify-between items-start mb-6">
-                                          <p className="text-xs text-text-muted flex items-center gap-1">
-                                             <MapPin size={12} className="text-accent" /> {hotel.address.split(',').slice(0, 3).join(',')}
-                                          </p>
-                                          <div className="text-right">
-                                             <p className="text-2xl font-black text-navy">₹{hotel.price.toLocaleString()}</p>
-                                             <p className="text-[10px] font-bold text-text-muted uppercase">per night</p>
-                                          </div>
-                                       </div>
-                                       <div className="flex items-center gap-4 mb-6">
-                                          <div className="text-[11px] font-bold text-success uppercase tracking-widest">Available Now</div>
-                                       </div>
-                                       <button onClick={() => setHotelPromptTarget(hotel)} className="w-full bg-navy text-white py-6 rounded-3xl text-sm font-black transition-all border-0 cursor-pointer shadow-lg shadow-navy/20 active:scale-95">
-                                          BOOK THIS STAY
-                                       </button>
-                                    </div>
-                                 </div>
-                              </div>
-                           );
-                           })}
-                        </div>
-                     ) : (
-                        <div className="text-center py-20 bg-bg rounded-3xl border-2 border-dashed border-border">
-                           <Search size={64} className="text-text-muted/30 mx-auto mb-6" />
-                           <h3 className="text-2xl font-black text-navy mb-2">Start Your Search</h3>
-                           <p className="text-text-secondary max-w-xs mx-auto">Enter a hotel name or keyword to find the best budget stays in {trip.destination}.</p>
-                        </div>
-                     )}
-                  </div>
-               </div>
+               <HotelsTab trip={trip} hotelSearch={hotelSearch} setHotelSearch={setHotelSearch} searchHotels={searchHotels} isSearchingHotels={isSearchingHotels} hotelResults={hotelResults} setHotelPromptTarget={setHotelPromptTarget} />
             )}
 
             {/* DINING TAB */}
             {activeTab === 'dining' && (
-               <div className="max-w-5xl mx-auto space-y-8">
-                  <div className="bg-white rounded-3xl p-8 lg:p-14 border border-border shadow-xl">
-                     <div className="mb-12">
-                        <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-3">
-                           <Utensils size={12} /> Local Gastronomy
-                        </div>
-                        <h2 className="text-4xl font-black text-navy mb-3" style={{ fontFamily: "'Poppins', sans-serif" }}>Nearby Dining</h2>
-                        <p className="text-text-secondary text-lg">Taste the local flavors! Verified eateries near {bookedHotel ? 'your booked hotel' : trip.destination}.</p>
-                     </div>
-                     <Suspense fallback={<div className="space-y-6 animate-pulse"><div className="h-12 w-64 bg-border rounded-" /><div className="h-80 bg-border rounded-3xl" /></div>}>
-                        <DiningNearby 
-                           latitude={bookedHotel?.lat || trip.latitude} 
-                           longitude={bookedHotel?.lon || trip.longitude} 
-                        />
-                     </Suspense>
-                  </div>
-               </div>
+               <DiningTab bookedHotel={bookedHotel} trip={trip} />
             )}
 
             {/* SIGHTSEEING TAB */}
             {activeTab === 'sightseeing' && (
-               <div className="max-w-5xl mx-auto space-y-8">
-                  <div className="bg-white rounded-3xl p-8 lg:p-14 border border-border shadow-xl">
-                     <div className="mb-12">
-                        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-3">
-                           <Compass size={12} /> Local Wonders
-                        </div>
-                        <h2 className="text-4xl font-black text-navy mb-3" style={{ fontFamily: "'Poppins', sans-serif" }}>Discover the Area</h2>
-                        <p className="text-text-secondary text-lg">Must-visit spots and cultural landmarks near {bookedHotel ? 'your stay' : 'your destination'}.</p>
-                     </div>
-                     <Suspense fallback={<div className="space-y-6 animate-pulse"><div className="h-12 w-64 bg-border rounded-" /><div className="h-80 bg-border rounded-3xl" /></div>}>
-                        <SightseeingNearby 
-                           latitude={bookedHotel?.lat || trip.latitude} 
-                           longitude={bookedHotel?.lon || trip.longitude} 
-                        />
-                     </Suspense>
-                  </div>
-               </div>
+               <SightseeingTab bookedHotel={bookedHotel} trip={trip} />
             )}
 
             {/* MAP TAB */}
             {activeTab === 'map' && (
-               <div className="max-w-6xl mx-auto h-[75vh]">
-                  <Suspense fallback={<div className="h-full w-full bg-white rounded-3xl border border-border animate-pulse flex items-center justify-center text-text-muted text-sm font-bold">CALIBRATING GPS SATELLITES...</div>}>
-                     <TripMap latitude={Number(trip.latitude)} longitude={Number(trip.longitude)} destination={trip.destination} nearbyPlaces={allNearbyPins} />
-                  </Suspense>
-               </div>
+               <MapTab trip={trip} allNearbyPins={allNearbyPins} />
             )}
 
          </div>
