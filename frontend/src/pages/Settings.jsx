@@ -25,7 +25,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-bg p-4 sm:p-8">
+    <div className="min-h-screen bg-bg p-6 sm:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
         
         {/* Header */}
@@ -35,8 +35,8 @@ export default function Settings() {
         </div>
 
         {/* Profile Section */}
-        <div className="bg-white rounded-2xl border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
-          <div className="px-6 py-4 border-b border-border bg-bg/30 flex items-center gap-2">
+        <div className="bg-white rounded- border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
+          <div className="px-6 py-6 border-b border-border bg-bg/30 flex items-center gap-2">
             <User size={18} className="text-primary" />
             <h3 className="font-bold text-navy text-sm uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Profile Information</h3>
           </div>
@@ -48,7 +48,7 @@ export default function Settings() {
                   type="text" 
                   value={profile.name} 
                   onChange={e => setProfile({...profile, name: e.target.value})}
-                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                  className="w-full border border-border rounded-xl px-6 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                 />
               </div>
               <div>
@@ -57,7 +57,7 @@ export default function Settings() {
                   type="email" 
                   value={profile.email} 
                   disabled
-                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-bg/50 text-text-muted cursor-not-allowed" 
+                  className="w-full border border-border rounded-xl px-6 py-2.5 text-sm bg-bg/50 text-text-muted cursor-not-allowed" 
                 />
               </div>
             </div>
@@ -65,8 +65,8 @@ export default function Settings() {
         </div>
 
         {/* Security Section */}
-        <div className="bg-white rounded-2xl border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
-          <div className="px-6 py-4 border-b border-border bg-bg/30 flex items-center gap-2">
+        <div className="bg-white rounded- border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
+          <div className="px-6 py-6 border-b border-border bg-bg/30 flex items-center gap-2">
             <Lock size={18} className="text-accent" />
             <h3 className="font-bold text-navy text-sm uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Security</h3>
           </div>
@@ -77,7 +77,7 @@ export default function Settings() {
                 <input 
                   type="password" 
                   placeholder="••••••••"
-                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                  className="w-full border border-border rounded-xl px-6 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                 />
               </div>
               <div>
@@ -85,7 +85,7 @@ export default function Settings() {
                 <input 
                   type="password" 
                   placeholder="••••••••"
-                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                  className="w-full border border-border rounded-xl px-6 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                 />
               </div>
               <div>
@@ -93,7 +93,7 @@ export default function Settings() {
                 <input 
                   type="password" 
                   placeholder="••••••••"
-                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                  className="w-full border border-border rounded-xl px-6 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                 />
               </div>
             </div>
@@ -101,8 +101,8 @@ export default function Settings() {
         </div>
 
         {/* Preferences Section */}
-        <div className="bg-white rounded-2xl border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
-          <div className="px-6 py-4 border-b border-border bg-bg/30 flex items-center gap-2">
+        <div className="bg-white rounded- border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
+          <div className="px-6 py-6 border-b border-border bg-bg/30 flex items-center gap-2">
             <Globe size={18} className="text-success" />
             <h3 className="font-bold text-navy text-sm uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Preferences</h3>
           </div>
@@ -115,7 +115,7 @@ export default function Settings() {
               <select 
                 value={preferences.currency} 
                 onChange={e => setPreferences({...preferences, currency: e.target.value})}
-                className="w-full md:w-48 border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 outline-none"
+                className="w-full md:w-48 border border-border rounded-xl px-6 py-2 text-sm focus:ring-2 focus:ring-primary/20 outline-none"
               >
                 <option value="₹ INR">₹ INR (Indian Rupee)</option>
                 <option value="$ USD">$ USD (US Dollar)</option>
@@ -130,16 +130,16 @@ export default function Settings() {
               </div>
               <button 
                 onClick={() => setPreferences({...preferences, notifications: !preferences.notifications})}
-                className={`w-12 h-6 rounded-full transition-colors relative ${preferences.notifications ? 'bg-primary' : 'bg-border'}`}
+                className={`w-12 h-6 rounded- transition-colors relative ${preferences.notifications ? 'bg-primary' : 'bg-border'}`}
               >
-                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${preferences.notifications ? 'left-7' : 'left-1'}`} />
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded- transition-all ${preferences.notifications ? 'left-7' : 'left-1'}`} />
               </button>
             </div>
           </div>
         </div>
 
         {/* Save Area */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-border">
           {saved && (
             <span className="text-success text-sm font-semibold flex items-center gap-1.5 animate-in fade-in slide-in-from-right-2">
               <CheckCircle size={16} /> Changes saved successfully
@@ -147,7 +147,7 @@ export default function Settings() {
           )}
           <button 
             onClick={handleSave}
-            className="flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-8 py-3 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] border-0 cursor-pointer"
+            className="flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-8 py-6 rounded- font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] border-0 cursor-pointer"
             style={{ boxShadow: '0 4px 12px rgba(255,107,53,0.3)' }}
           >
             <Save size={18} />

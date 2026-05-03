@@ -35,15 +35,15 @@ export default class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div
-          className="min-h-screen bg-bg flex items-center justify-center p-4"
+          className="min-h-screen bg-bg flex items-center justify-center p-6"
           role="alert"
         >
           <div
-            className="bg-card rounded-2xl p-10 w-full max-w-md text-center border border-border"
+            className="bg-card rounded- p-10 w-full max-w-md text-center border border-border"
             style={{ boxShadow: 'var(--shadow-lg)' }}
           >
             <div className="flex justify-center mb-6">
-               <div className="w-20 h-20 bg-accent/10 rounded-[2rem] flex items-center justify-center text-accent">
+               <div className="w-20 h-20 bg-accent/10 rounded-3xl flex items-center justify-center text-accent">
                  <AlertCircle size={40} strokeWidth={2} />
                </div>
             </div>
@@ -54,14 +54,14 @@ export default class ErrorBoundary extends Component {
               Something went wrong
             </h1>
             <p
-              className="text-text-secondary text-sm mb-8 leading-relaxed font-medium break-words whitespace-normal px-4"
+              className="text-text-secondary text-sm mb-8 leading-relaxed font-medium break-words whitespace-normal px-6"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {this.state.error?.message || "Please refresh the page to try again. Your data is safe."}
             </p>
             <button
               onClick={this.handleReset}
-              className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white px-6 py-4 rounded-xl text-sm font-black transition-colors duration-150 cursor-pointer border-0 shadow-lg shadow-accent/20"
+              className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white px-6 py-6 rounded- text-sm font-black transition-colors duration-150 cursor-pointer border-0 shadow-lg shadow-accent/20"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               <RefreshCw size={18} /> Refresh Page

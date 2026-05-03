@@ -51,7 +51,7 @@ export default function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border"
       style={{ boxShadow: 'var(--shadow-navbar)' }}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto px-6 sm:px-6">
         <div className="flex items-center justify-between h-16">
           {/* LEFT — Logo */}
           <Link
@@ -71,7 +71,7 @@ export default function Navbar() {
                 to={link.to}
                 id={link.id}
                 className={`
-                  px-4 py-2 rounded-lg text-sm font-medium no-underline transition-colors duration-150
+                  px-6 py-2 rounded-xl text-sm font-medium no-underline transition-colors duration-150
                   ${isActive(link.to)
                     ? 'bg-primary-50 text-primary font-semibold'
                     : 'text-text-secondary hover:text-navy hover:bg-border-light'
@@ -87,11 +87,11 @@ export default function Navbar() {
           {/* RIGHT — User Info + Logout (Desktop) */}
           <div className="hidden md:flex items-center gap-3">
             <div
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bg"
+              className="flex items-center gap-2 px-6 py-1.5 rounded-xl bg-bg"
               id="navbar-user-info"
             >
               {/* User avatar circle */}
-              <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-xs font-semibold uppercase"
+              <div className="w-7 h-7 rounded- bg-primary flex items-center justify-center text-white text-xs font-semibold uppercase"
                 style={{ fontFamily: "'Poppins', sans-serif" }}
               >
                 {user?.name?.charAt(0) || 'U'}
@@ -106,7 +106,7 @@ export default function Navbar() {
             <button
               onClick={handleLogout}
               id="navbar-logout"
-              className="text-sm font-medium px-3 py-1.5 rounded-lg border border-border text-text-secondary 
+              className="text-sm font-medium px-6 py-1.5 rounded-xl border border-border text-text-secondary 
                          hover:text-danger hover:border-danger hover:bg-danger-light transition-colors duration-150 cursor-pointer bg-white"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
@@ -117,25 +117,25 @@ export default function Navbar() {
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg hover:bg-border-light transition-colors cursor-pointer bg-transparent border-0"
+            className="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-xl hover:bg-border-light transition-colors cursor-pointer bg-transparent border-0"
             id="navbar-mobile-toggle"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
           >
             <span
-              className="block w-5 h-0.5 bg-navy rounded-full transition-all duration-200"
+              className="block w-5 h-0.5 bg-navy rounded- transition-all duration-200"
               style={{
                 transform: mobileOpen ? 'rotate(45deg) translate(2px, 2px)' : 'none',
               }}
             />
             <span
-              className="block w-5 h-0.5 bg-navy rounded-full transition-all duration-200 mt-1"
+              className="block w-5 h-0.5 bg-navy rounded- transition-all duration-200 mt-1"
               style={{
                 opacity: mobileOpen ? 0 : 1,
               }}
             />
             <span
-              className="block w-5 h-0.5 bg-navy rounded-full transition-all duration-200 mt-1"
+              className="block w-5 h-0.5 bg-navy rounded- transition-all duration-200 mt-1"
               style={{
                 transform: mobileOpen ? 'rotate(-45deg) translate(3px, -3px)' : 'none',
               }}
@@ -150,14 +150,14 @@ export default function Navbar() {
           mobileOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0 border-t-0'
         }`}
       >
-        <div className="px-4 py-3 space-y-1">
+        <div className="px-6 py-6 space-y-1">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.to}
               to={link.to}
               onClick={() => setMobileOpen(false)}
               className={`
-                block px-4 py-2.5 rounded-lg text-sm font-medium no-underline transition-colors duration-150
+                block px-6 py-2.5 rounded-xl text-sm font-medium no-underline transition-colors duration-150
                 ${isActive(link.to)
                   ? 'bg-primary-50 text-primary font-semibold'
                   : 'text-text-secondary hover:text-navy hover:bg-border-light'
@@ -171,8 +171,8 @@ export default function Navbar() {
 
           {/* Mobile user section */}
           <div className="pt-2 mt-2 border-t border-border">
-            <div className="flex items-center gap-3 px-4 py-2">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-semibold uppercase"
+            <div className="flex items-center gap-3 px-6 py-2">
+              <div className="w-8 h-8 rounded- bg-primary flex items-center justify-center text-white text-sm font-semibold uppercase"
                 style={{ fontFamily: "'Poppins', sans-serif" }}
               >
                 {user?.name?.charAt(0) || 'U'}
@@ -189,7 +189,7 @@ export default function Navbar() {
             <button
               onClick={handleLogout}
               id="navbar-mobile-logout"
-              className="w-full mt-2 text-sm font-medium px-4 py-2.5 rounded-lg border border-border text-text-secondary 
+              className="w-full mt-2 text-sm font-medium px-6 py-2.5 rounded-xl border border-border text-text-secondary 
                          hover:text-danger hover:border-danger hover:bg-danger-light transition-colors duration-150 cursor-pointer bg-white"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >

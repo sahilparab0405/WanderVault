@@ -101,11 +101,11 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
   if (!latitude || !longitude) {
     return (
       <div
-        className="bg-card rounded-xl border border-border p-8 text-center"
+        className="bg-card rounded- border border-border p-8 text-center"
         style={{ boxShadow: 'var(--shadow-card)' }}
       >
         <div className="flex justify-center mb-3">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+          <div className="w-12 h-12 rounded- bg-primary/10 flex items-center justify-center text-primary">
             <Map size={24} strokeWidth={1.5} />
           </div>
         </div>
@@ -123,10 +123,10 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
 
   return (
     <div
-      className="bg-card rounded-[2rem] overflow-hidden border border-border h-full flex flex-col shadow-2xl"
+      className="bg-card rounded-3xl overflow-hidden border border-border h-full flex flex-col shadow-2xl"
     >
       {/* Map header */}
-      <div className="px-5 py-3 border-b border-border flex items-center justify-between">
+      <div className="px-6 py-6 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Map size={16} strokeWidth={1.5} className="text-primary" />
           <h3 className="font-bold text-navy text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -135,19 +135,19 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
-            <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+            <div className="w-2.5 h-2.5 rounded- bg-primary" />
             <span className="text-[10px] text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>Destination</span>
           </div>
           <div className="flex items-center gap-1">
-             <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#FF6B35' }}/>
+             <div className="w-2.5 h-2.5 rounded-" style={{ background: '#FF6B35' }}/>
              <span className="text-[10px] text-text-muted">Dining</span>
           </div>
           <div className="flex items-center gap-1">
-             <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#1a2b4a' }}/>
+             <div className="w-2.5 h-2.5 rounded-" style={{ background: '#1a2b4a' }}/>
              <span className="text-[10px] text-text-muted">Sightseeing</span>
           </div>
           <div className="flex items-center gap-1">
-             <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#2563EB' }}/>
+             <div className="w-2.5 h-2.5 rounded-" style={{ background: '#2563EB' }}/>
              <span className="text-[10px] text-text-muted">Hotels</span>
           </div>
         </div>

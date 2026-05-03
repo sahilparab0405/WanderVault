@@ -79,14 +79,14 @@ export default function Dashboard() {
   if (loading) return (
     <div className="min-h-screen bg-bg p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="h-64 bg-white rounded-3xl animate-pulse border border-border" />
+        <div className="h-64 bg-white rounded- animate-pulse border border-border" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="h-40 bg-white rounded-2xl animate-pulse" />
-            <div className="h-40 bg-white rounded-2xl animate-pulse" />
+            <div className="h-40 bg-white rounded- animate-pulse" />
+            <div className="h-40 bg-white rounded- animate-pulse" />
           </div>
           <div className="space-y-6">
-             <div className="h-80 bg-white rounded-2xl animate-pulse" />
+             <div className="h-80 bg-white rounded- animate-pulse" />
           </div>
         </div>
       </div>
@@ -97,7 +97,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-bg flex flex-col">
       
       {/* ── Top Bar ── */}
-      <header className="bg-white border-b border-border px-8 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm shadow-navy/5">
+      <header className="bg-white border-b border-border px-8 py-6 flex items-center justify-between sticky top-0 z-30 shadow-sm shadow-navy/5">
         <div className="flex items-center gap-6">
           <div className="hidden lg:block scale-90 origin-left">
              <Logo size="md" dark={false} />
@@ -108,7 +108,7 @@ export default function Dashboard() {
               Dashboard
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded- bg-success animate-pulse" />
               <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
                 Active Session for {user?.name?.split(' ')[0] || 'Traveler'}
               </p>
@@ -124,16 +124,16 @@ export default function Dashboard() {
               placeholder="Search trips..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-bg border border-border rounded-xl text-xs w-48 focus:w-64 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300"
+              className="pl-9 pr-6 py-2 bg-bg border border-border rounded- text-xs w-48 focus:w-64 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300"
             />
           </div>
           <Link
             to="/create-trip"
-            className="flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-5 py-2.5 rounded-xl text-xs font-bold no-underline transition-all shadow-lg shadow-accent/20 hover:-translate-y-0.5"
+            className="flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-6 py-2.5 rounded- text-xs font-bold no-underline transition-all shadow-lg shadow-accent/20 hover:-translate-y-0.5"
           >
             <PlusCircle size={16} /> New Trip
           </Link>
-          <div className="w-9 h-9 rounded-full bg-navy text-white flex items-center justify-center text-xs font-black shadow-inner">
+          <div className="w-9 h-9 rounded- bg-navy text-white flex items-center justify-center text-xs font-black shadow-inner">
             {user?.name?.charAt(0) || 'U'}
           </div>
         </div>
@@ -143,10 +143,10 @@ export default function Dashboard() {
         
         {/* ── Spotlight: Active Trip ── */}
         {activeTrip ? (
-          <section className="bg-white rounded-[2rem] border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[400px]">
+          <section className="bg-white rounded-3xl border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[400px]">
             <div className="lg:col-span-2 p-8 lg:p-10 flex flex-col justify-between space-y-8">
               <div>
-                <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">
+                <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-4">
                   <CheckCircle size={10} /> Active Adventure
                 </div>
                 <h2 className="text-4xl font-black text-navy leading-none mb-3" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -158,11 +158,11 @@ export default function Dashboard() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-bg rounded-2xl p-4 border border-border">
+                <div className="bg-bg rounded- p-6 border border-border">
                   <p className="text-[10px] font-bold text-text-muted uppercase mb-1">Total Spent</p>
                   <p className="text-xl font-black text-navy">₹{activeTrip.totalExpense?.toLocaleString()}</p>
                 </div>
-                <div className="bg-bg rounded-2xl p-4 border border-border">
+                <div className="bg-bg rounded- p-6 border border-border">
                   <p className="text-[10px] font-bold text-text-muted uppercase mb-1">Budget Left</p>
                   <p className={`text-xl font-black ${activeTrip.budgetExceeded ? 'text-danger' : 'text-success'}`}>
                     ₹{(activeTrip.budget - activeTrip.totalExpense).toLocaleString()}
@@ -171,10 +171,10 @@ export default function Dashboard() {
               </div>
 
               <div className="flex gap-4">
-                <Link to={`/trip/${activeTrip._id}`} className="flex-1 bg-navy text-white py-4 rounded-2xl text-sm font-bold no-underline text-center hover:bg-navy-dark transition-all shadow-lg shadow-navy/20">
+                <Link to={`/trip/${activeTrip._id}`} className="flex-1 bg-navy text-white py-6 rounded- text-sm font-bold no-underline text-center hover:bg-navy-dark transition-all shadow-lg shadow-navy/20">
                   Manage Trip
                 </Link>
-                <Link to={`/trip/${activeTrip._id}/itinerary`} className="flex-1 bg-bg border border-border text-navy py-4 rounded-2xl text-sm font-bold no-underline text-center hover:bg-white transition-all">
+                <Link to={`/trip/${activeTrip._id}/itinerary`} className="flex-1 bg-bg border border-border text-navy py-6 rounded- text-sm font-bold no-underline text-center hover:bg-white transition-all">
                   Itinerary
                 </Link>
               </div>
@@ -191,15 +191,15 @@ export default function Dashboard() {
           </section>
         ) : (
           /* Empty Active Trip State */
-          <div className="bg-white rounded-[2rem] border-2 border-dashed border-border p-12 text-center space-y-6">
-            <div className="w-20 h-20 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto">
+          <div className="bg-white rounded-3xl border-2 border-dashed border-border p-12 text-center space-y-6">
+            <div className="w-20 h-20 bg-accent/10 text-accent rounded- flex items-center justify-center mx-auto">
               <Plane size={36} />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-navy">Ready for your next adventure?</h2>
               <p className="text-text-secondary mt-2">Create a new trip to start tracking your travel memories and expenses.</p>
             </div>
-            <Link to="/create-trip" className="inline-flex items-center gap-2 bg-accent text-white px-8 py-4 rounded-2xl font-black text-sm no-underline shadow-xl shadow-accent/20">
+            <Link to="/create-trip" className="inline-flex items-center gap-2 bg-accent text-white px-8 py-6 rounded- font-black text-sm no-underline shadow-xl shadow-accent/20">
               <PlusCircle size={18} /> Plan New Trip
             </Link>
           </div>
@@ -215,7 +215,7 @@ export default function Dashboard() {
                 <Calendar size={20} className="text-primary" /> Recent Trips
               </h3>
               {filteredTrips.length > 0 && (
-                 <span className="text-[10px] font-bold text-text-muted bg-white border border-border px-3 py-1 rounded-full uppercase">
+                 <span className="text-[10px] font-bold text-text-muted bg-white border border-border px-6 py-1 rounded- uppercase">
                    {filteredTrips.length} Total
                  </span>
               )}
@@ -223,29 +223,29 @@ export default function Dashboard() {
 
             <div className="grid gap-6">
               {filteredTrips.slice(0, 5).map(trip => (
-                <div key={trip._id} className="group bg-white rounded-3xl p-6 border border-border shadow-sm hover:shadow-xl hover:shadow-navy/5 transition-all duration-300 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
+                <div key={trip._id} className="group bg-white rounded- p-6 border border-border shadow-sm hover:shadow-xl hover:shadow-navy/5 transition-all duration-300 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded- -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
                   <div className="flex items-start justify-between relative z-10">
                     <div className="flex gap-4 items-center">
-                      <div className="w-14 h-14 bg-bg rounded-2xl border border-border flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                      <div className="w-14 h-14 bg-bg rounded- border border-border flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                         <Plane size={24} />
                       </div>
                       <div>
                         <h4 className="font-bold text-navy group-hover:text-primary transition-colors">{trip.name}</h4>
                         <p className="text-xs text-text-secondary mt-0.5">{trip.destination}</p>
                         <div className="flex items-center gap-3 mt-2">
-                           <span className="text-[10px] font-bold text-text-muted bg-bg px-2 py-0.5 rounded border border-border">{new Date(trip.startDate).toLocaleDateString()}</span>
+                           <span className="text-[10px] font-bold text-text-muted bg-bg px-2 py-0.5 rounded-xl border border-border">{new Date(trip.startDate).toLocaleDateString()}</span>
                            <span className={`text-[10px] font-bold ${trip.budgetExceeded ? 'text-danger' : 'text-success'}`}>₹{trip.totalExpense?.toLocaleString()} spent</span>
                         </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-2">
-                      <Link to={`/trip/${trip._id}`} className="bg-bg hover:bg-navy hover:text-white p-2.5 rounded-xl transition-all border border-border">
+                      <Link to={`/trip/${trip._id}`} className="bg-bg hover:bg-navy hover:text-white p-2.5 rounded- transition-all border border-border">
                         <ArrowRight size={16} />
                       </Link>
                       <button
                         onClick={(e) => { e.stopPropagation(); setCloneTarget(trip); }}
-                        className="bg-bg hover:bg-primary hover:text-white text-text-muted p-2 rounded-xl transition-all border border-border cursor-pointer"
+                        className="bg-bg hover:bg-primary hover:text-white text-text-muted p-2 rounded- transition-all border border-border cursor-pointer"
                         title="Clone trip"
                       >
                         <Copy size={14} />
@@ -256,7 +256,7 @@ export default function Dashboard() {
               ))}
               
               {filteredTrips.length === 0 && !loading && (
-                <div className="text-center py-12 bg-white/50 rounded-3xl border border-dashed border-border px-6">
+                <div className="text-center py-12 bg-white/50 rounded- border border-dashed border-border px-6">
                   <Search size={32} className="text-text-muted mx-auto mb-3 opacity-30" />
                   <p className="text-sm font-bold text-navy">No trips found matching your search</p>
                   <button onClick={() => setSearchQuery('')} className="text-xs text-accent font-bold mt-2 bg-transparent border-0 cursor-pointer">Clear Search</button>
@@ -273,8 +273,8 @@ export default function Dashboard() {
             
             <div className="space-y-4">
               {/* Stat Summary */}
-              <div className="bg-navy rounded-[2rem] p-8 text-white relative overflow-hidden shadow-xl shadow-navy/20">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-20 -mt-20" />
+              <div className="bg-navy rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-navy/20">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded- -mr-20 -mt-20" />
                 <div className="relative z-10">
                   <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">Lifetime Spend</p>
                   <p className="text-4xl font-black mb-1">₹{totalSpent >= 100000 ? (totalSpent/100000).toFixed(1)+'L' : totalSpent.toLocaleString()}</p>
@@ -286,15 +286,15 @@ export default function Dashboard() {
 
               {/* Quick Analytics Cards */}
               <div className="grid grid-cols-2 gap-4">
-                 <div className="bg-white rounded-2xl p-5 border border-border shadow-sm">
-                    <div className="w-8 h-8 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-3">
+                 <div className="bg-white rounded- p-6 border border-border shadow-sm">
+                    <div className="w-8 h-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-3">
                       <PlusCircle size={18} />
                     </div>
                     <p className="text-[10px] font-bold text-text-muted uppercase">Total Trips</p>
                     <p className="text-xl font-black text-navy">{trips.length}</p>
                  </div>
-                 <div className="bg-white rounded-2xl p-5 border border-border shadow-sm">
-                    <div className="w-8 h-8 bg-danger/10 text-danger rounded-lg flex items-center justify-center mb-3">
+                 <div className="bg-white rounded- p-6 border border-border shadow-sm">
+                    <div className="w-8 h-8 bg-danger/10 text-danger rounded-xl flex items-center justify-center mb-3">
                       <AlertTriangle size={18} />
                     </div>
                     <p className="text-[10px] font-bold text-text-muted uppercase">Health</p>
@@ -303,9 +303,9 @@ export default function Dashboard() {
               </div>
 
               {/* Tips / CTR */}
-              <div className="bg-accent/10 rounded-2xl p-6 border border-accent/20">
+              <div className="bg-accent/10 rounded- p-6 border border-accent/20">
                  <div className="flex gap-3">
-                    <div className="w-10 h-10 bg-accent text-white rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-accent/20">
+                    <div className="w-10 h-10 bg-accent text-white rounded- flex items-center justify-center shrink-0 shadow-lg shadow-accent/20">
                        <BarChart2 size={20} />
                     </div>
                     <div>
@@ -317,13 +317,13 @@ export default function Dashboard() {
               </div>
 
               {/* Location Insight */}
-              <div className="bg-white rounded-[2rem] p-6 border border-border shadow-sm">
+              <div className="bg-white rounded-3xl p-6 border border-border shadow-sm">
                  <div className="flex items-center justify-between mb-4">
                     <h5 className="font-bold text-navy text-xs uppercase tracking-wider">Top Destination</h5>
                     <Info size={14} className="text-text-muted" />
                  </div>
                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden bg-bg border border-border">
+                    <div className="w-16 h-16 rounded- overflow-hidden bg-bg border border-border">
                        <img src="https://images.unsplash.com/photo-1548013146-72479768bada?w=200&h=200&fit=crop" alt="India" className="w-full h-full object-cover" />
                     </div>
                     <div>
@@ -339,9 +339,9 @@ export default function Dashboard() {
 
       {/* Delete Confirmation Modal */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-4">
-          <div className="bg-white rounded-[2.5rem] max-w-md w-full p-10 border border-white/20 shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div className="flex items-center justify-center w-20 h-20 rounded-3xl bg-danger/10 text-danger mb-6 mx-auto">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-6">
+          <div className="bg-white rounded-3xl max-w-md w-full p-10 border border-white/20 shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="flex items-center justify-center w-20 h-20 rounded- bg-danger/10 text-danger mb-6 mx-auto">
               <AlertTriangle size={32} />
             </div>
             <h3 className="text-2xl font-black text-navy text-center mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -353,13 +353,13 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-4">
               <button 
                 onClick={() => setDeleteTarget(null)}
-                className="py-4 rounded-2xl font-bold bg-bg text-navy hover:bg-border transition-all cursor-pointer border-0"
+                className="py-6 rounded- font-bold bg-bg text-navy hover:bg-border transition-all cursor-pointer border-0"
               >
                 No, Keep it
               </button>
               <button 
                 onClick={confirmDelete}
-                className="py-4 rounded-2xl font-bold text-white bg-danger hover:bg-red-600 transition-all cursor-pointer border-0 shadow-lg shadow-danger/20"
+                className="py-6 rounded- font-bold text-white bg-danger hover:bg-red-600 transition-all cursor-pointer border-0 shadow-lg shadow-danger/20"
               >
                 Yes, Delete
               </button>
@@ -370,9 +370,9 @@ export default function Dashboard() {
 
       {/* Clone Confirmation Modal (Area 5 Feature C) */}
       {cloneTarget && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-4">
-          <div className="bg-white rounded-[2.5rem] max-w-md w-full p-10 border border-white/20 shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div className="flex items-center justify-center w-20 h-20 rounded-3xl bg-primary/10 text-primary mb-6 mx-auto">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-6">
+          <div className="bg-white rounded-3xl max-w-md w-full p-10 border border-white/20 shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="flex items-center justify-center w-20 h-20 rounded- bg-primary/10 text-primary mb-6 mx-auto">
               <Copy size={32} />
             </div>
             <h3 className="text-2xl font-black text-navy text-center mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -384,16 +384,16 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-4">
               <button 
                 onClick={() => setCloneTarget(null)}
-                className="py-4 rounded-2xl font-bold bg-bg text-navy hover:bg-border transition-all cursor-pointer border-0"
+                className="py-6 rounded- font-bold bg-bg text-navy hover:bg-border transition-all cursor-pointer border-0"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleClone}
                 disabled={isCloning}
-                className="py-4 rounded-2xl font-bold text-white bg-primary hover:bg-primary-dark transition-all cursor-pointer border-0 shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                className="py-6 rounded- font-bold text-white bg-primary hover:bg-primary-dark transition-all cursor-pointer border-0 shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
               >
-                {isCloning ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Cloning...</> : <><Copy size={16} /> Clone Trip</>}
+                {isCloning ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded- animate-spin" /> Cloning...</> : <><Copy size={16} /> Clone Trip</>}
               </button>
             </div>
           </div>

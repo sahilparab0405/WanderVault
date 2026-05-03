@@ -52,7 +52,7 @@ function PieTooltipContent({ active, payload }) {
   const { name, value, payload: data } = payload[0];
   return (
     <div
-      className="bg-navy text-white px-3 py-2 rounded-lg"
+      className="bg-navy text-white px-6 py-2 rounded-xl"
       style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
     >
       <p className="font-semibold mb-0.5">{name}</p>
@@ -69,7 +69,7 @@ function BarTooltipContent({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
     <div
-      className="bg-navy text-white px-3 py-2 rounded-lg"
+      className="bg-navy text-white px-6 py-2 rounded-xl"
       style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
     >
       <p className="font-semibold mb-0.5">{label}</p>
@@ -97,7 +97,7 @@ function renderCustomLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent
       dominantBaseline="central"
       fontSize={11}
       fontWeight={600}
-      fontFamily="Inter, sans-serif"
+      
     >
       {(percent * 100).toFixed(0)}%
     </text>
@@ -119,27 +119,27 @@ function BudgetVoucher({ trip, totalSpent, remaining, budgetPercent }) {
 
   return (
     <div
-      className="relative overflow-hidden rounded-xl"
+      className="relative overflow-hidden rounded-"
       style={{
         border: '2px dashed var(--color-border)',
         background: 'linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%)',
       }}
     >
       {/* Decorative holes on left side */}
-      <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between py-3" style={{ marginLeft: '-8px' }}>
+      <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between py-6" style={{ marginLeft: '-8px' }}>
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="w-4 h-4 rounded-full bg-bg border border-border" />
+          <div key={i} className="w-4 h-4 rounded- bg-bg border border-border" />
         ))}
       </div>
 
       {/* Decorative holes on right side */}
-      <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-between py-3" style={{ marginRight: '-8px' }}>
+      <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-between py-6" style={{ marginRight: '-8px' }}>
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="w-4 h-4 rounded-full bg-bg border border-border" />
+          <div key={i} className="w-4 h-4 rounded- bg-bg border border-border" />
         ))}
       </div>
 
-      <div className="px-8 py-5">
+      <div className="px-8 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -151,7 +151,7 @@ function BudgetVoucher({ trip, totalSpent, remaining, budgetPercent }) {
               {trip.name}
             </h3>
           </div>
-          <div className={`px-3 py-1 rounded-full text-xs font-bold ${statusBg}`}
+          <div className={`px-6 py-1 rounded- text-xs font-bold ${statusBg}`}
             style={{ fontFamily: "'Inter', sans-serif", color: `var(--color-${statusColor})` }}>
             {statusLabel}
           </div>
@@ -196,9 +196,9 @@ function BudgetVoucher({ trip, totalSpent, remaining, budgetPercent }) {
             <span>{budgetPercent.toFixed(1)}% used</span>
             <span>{Math.max(100 - budgetPercent, 0).toFixed(1)}% left</span>
           </div>
-          <div className="w-full bg-border-light rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-border-light rounded- h-3 overflow-hidden">
             <div
-              className="h-3 rounded-full transition-all duration-700 ease-out"
+              className="h-3 rounded- transition-all duration-700 ease-out"
               style={{
                 width: `${Math.min(budgetPercent, 100)}%`,
                 background: budgetPercent >= 100
@@ -243,13 +243,13 @@ function ThresholdMilestones({ budgetPercent }) {
           return (
             <div
               key={t.percent}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-300 ${
+              className={`flex items-center gap-3 px-6 py-2 rounded-xl transition-all duration-300 ${
                 reached ? t.bg : 'bg-bg'
               }`}
             >
               {/* Milestone indicator */}
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold ${
+                className={`w-6 h-6 rounded- flex items-center justify-center shrink-0 text-[10px] font-bold ${
                   reached ? 'text-white' : 'text-text-muted border-2 border-border-light bg-white'
                 }`}
                 style={reached ? { background: t.color } : {}}
@@ -586,12 +586,12 @@ export default function BudgetTracker({ trip, expenses }) {
 
   return (
     <div
-      className="bg-card rounded-xl overflow-hidden border border-border"
+      className="bg-card rounded- overflow-hidden border border-border"
       style={{ boxShadow: 'var(--shadow-card)' }}
       id="budget-tracker-section"
     >
       {/* ═══ Header ═══ */}
-      <div className="px-5 py-4 border-b border-border flex flex-wrap items-center justify-between gap-2">
+      <div className="px-6 py-6 border-b border-border flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <BarChart2 size={16} strokeWidth={1.5} className="text-primary" />
           <h3 className="font-bold text-navy text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -605,7 +605,7 @@ export default function BudgetTracker({ trip, expenses }) {
             disabled={expenses.length === 0}
             id="budget-export-csv"
             className="inline-flex items-center gap-1 text-text-secondary text-xs font-semibold cursor-pointer
-                       bg-bg hover:bg-border-light px-3 py-1.5 rounded-lg border border-border
+                       bg-bg hover:bg-border-light px-6 py-1.5 rounded-xl border border-border
                        transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
@@ -623,13 +623,13 @@ export default function BudgetTracker({ trip, expenses }) {
             disabled={expenses.length === 0 || pdfLoading}
             id="budget-export-pdf"
             className="inline-flex items-center gap-1 text-white text-xs font-semibold cursor-pointer
-                       bg-accent hover:bg-accent-dark px-3 py-1.5 rounded-lg border-0
+                       bg-accent hover:bg-accent-dark px-6 py-1.5 rounded-xl border-0
                        transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
             {pdfLoading ? (
               <>
-                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded- animate-spin" />
                 Generating...
               </>
             ) : (
@@ -648,7 +648,7 @@ export default function BudgetTracker({ trip, expenses }) {
         </div>
       </div>
 
-      <div className="p-5 space-y-6">
+      <div className="p-6 space-y-6">
 
         {/* ═══ Lottery Voucher Budget Card ═══ */}
         <BudgetVoucher
@@ -660,7 +660,7 @@ export default function BudgetTracker({ trip, expenses }) {
 
         {/* ═══ Stats Row ═══ */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-bg rounded-xl p-3 text-center border border-border-light">
+          <div className="bg-bg rounded- p-6 text-center border border-border-light">
             <p className="text-lg font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
               ₹{remaining.toLocaleString()}
             </p>
@@ -668,7 +668,7 @@ export default function BudgetTracker({ trip, expenses }) {
               Remaining
             </p>
           </div>
-          <div className="bg-bg rounded-xl p-3 text-center border border-border-light">
+          <div className="bg-bg rounded- p-6 text-center border border-border-light">
             <p className="text-lg font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
               ₹{Math.round(dailyBudgetRemaining).toLocaleString()}
             </p>
@@ -676,7 +676,7 @@ export default function BudgetTracker({ trip, expenses }) {
               Per day left
             </p>
           </div>
-          <div className="bg-bg rounded-xl p-3 text-center border border-border-light">
+          <div className="bg-bg rounded- p-6 text-center border border-border-light">
             <p className="text-lg font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
               ₹{Math.round(averageDailySpend).toLocaleString()}
             </p>
@@ -684,7 +684,7 @@ export default function BudgetTracker({ trip, expenses }) {
               Avg/day
             </p>
           </div>
-          <div className={`rounded-xl p-3 text-center border ${
+          <div className={`rounded- p-6 text-center border ${
             projectedOverBudget ? 'bg-danger-light border-danger/20' : 'bg-success-light border-success/20'
           }`}>
             <p className={`text-lg font-bold ${projectedOverBudget ? 'text-danger' : 'text-success'}`}
@@ -701,7 +701,7 @@ export default function BudgetTracker({ trip, expenses }) {
         <div className="flex gap-2">
           <button
             onClick={() => setActiveView('charts')}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold border cursor-pointer transition-all duration-150 flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold border cursor-pointer transition-all duration-150 flex items-center justify-center gap-1.5 ${
               activeView === 'charts'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-text-secondary border-border hover:bg-bg'
@@ -712,7 +712,7 @@ export default function BudgetTracker({ trip, expenses }) {
           </button>
           <button
             onClick={() => setActiveView('milestones')}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold border cursor-pointer transition-all duration-150 flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold border cursor-pointer transition-all duration-150 flex items-center justify-center gap-1.5 ${
               activeView === 'milestones'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-text-secondary border-border hover:bg-bg'
@@ -773,7 +773,7 @@ export default function BudgetTracker({ trip, expenses }) {
                   <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mt-2">
                     {pieData.map((seg) => (
                       <div key={seg.name} className="flex items-center gap-1">
-                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: seg.color }} />
+                        <div className="w-2.5 h-2.5 rounded- shrink-0" style={{ background: seg.color }} />
                         <span className="text-[10px] text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>
                           {seg.name} ({seg.percentage.toFixed(0)}%)
                         </span>
@@ -813,9 +813,9 @@ export default function BudgetTracker({ trip, expenses }) {
                                   ₹{total.toLocaleString()}
                                 </span>
                               </div>
-                              <div className="w-full bg-border-light rounded-full h-1.5">
+                              <div className="w-full bg-border-light rounded- h-1.5">
                                 <div
-                                  className="h-1.5 rounded-full transition-all duration-500"
+                                  className="h-1.5 rounded- transition-all duration-500"
                                   style={{
                                     width: `${catPercent}%`,
                                     background: CATEGORY_COLORS[cat] || '#6B7280',
@@ -856,13 +856,13 @@ export default function BudgetTracker({ trip, expenses }) {
                       />
                       <XAxis
                         dataKey="label"
-                        tick={{ fontSize: 9, fill: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif' }}
+                        tick={{ fontSize: 9, fill: 'var(--color-text-muted)' }}
                         tickLine={false}
                         axisLine={{ stroke: 'var(--color-border)' }}
                         interval={barData.length > 10 ? 1 : 0}
                       />
                       <YAxis
-                        tick={{ fontSize: 9, fill: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif' }}
+                        tick={{ fontSize: 9, fill: 'var(--color-text-muted)' }}
                         tickLine={false}
                         axisLine={false}
                         domain={[0, 'auto']}
@@ -879,7 +879,6 @@ export default function BudgetTracker({ trip, expenses }) {
                           position: 'insideTopRight',
                           fill: 'var(--color-warning)',
                           fontSize: 9,
-                          fontFamily: 'Inter, sans-serif',
                           fontWeight: 600,
                         }}
                       />
@@ -903,11 +902,11 @@ export default function BudgetTracker({ trip, expenses }) {
                 {/* Legend for bars */}
                 <div className="flex items-center justify-center gap-4 mt-1">
                   <div className="flex items-center gap-1">
-                    <div className="w-2.5 h-2.5 rounded-sm" style={{ background: '#2563EB' }} />
+                    <div className="w-2.5 h-2.5 rounded-xl" style={{ background: '#2563EB' }} />
                     <span className="text-[10px] text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>Within budget</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-2.5 h-2.5 rounded-sm" style={{ background: '#EF4444' }} />
+                    <div className="w-2.5 h-2.5 rounded-xl" style={{ background: '#EF4444' }} />
                     <span className="text-[10px] text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>Over daily limit</span>
                   </div>
                 </div>

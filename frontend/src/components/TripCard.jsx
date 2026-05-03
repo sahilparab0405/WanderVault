@@ -67,7 +67,7 @@ export default function TripCard({ trip, onDelete }) {
 
   return (
     <div
-      className="group relative bg-card rounded-xl overflow-hidden border border-border
+      className="group relative bg-card rounded- overflow-hidden border border-border
                  hover:border-primary/30 transition-all duration-300"
       style={{
         boxShadow: 'var(--shadow-card)',
@@ -101,7 +101,7 @@ export default function TripCard({ trip, onDelete }) {
         />
 
         {/* Destination name on photo */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
+        <div className="absolute bottom-0 left-0 right-0 p-6">
           <h3
             className="text-white text-lg font-bold leading-tight truncate"
             style={{ fontFamily: "'Poppins', sans-serif", textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}
@@ -120,21 +120,21 @@ export default function TripCard({ trip, onDelete }) {
         <div className="absolute top-3 right-3">
           {isActive ? (
             <span
-              className="px-2 py-0.5 rounded-full text-xs font-semibold bg-primary text-white"
+              className="px-2 py-0.5 rounded- text-xs font-semibold bg-primary text-white"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               Active
             </span>
           ) : isPast ? (
             <span
-              className="px-2 py-0.5 rounded-full text-xs font-semibold bg-text-muted text-white"
+              className="px-2 py-0.5 rounded- text-xs font-semibold bg-text-muted text-white"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               Completed
             </span>
           ) : (
             <span
-              className="px-2 py-0.5 rounded-full text-xs font-semibold bg-accent text-white"
+              className="px-2 py-0.5 rounded- text-xs font-semibold bg-accent text-white"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               Upcoming
@@ -145,7 +145,7 @@ export default function TripCard({ trip, onDelete }) {
         {/* Travel mode badge — top left */}
         <div className="absolute top-3 left-3">
           <span
-            className="px-2 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-navy backdrop-blur-sm flex items-center gap-1"
+            className="px-2 py-0.5 rounded- text-xs font-semibold bg-white/90 text-navy backdrop-blur-sm flex items-center gap-1"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
             {mode.Icon && <mode.Icon size={11} strokeWidth={1.5} />}{mode.label}
@@ -154,7 +154,7 @@ export default function TripCard({ trip, onDelete }) {
       </div>
 
       {/* ═══ BOARDING PASS BODY ═══ */}
-      <div className="px-4 pt-4 pb-3">
+      <div className="px-6 pt-6 pb-6">
 
         {/* ─── Ticket row: Departure ↔ Destination ─── */}
         <div className="flex items-center justify-between mb-3">
@@ -171,11 +171,11 @@ export default function TripCard({ trip, onDelete }) {
 
           {/* Center: connecting flight path */}
           <div className="flex-1 mx-3 flex items-center gap-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <div className="w-1.5 h-1.5 rounded- bg-primary" />
             <div className="flex-1 border-t border-dashed border-text-muted" />
             {mode.Icon && <mode.Icon size={14} strokeWidth={1.5} className="text-text-muted shrink-0" />}
             <div className="flex-1 border-t border-dashed border-text-muted" />
-            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <div className="w-1.5 h-1.5 rounded- bg-accent" />
           </div>
 
           {/* Right: Return date */}
@@ -193,7 +193,7 @@ export default function TripCard({ trip, onDelete }) {
         {/* Duration chip */}
         <div className="flex justify-center mb-3">
           <span
-            className="bg-bg text-text-secondary text-[10px] font-medium px-2.5 py-0.5 rounded-full border border-border-light"
+            className="bg-bg text-text-secondary text-[10px] font-medium px-2.5 py-0.5 rounded- border border-border-light"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
             {duration} {duration === 1 ? 'Day' : 'Days'}
@@ -205,11 +205,11 @@ export default function TripCard({ trip, onDelete }) {
           <div className="border-t-2 border-dashed border-border" />
           {/* Left notch */}
           <div
-            className="absolute -left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-bg border border-border"
+            className="absolute -left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded- bg-bg border border-border"
           />
           {/* Right notch */}
           <div
-            className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-bg border border-border"
+            className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded- bg-bg border border-border"
           />
         </div>
 
@@ -238,9 +238,9 @@ export default function TripCard({ trip, onDelete }) {
           </div>
 
           {/* Budget progress bar */}
-          <div className="w-full bg-border-light rounded-full h-2">
+          <div className="w-full bg-border-light rounded- h-2">
             <div
-              className={`h-2 rounded-full transition-all duration-700 ${
+              className={`h-2 rounded- transition-all duration-700 ${
                 budgetPercent >= 100 ? 'bg-danger' :
                 budgetPercent >= 75 ? 'bg-warning' : 'bg-success'
               }`}
@@ -251,7 +251,7 @@ export default function TripCard({ trip, onDelete }) {
           {/* Status + remaining */}
           <div className="flex justify-between items-center mt-1.5">
             <span
-              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${status.badgeClass}`}
+              className={`text-[10px] font-semibold px-2 py-0.5 rounded- ${status.badgeClass}`}
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {status.label}
@@ -268,7 +268,7 @@ export default function TripCard({ trip, onDelete }) {
         <div className="flex gap-2 mt-3">
           <Link
             to={`/trip/${trip._id}`}
-            className="flex-1 text-center bg-primary hover:bg-primary-dark text-white py-2 rounded-lg text-xs font-semibold
+            className="flex-1 text-center bg-primary hover:bg-primary-dark text-white py-2 rounded-xl text-xs font-semibold
                        transition-colors duration-150 no-underline"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
@@ -276,7 +276,7 @@ export default function TripCard({ trip, onDelete }) {
           </Link>
           <Link
             to={`/trip/${trip._id}/itinerary`}
-            className="flex-1 text-center bg-primary-50 text-primary py-2 rounded-lg text-xs font-semibold
+            className="flex-1 text-center bg-primary-50 text-primary py-2 rounded-xl text-xs font-semibold
                        hover:bg-primary-100 transition-colors duration-150 no-underline flex items-center justify-center gap-1"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
@@ -284,7 +284,7 @@ export default function TripCard({ trip, onDelete }) {
           </Link>
           <button
             onClick={() => onDelete(trip._id)}
-            className="w-9 h-9 flex items-center justify-center bg-border-light text-text-muted rounded-lg
+            className="w-9 h-9 flex items-center justify-center bg-border-light text-text-muted rounded-xl
                        hover:bg-danger-light hover:text-danger transition-colors duration-150 cursor-pointer border-0 shrink-0"
             aria-label="Delete trip"
           >

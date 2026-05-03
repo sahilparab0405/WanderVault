@@ -95,10 +95,10 @@ export default function Explore() {
   if (loading) return (
     <div className="min-h-screen bg-bg p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="h-10 w-48 bg-border/40 rounded-lg animate-pulse" />
-        <div className="h-80 bg-white rounded-[2rem] animate-pulse border border-border" />
+        <div className="h-10 w-48 bg-border/40 rounded-xl animate-pulse" />
+        <div className="h-80 bg-white rounded-3xl animate-pulse border border-border" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white rounded-2xl animate-pulse" />)}
+          {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white rounded- animate-pulse" />)}
         </div>
       </div>
     </div>
@@ -108,7 +108,7 @@ export default function Explore() {
     <div className="min-h-screen bg-bg flex flex-col">
       
       {/* ── Top Bar ── */}
-      <header className="bg-white border-b border-border px-8 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+      <header className="bg-white border-b border-border px-8 py-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
         <div>
           <h1 className="text-xl font-black text-navy leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
             Explore
@@ -123,10 +123,10 @@ export default function Explore() {
               <input 
                 type="text" 
                 placeholder="Find a city..." 
-                className="pl-9 pr-4 py-2 bg-bg border border-border rounded-xl text-xs w-48 focus:w-64 focus:ring-4 focus:ring-primary/10 transition-all duration-300 outline-none"
+                className="pl-9 pr-6 py-2 bg-bg border border-border rounded- text-xs w-48 focus:w-64 focus:ring-4 focus:ring-primary/10 transition-all duration-300 outline-none"
               />
            </div>
-           <Link to="/create-trip" className="bg-accent hover:bg-accent-dark text-white px-5 py-2.5 rounded-xl text-xs font-bold no-underline transition-all shadow-lg shadow-accent/20">
+           <Link to="/create-trip" className="bg-accent hover:bg-accent-dark text-white px-6 py-2.5 rounded- text-xs font-bold no-underline transition-all shadow-lg shadow-accent/20">
               New Trip
            </Link>
         </div>
@@ -141,11 +141,11 @@ export default function Explore() {
             <h2 className="text-2xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Contextual Discovery</h2>
           </div>
           
-          <div className="bg-white rounded-[2.5rem] border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[300px]">
+          <div className="bg-white rounded-3xl border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[300px]">
             <div className="lg:col-span-2 bg-navy p-10 text-white flex flex-col justify-between">
               {activeTrip ? (
                 <div>
-                   <div className="inline-flex items-center gap-2 bg-white/10 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">
+                   <div className="inline-flex items-center gap-2 bg-white/10 text-white px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-4">
                       Active Trip Proximity
                    </div>
                    <h3 className="text-3xl font-black mb-3 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>{activeTrip.name}</h3>
@@ -160,7 +160,7 @@ export default function Explore() {
                 </div>
               ) : (
                 <div>
-                   <div className="inline-flex items-center gap-2 bg-white/10 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">
+                   <div className="inline-flex items-center gap-2 bg-white/10 text-white px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-4">
                       Discovery
                    </div>
                    <h3 className="text-2xl font-black mb-3 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>No Trip Yet</h3>
@@ -168,18 +168,19 @@ export default function Explore() {
                 </div>
               )}
               {activeTrip ? (
-                <Link to={`/trip/${activeTrip._id}`} className="bg-white text-navy px-6 py-4 rounded-2xl text-xs font-black no-underline text-center hover:bg-white/90 transition-all mt-6">
+                <Link to={`/trip/${activeTrip._id}`} className="bg-white text-navy px-6 py-6 rounded- text-xs font-black no-underline text-center hover:bg-white/90 transition-all mt-6">
                    VIEW TRIP DETAILS
                 </Link>
               ) : (
-                <Link to="/create-trip" className="bg-accent text-white px-6 py-4 rounded-2xl text-xs font-black no-underline text-center hover:bg-accent-dark transition-all mt-6">
+                <Link to="/create-trip" className="bg-accent text-white px-6 py-6 rounded- text-xs font-black no-underline text-center hover:bg-accent-dark transition-all mt-6">
                    CREATE FIRST TRIP
                 </Link>
               )}
             </div>
             
-            <div className="lg:col-span-3 p-8 lg:p-10">
-              <div className="flex gap-6 border-b border-border mb-8 overflow-x-auto no-scrollbar">
+            <div className="lg:col-span-3 p-8 lg:p-10 relative">
+              <div className="absolute right-8 top-8 bottom-8 w-12 bg-gradient-to-l from-white to-transparent pointer-events-none z-20 md:hidden" />
+              <div className="flex gap-6 border-b border-border mb-8 overflow-x-auto no-scrollbar relative z-10">
                 {[
                   { id: 'dining', label: 'Cuisine', icon: Utensils },
                   { id: 'sightseeing', label: 'Landmarks', icon: Landmark },
@@ -188,21 +189,21 @@ export default function Explore() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`pb-4 px-1 text-xs font-black tracking-widest uppercase transition-all relative border-0 bg-transparent cursor-pointer flex items-center gap-2 whitespace-nowrap
+                    className={`pb-6 px-1 text-xs font-black tracking-widest uppercase transition-all relative border-0 bg-transparent cursor-pointer flex items-center gap-2 whitespace-nowrap
                       ${activeTab === tab.id ? 'text-navy' : 'text-text-muted hover:text-navy'}
                     `}
                   >
                     <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
                     {tab.label}
-                    {activeTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-full" />}
+                    {activeTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-" />}
                   </button>
                 ))}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {PLACE_NAMES[activeTab].map((item, i) => (
-                     <div key={i} className="bg-bg rounded-2xl p-6 border border-border hover:border-primary/50 transition-colors cursor-pointer group">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                     <div key={i} className="bg-bg rounded- p-6 border border-border hover:border-primary/50 transition-colors cursor-pointer group">
+                        <div className="w-10 h-10 bg-white rounded- flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
                            {activeTab === 'dining' ? <Utensils size={18} /> : activeTab === 'sightseeing' ? <Landmark size={18} /> : <Building2 size={18} />}
                         </div>
                         <p className="font-bold text-navy text-sm leading-tight mb-1">{item.name}</p>
@@ -231,9 +232,9 @@ export default function Explore() {
               <h2 className="text-2xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>New Horizons</h2>
             </div>
             <div className="hidden sm:flex gap-2">
-               <div className="w-2.5 h-2.5 rounded-full bg-accent" />
-               <div className="w-2.5 h-2.5 rounded-full bg-border" />
-               <div className="w-2.5 h-2.5 rounded-full bg-border" />
+               <div className="w-2.5 h-2.5 rounded- bg-accent" />
+               <div className="w-2.5 h-2.5 rounded- bg-border" />
+               <div className="w-2.5 h-2.5 rounded- bg-border" />
             </div>
           </div>
 
@@ -241,16 +242,16 @@ export default function Explore() {
             {/* Popular Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {POPULAR_DESTINATIONS.map(dest => (
-                <div key={dest.name} className="group relative rounded-[2rem] overflow-hidden aspect-[4/5] shadow-xl hover:-translate-y-2 transition-all duration-500">
+                <div key={dest.name} className="group relative rounded-3xl overflow-hidden aspect-[4/5] shadow-xl hover:-translate-y-2 transition-all duration-500">
                   <img src={dest.image} alt={dest.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                   <div className="absolute inset-0 bg-gradient-to-t from-navy via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
                   <div className="absolute inset-x-0 bottom-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                    <span className="inline-block px-2 py-0.5 bg-accent text-white text-[9px] font-bold rounded-full mb-2 uppercase tracking-widest">{dest.category}</span>
+                    <span className="inline-block px-2 py-0.5 bg-accent text-white text-[9px] font-bold rounded- mb-2 uppercase tracking-widest">{dest.category}</span>
                     <p className="text-white font-black text-xl mb-1" style={{ fontFamily: "'Poppins', sans-serif" }}>{dest.name}</p>
                     <p className="text-white/60 text-[10px] font-bold mb-4">Starting from {dest.budget}</p>
                     <button 
                       onClick={() => handlePlanTrip(dest.name)}
-                      className="w-full py-3 bg-white text-navy hover:bg-accent hover:text-white rounded-xl text-[11px] font-black transition-all border-0 cursor-pointer shadow-lg"
+                      className="w-full py-6 bg-white text-navy hover:bg-accent hover:text-white rounded- text-[11px] font-black transition-all border-0 cursor-pointer shadow-lg"
                     >
                       PLAN TRIP
                     </button>
@@ -260,22 +261,22 @@ export default function Explore() {
             </div>
 
             {/* Featured Seasonal — Shimla + Pondicherry with CSS gradient backgrounds */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6">
               {SEASONAL_HIGHLIGHTS.map(dest => (
-                <div key={dest.name} className="relative rounded-[2.5rem] overflow-hidden h-80 shadow-2xl group cursor-pointer" onClick={() => handlePlanTrip(dest.name)}>
+                <div key={dest.name} className="relative rounded-3xl overflow-hidden h-80 shadow-2xl group cursor-pointer" onClick={() => handlePlanTrip(dest.name)}>
                   {/* CSS Gradient Background instead of broken image */}
                   <div 
                     className="absolute inset-0"
                     style={{ background: `linear-gradient(135deg, ${dest.gradientFrom}, ${dest.gradientTo})` }}
                   />
                   {/* Decorative circles */}
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000" />
-                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24 group-hover:scale-125 transition-transform duration-700" />
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded- -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000" />
+                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded- -ml-24 -mb-24 group-hover:scale-125 transition-transform duration-700" />
                   
                   {/* Always visible content — no hover-to-preview */}
                   <div className="absolute inset-0 p-8 lg:p-10 flex flex-col justify-between relative z-10">
                     <div>
-                      <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold rounded-full uppercase tracking-widest border border-white/20">
+                      <span className="inline-block px-6 py-1 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold rounded- uppercase tracking-widest border border-white/20">
                         {dest.tag}
                       </span>
                     </div>
@@ -294,7 +295,7 @@ export default function Explore() {
                           </div>
                           <p className="text-white font-black text-lg">{dest.budget}</p>
                         </div>
-                        <button className="bg-white text-navy hover:bg-accent hover:text-white px-6 py-3 rounded-2xl text-[11px] font-black transition-all border-0 shadow-lg shadow-black/10 cursor-pointer">
+                        <button className="bg-white text-navy hover:bg-accent hover:text-white px-6 py-6 rounded- text-[11px] font-black transition-all border-0 shadow-lg shadow-black/10 cursor-pointer">
                           PLAN TRIP <ArrowRight size={14} className="inline ml-1" />
                         </button>
                       </div>
@@ -316,14 +317,14 @@ export default function Explore() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {pastTrips.map(trip => (
-                <div key={trip._id} className="bg-white rounded-3xl p-8 border border-border shadow-sm group hover:border-accent hover:shadow-xl hover:shadow-accent/5 transition-all flex flex-col justify-between">
+                <div key={trip._id} className="bg-white rounded- p-8 border border-border shadow-sm group hover:border-accent hover:shadow-xl hover:shadow-accent/5 transition-all flex flex-col justify-between">
                   <div>
                      <h4 className="font-black text-navy text-xl mb-1" style={{ fontFamily: "'Poppins', sans-serif" }}>{trip.destination}</h4>
                      <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-6">Last visited {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</p>
                   </div>
                   <button 
                     onClick={() => navigate(`/trip/${trip._id}`)}
-                    className="w-full py-4 bg-bg text-navy hover:bg-navy hover:text-white rounded-2xl text-[11px] font-black tracking-widest transition-all border-0 cursor-pointer uppercase"
+                    className="w-full py-6 bg-bg text-navy hover:bg-navy hover:text-white rounded- text-[11px] font-black tracking-widest transition-all border-0 cursor-pointer uppercase"
                   >
                     Explore Again
                   </button>
@@ -340,9 +341,9 @@ export default function Explore() {
           <p className="text-white/40 text-[11px] font-bold tracking-[0.3em] uppercase mb-4">WanderVault Experience</p>
           <p className="text-white/60 text-xs max-w-sm mx-auto font-medium leading-relaxed">Personalized discovery engine Powered by OpenStreetMap & WanderVault Intelligence.</p>
           <div className="mt-8 flex justify-center gap-6">
-             <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-             <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-             <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+             <div className="w-1.5 h-1.5 rounded- bg-white/20" />
+             <div className="w-1.5 h-1.5 rounded- bg-white/20" />
+             <div className="w-1.5 h-1.5 rounded- bg-white/20" />
           </div>
       </footer>
     </div>

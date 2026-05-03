@@ -49,7 +49,7 @@ const MOCK_EXPENSES_OVER = [
 export default function BudgetDemo() {
   return (
     <div className="min-h-screen bg-bg page-content">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <div className="max-w-3xl mx-auto px-6 sm:px-6 py-8 space-y-8">
 
         {/* Page header */}
         <div>

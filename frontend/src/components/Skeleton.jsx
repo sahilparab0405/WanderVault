@@ -17,7 +17,7 @@
 function SkeletonBlock({ className = '', style = {} }) {
   return (
     <div
-      className={`bg-border-light rounded animate-pulse ${className}`}
+      className={`bg-border-light rounded-xl animate-pulse ${className}`}
       style={style}
     />
   );
@@ -27,14 +27,14 @@ function SkeletonBlock({ className = '', style = {} }) {
 export function TripCardSkeleton() {
   return (
     <div
-      className="bg-card rounded-xl overflow-hidden border border-border"
+      className="bg-card rounded- overflow-hidden border border-border"
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
       {/* Photo strip skeleton */}
-      <SkeletonBlock className="h-32 w-full rounded-none" />
+      <SkeletonBlock className="h-32 w-full rounded-" />
 
       {/* Body */}
-      <div className="px-4 pt-4 pb-3">
+      <div className="px-6 pt-6 pb-6">
         {/* Date row */}
         <div className="flex justify-between items-center mb-3">
           <div>
@@ -50,7 +50,7 @@ export function TripCardSkeleton() {
 
         {/* Duration chip */}
         <div className="flex justify-center mb-3">
-          <SkeletonBlock className="h-4 w-16 rounded-full" />
+          <SkeletonBlock className="h-4 w-16 rounded-" />
         </div>
 
         {/* Tear line */}
@@ -70,18 +70,18 @@ export function TripCardSkeleton() {
               <SkeletonBlock className="h-5 w-16 ml-auto" />
             </div>
           </div>
-          <SkeletonBlock className="h-2 w-full rounded-full" />
+          <SkeletonBlock className="h-2 w-full rounded-" />
           <div className="flex justify-between mt-1.5">
-            <SkeletonBlock className="h-3 w-14 rounded-full" />
+            <SkeletonBlock className="h-3 w-14 rounded-" />
             <SkeletonBlock className="h-3 w-12" />
           </div>
         </div>
 
         {/* Buttons */}
         <div className="flex gap-2 mt-3">
-          <SkeletonBlock className="flex-1 h-9 rounded-lg" />
-          <SkeletonBlock className="flex-1 h-9 rounded-lg" />
-          <SkeletonBlock className="w-9 h-9 rounded-lg" />
+          <SkeletonBlock className="flex-1 h-9 rounded-xl" />
+          <SkeletonBlock className="flex-1 h-9 rounded-xl" />
+          <SkeletonBlock className="w-9 h-9 rounded-xl" />
         </div>
       </div>
     </div>
@@ -92,7 +92,7 @@ export function TripCardSkeleton() {
 export function StatCardSkeleton() {
   return (
     <div
-      className="bg-card rounded-xl p-4 text-center border border-border animate-pulse"
+      className="bg-card rounded- p-6 text-center border border-border animate-pulse"
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
       <SkeletonBlock className="h-8 w-12 mx-auto mb-2" />
@@ -105,48 +105,48 @@ export function StatCardSkeleton() {
 export function TripDetailSkeleton() {
   return (
     <div className="min-h-screen bg-bg page-content">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
+      <div className="max-w-6xl mx-auto px-6 sm:px-6 py-8 animate-pulse">
         {/* Back link */}
-        <SkeletonBlock className="h-4 w-32 mb-6 rounded" />
+        <SkeletonBlock className="h-4 w-32 mb-6 rounded-xl" />
 
         <div className="grid gap-6 md:grid-cols-5">
           {/* Left column */}
           <div className="space-y-6 md:col-span-3">
             {/* Trip header card */}
-            <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
-              <SkeletonBlock className="h-7 w-2/3 mb-2 rounded" />
-              <SkeletonBlock className="h-4 w-1/3 mb-4 rounded" />
+            <div className="bg-card rounded- p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <SkeletonBlock className="h-7 w-2/3 mb-2 rounded-xl" />
+              <SkeletonBlock className="h-4 w-1/3 mb-4 rounded-xl" />
               <div className="flex gap-2 mb-4">
-                <SkeletonBlock className="h-5 w-16 rounded-full" />
-                <SkeletonBlock className="h-5 w-28 rounded-full" />
-                <SkeletonBlock className="h-5 w-14 rounded-full" />
+                <SkeletonBlock className="h-5 w-16 rounded-" />
+                <SkeletonBlock className="h-5 w-28 rounded-" />
+                <SkeletonBlock className="h-5 w-14 rounded-" />
               </div>
-              <SkeletonBlock className="h-3 w-full rounded-full mb-2" />
+              <SkeletonBlock className="h-3 w-full rounded- mb-2" />
               <div className="flex justify-between">
-                <SkeletonBlock className="h-3 w-20 rounded" />
-                <SkeletonBlock className="h-3 w-20 rounded" />
+                <SkeletonBlock className="h-3 w-20 rounded-xl" />
+                <SkeletonBlock className="h-3 w-20 rounded-xl" />
               </div>
             </div>
 
             {/* Budget tracker card */}
-            <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
-              <SkeletonBlock className="h-5 w-40 mb-4 rounded" />
-              <SkeletonBlock className="h-48 w-full rounded-lg" />
+            <div className="bg-card rounded- p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <SkeletonBlock className="h-5 w-40 mb-4 rounded-xl" />
+              <SkeletonBlock className="h-48 w-full rounded-xl" />
             </div>
 
             {/* Expenses card */}
-            <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
-              <SkeletonBlock className="h-5 w-32 mb-4 rounded" />
+            <div className="bg-card rounded- p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <SkeletonBlock className="h-5 w-32 mb-4 rounded-xl" />
               {[1, 2, 3].map(i => (
-                <div key={i} className="flex items-center justify-between py-3 border-b border-border-light last:border-0">
+                <div key={i} className="flex items-center justify-between py-6 border-b border-border-light last:border-0">
                   <div className="flex items-center gap-3">
-                    <SkeletonBlock className="w-8 h-8 rounded-full" />
+                    <SkeletonBlock className="w-8 h-8 rounded-" />
                     <div>
-                      <SkeletonBlock className="h-4 w-28 mb-1 rounded" />
-                      <SkeletonBlock className="h-3 w-20 rounded" />
+                      <SkeletonBlock className="h-4 w-28 mb-1 rounded-xl" />
+                      <SkeletonBlock className="h-3 w-20 rounded-xl" />
                     </div>
                   </div>
-                  <SkeletonBlock className="h-5 w-16 rounded" />
+                  <SkeletonBlock className="h-5 w-16 rounded-xl" />
                 </div>
               ))}
             </div>
@@ -154,11 +154,11 @@ export function TripDetailSkeleton() {
 
           {/* Right column */}
           <div className="md:col-span-2 space-y-6">
-            <SkeletonBlock className="h-64 w-full rounded-xl" />
-            <div className="bg-card rounded-xl p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
-              <SkeletonBlock className="h-5 w-32 mb-4 rounded" />
+            <SkeletonBlock className="h-64 w-full rounded-" />
+            <div className="bg-card rounded- p-6 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <SkeletonBlock className="h-5 w-32 mb-4 rounded-xl" />
               {[1, 2, 3].map(i => (
-                <SkeletonBlock key={i} className="h-20 w-full rounded-xl mb-3" />
+                <SkeletonBlock key={i} className="h-20 w-full rounded- mb-3" />
               ))}
             </div>
           </div>
@@ -172,23 +172,23 @@ export function TripDetailSkeleton() {
 export function ItinerarySkeleton() {
   return (
     <div className="min-h-screen bg-bg page-content">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
-        <SkeletonBlock className="h-4 w-28 mb-6 rounded" />
+      <div className="max-w-3xl mx-auto px-6 sm:px-6 py-8 animate-pulse">
+        <SkeletonBlock className="h-4 w-28 mb-6 rounded-xl" />
         <div className="flex justify-between items-center mb-6">
           <div>
-            <SkeletonBlock className="h-7 w-40 mb-2 rounded" />
-            <SkeletonBlock className="h-4 w-56 rounded" />
+            <SkeletonBlock className="h-7 w-40 mb-2 rounded-xl" />
+            <SkeletonBlock className="h-4 w-56 rounded-xl" />
           </div>
-          <SkeletonBlock className="h-9 w-24 rounded-lg" />
+          <SkeletonBlock className="h-9 w-24 rounded-xl" />
         </div>
         {[1, 2].map(g => (
           <div key={g} className="mb-6">
             <div className="flex items-center gap-3 mb-3">
-              <SkeletonBlock className="h-7 w-16 rounded-full" />
-              <SkeletonBlock className="h-0.5 flex-1 rounded" />
+              <SkeletonBlock className="h-7 w-16 rounded-" />
+              <SkeletonBlock className="h-0.5 flex-1 rounded-xl" />
             </div>
             {[1, 2].map(i => (
-              <SkeletonBlock key={i} className="h-20 w-full rounded-xl mb-3" />
+              <SkeletonBlock key={i} className="h-20 w-full rounded- mb-3" />
             ))}
           </div>
         ))}
@@ -208,7 +208,7 @@ export function PageSpinner({ message = 'Loading...' }) {
       <div className="flex flex-col items-center gap-3">
         {/* Standard border spinner — no Chrome-only features */}
         <div
-          className="w-10 h-10 rounded-full animate-spin"
+          className="w-10 h-10 rounded- animate-spin"
           style={{
             border: '3px solid var(--color-border)',
             borderTopColor: 'var(--color-primary)',

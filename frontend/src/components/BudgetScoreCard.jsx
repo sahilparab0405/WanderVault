@@ -58,9 +58,9 @@ export default function BudgetScoreCard({ budget, days = 1, destination = '' }) 
   if (!analysis) return null;
 
   return (
-    <div className="mt-6 bg-white rounded-xl p-5 border border-border shadow-sm flex flex-col gap-4">
+    <div className="mt-6 bg-white rounded- p-6 border border-border shadow-sm flex flex-col gap-4">
       
-      <div className={`p-4 rounded-r-lg border-y border-r border-border border-l-4 flex items-center gap-4 ${analysis.colorClass}`}>
+      <div className={`p-6 rounded-xl-r-lg border-y border-r border-border border-l-4 flex items-center gap-4 ${analysis.colorClass}`}>
         <div className="shrink-0">{analysis.icon}</div>
         <div>
           <h3 className="text-sm font-bold tracking-wide uppercase">{analysis.score}</h3>

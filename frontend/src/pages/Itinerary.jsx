@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import API from '../api/axios';
 import { ItinerarySkeleton } from '../components/Skeleton';
+import ConfirmModal from '../components/ConfirmModal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Calendar, MapPin, Clock, Trash2 } from 'lucide-react';
@@ -13,6 +14,7 @@ export default function Itinerary() {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ day: '', title: '', description: '', location: '', time: '' });
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => { fetchData(); }, [id]);
 
@@ -45,11 +47,13 @@ export default function Itinerary() {
     }
   };
 
-  const handleDelete = async (itemId) => {
-    if (!window.confirm('Delete this item?')) return;
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    const itemId = itemToDelete;
+    setItemToDelete(null);
     
     // 1. Optimistic UI Update
-    const itemToDelete = items.find(i => i._id === itemId);
+    const itemToDeleteObj = items.find(i => i._id === itemId);
     setItems((prev) => prev.filter(i => i._id !== itemId));
     
     // 2. Background API Sync
@@ -57,8 +61,8 @@ export default function Itinerary() {
       await API.delete(`/itinerary/${itemId}`);
     } catch (err) { 
       console.error(err); 
-      if (itemToDelete) {
-         setItems((prev) => [...prev, itemToDelete].sort((a, b) => a.day - b.day)); // Revert on failure
+      if (itemToDeleteObj) {
+         setItems((prev) => [...prev, itemToDeleteObj].sort((a, b) => a.day - b.day)); // Revert on failure
          alert("Failed to delete item.");
       }
     }
@@ -75,7 +79,7 @@ export default function Itinerary() {
 
   return (
     <div className="min-h-screen bg-bg page-content">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-3xl mx-auto px-6 sm:px-6 py-8">
 
         <Link to={`/trip/${id}`} className="inline-flex items-center gap-1 text-text-secondary hover:text-navy text-sm no-underline transition-colors duration-150 mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>← Back to Trip</Link>
 
@@ -87,39 +91,39 @@ export default function Itinerary() {
             </h2>
             {trip && <p className="text-text-secondary text-sm mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>{trip.name} • {trip.destination}</p>}
           </div>
-          <button onClick={() => setShowForm(!showForm)} id="itinerary-add-toggle" className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-150 cursor-pointer border-0" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <button onClick={() => setShowForm(!showForm)} id="itinerary-add-toggle" className="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-xl text-sm font-semibold transition-colors duration-150 cursor-pointer border-0" style={{ fontFamily: "'Inter', sans-serif" }}>
             {showForm ? '✕ Cancel' : '+ Add Item'}
           </button>
         </div>
 
         {/* Add Form */}
         {showForm && (
-          <div className="bg-card rounded-xl p-6 mb-6 border border-primary-100" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="bg-card rounded- p-6 mb-6 border border-primary-100" style={{ boxShadow: 'var(--shadow-card)' }}>
             <h4 className="font-semibold text-navy mb-4 text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>New Itinerary Item</h4>
             <form onSubmit={handleAdd} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Day Number</label>
-                  <input type="number" required placeholder="1" min="1" id="itinerary-day" className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" style={{ fontFamily: "'Inter', sans-serif" }} value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })} />
+                  <input type="number" required placeholder="1" min="1" id="itinerary-day" className="w-full border border-border rounded-xl px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" style={{ fontFamily: "'Inter', sans-serif" }} value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Time</label>
-                  <DatePicker selected={form.time ? new Date(`1970-01-01T${form.time}:00`) : null} onChange={(date) => { if (date) { const h = String(date.getHours()).padStart(2,'0'); const m = String(date.getMinutes()).padStart(2,'0'); setForm({ ...form, time: `${h}:${m}` }); } else setForm({ ...form, time: '' }); }} showTimeSelect showTimeSelectOnly timeIntervals={15} timeCaption="Time" dateFormat="h:mm aa" placeholderText="hh:mm" id="itinerary-time" className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" wrapperClassName="w-full" />
+                  <DatePicker selected={form.time ? new Date(`1970-01-01T${form.time}:00`) : null} onChange={(date) => { if (date) { const h = String(date.getHours()).padStart(2,'0'); const m = String(date.getMinutes()).padStart(2,'0'); setForm({ ...form, time: `${h}:${m}` }); } else setForm({ ...form, time: '' }); }} showTimeSelect showTimeSelectOnly timeIntervals={15} timeCaption="Time" dateFormat="h:mm aa" placeholderText="hh:mm" id="itinerary-time" className="w-full border border-border rounded-xl px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" wrapperClassName="w-full" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Activity Title</label>
-                <input type="text" required placeholder="e.g. Visit a local landmark" id="itinerary-title" className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" style={{ fontFamily: "'Inter', sans-serif" }} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+                <input type="text" required placeholder="e.g. Visit a local landmark" id="itinerary-title" className="w-full border border-border rounded-xl px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" style={{ fontFamily: "'Inter', sans-serif" }} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Location</label>
-                <input type="text" placeholder="e.g. Gateway of India" id="itinerary-location" className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" style={{ fontFamily: "'Inter', sans-serif" }} value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+                <input type="text" placeholder="e.g. Gateway of India" id="itinerary-location" className="w-full border border-border rounded-xl px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" style={{ fontFamily: "'Inter', sans-serif" }} value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Notes</label>
-                <textarea placeholder="Additional notes (optional)" rows={2} id="itinerary-description" className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy resize-y" style={{ fontFamily: "'Inter', sans-serif" }} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                <textarea placeholder="Additional notes (optional)" rows={2} id="itinerary-description" className="w-full border border-border rounded-xl px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy resize-y" style={{ fontFamily: "'Inter', sans-serif" }} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               </div>
-              <button type="submit" id="itinerary-submit" className="w-full bg-primary hover:bg-primary-dark text-white py-2 rounded-lg text-sm font-semibold transition-colors duration-150 cursor-pointer border-0" style={{ fontFamily: "'Inter', sans-serif" }}>
+              <button type="submit" id="itinerary-submit" className="w-full bg-primary hover:bg-primary-dark text-white py-2 rounded-xl text-sm font-semibold transition-colors duration-150 cursor-pointer border-0" style={{ fontFamily: "'Inter', sans-serif" }}>
                 Add to Itinerary
               </button>
             </form>
@@ -128,7 +132,7 @@ export default function Itinerary() {
 
         {/* Itinerary Timeline */}
         {Object.keys(groupedByDay).length === 0 ? (
-          <div className="text-center py-16 bg-card rounded-xl border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="text-center py-16 bg-card rounded- border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div className="flex justify-center mb-3"><Calendar size={40} strokeWidth={1.5} className="text-text-muted opacity-60" /></div>
             <p className="text-text-secondary text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>No activities added yet.</p>
           </div>
@@ -137,19 +141,19 @@ export default function Itinerary() {
             {Object.entries(groupedByDay).map(([day, dayItems]) => (
               <div key={day}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>{day}</span>
+                  <span className="bg-primary text-white px-6 py-1 rounded- text-sm font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>{day}</span>
                   <div className="flex-1 h-px bg-border" />
                 </div>
                 <div className="space-y-3 ml-2">
                   {dayItems.map(item => (
-                    <div key={item._id} className={`bg-card rounded-xl p-4 flex justify-between items-start border border-border hover:border-primary-100 transition-all duration-300 ${item.isOptimistic ? 'opacity-60 scale-[0.98]' : 'opacity-100 scale-100'}`} style={{ boxShadow: 'var(--shadow-sm)' }}>
+                    <div key={item._id} className={`bg-card rounded- p-6 flex justify-between items-start border border-border hover:border-primary-100 transition-all duration-300 ${item.isOptimistic ? 'opacity-60 scale-[0.98]' : 'opacity-100 scale-100'}`} style={{ boxShadow: 'var(--shadow-sm)' }}>
                       <div className="flex gap-3">
-                        <div className="w-1 bg-primary rounded-full min-h-full" />
+                        <div className="w-1 bg-primary rounded- min-h-full" />
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="font-semibold text-navy text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>{item.title}</p>
                             {item.time && (
-                              <span className="text-xs bg-bg text-text-secondary px-2 py-0.5 rounded-full border border-border-light flex items-center gap-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                              <span className="text-xs bg-bg text-text-secondary px-2 py-0.5 rounded- border border-border-light flex items-center gap-1" style={{ fontFamily: "'Inter', sans-serif" }}>
                                 <Clock size={10} strokeWidth={1.5} />{item.time}
                               </span>
                             )}
@@ -163,7 +167,7 @@ export default function Itinerary() {
                           {item.description && <p className="text-sm text-text-muted mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>{item.description}</p>}
                         </div>
                       </div>
-                      <button onClick={() => handleDelete(item._id)} disabled={item.isOptimistic} className="text-danger/60 hover:text-danger disabled:opacity-30 text-sm ml-3 shrink-0 cursor-pointer bg-transparent border-0 p-1">
+                      <button onClick={() => setItemToDelete(item._id)} disabled={item.isOptimistic} className="text-danger/60 hover:text-danger disabled:opacity-30 text-sm ml-3 shrink-0 cursor-pointer bg-transparent border-0 p-1">
                         <Trash2 size={16} strokeWidth={1.5} />
                       </button>
                     </div>
@@ -174,6 +178,7 @@ export default function Itinerary() {
           </div>
         )}
       </div>
+      {itemToDelete && <ConfirmModal title="Delete item?" message="Are you sure you want to delete this itinerary item?" onConfirm={confirmDelete} onCancel={() => setItemToDelete(null)} />}
     </div>
   );
 }

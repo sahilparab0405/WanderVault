@@ -83,7 +83,7 @@ function SidebarInner({ onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="lg:hidden p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border-0 bg-transparent"
+            className="lg:hidden p-1.5 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border-0 bg-transparent"
             aria-label="Close menu"
           >
             <X size={18} strokeWidth={1.5} />
@@ -92,8 +92,8 @@ function SidebarInner({ onClose }) {
       </div>
 
       {/* ── Nav Items ── */}
-      <nav className="flex-1 px-4 py-8 space-y-1">
-        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 px-3 mb-4"
+      <nav className="flex-1 px-6 py-8 space-y-1">
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 px-6 mb-4"
            style={{ fontFamily: "'Inter', sans-serif" }}>
           Menu
         </p>
@@ -105,7 +105,7 @@ function SidebarInner({ onClose }) {
               to={to}
               onClick={onClose}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl no-underline
+                flex items-center gap-3 px-6 py-6 rounded- no-underline
                 text-sm font-semibold transition-all duration-200 group
                 ${active
                   ? 'bg-white/10 text-white shadow-lg shadow-black/10'
@@ -122,7 +122,7 @@ function SidebarInner({ onClose }) {
               />
               <span>{label}</span>
               {active && (
-                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-accent" />
+                <div className="ml-auto w-1.5 h-1.5 rounded- bg-accent" />
               )}
             </Link>
           );
@@ -131,8 +131,8 @@ function SidebarInner({ onClose }) {
 
       {/* ── Active Trip Indicator ── */}
       {activeTrip && (
-        <div className="px-4 mb-4">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 overflow-hidden relative group">
+        <div className="px-6 mb-4">
+          <div className="bg-white/5 border border-white/10 rounded- p-6 overflow-hidden relative group">
             <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100 transition-opacity">
                <Loader2 size={12} className="text-accent animate-pulse" />
             </div>
@@ -151,12 +151,12 @@ function SidebarInner({ onClose }) {
       )}
 
       {/* ── Settings ── */}
-      <div className="px-4 pb-2">
+      <div className="px-6 pb-2">
         <Link
           to="/settings"
           onClick={onClose}
           className={`
-            flex items-center gap-3 px-4 py-3 rounded-xl no-underline
+            flex items-center gap-3 px-6 py-6 rounded- no-underline
             text-sm font-semibold transition-all duration-200
             ${location.pathname === '/settings'
               ? 'bg-white/10 text-white shadow-lg shadow-black/10'
@@ -175,10 +175,10 @@ function SidebarInner({ onClose }) {
       </div>
 
       {/* ── User footer ── */}
-      <div className="px-4 py-6 border-t border-white/5 m-2 bg-black/20 rounded-2xl">
+      <div className="px-6 py-6 border-t border-white/5 m-2 bg-black/20 rounded-">
         <div className="flex items-center gap-3 mb-4">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold uppercase shadow-inner"
+            className="w-10 h-10 rounded- flex items-center justify-center text-sm font-bold uppercase shadow-inner"
             style={{
               background: 'linear-gradient(135deg, #FF6B35, #E5552A)',
               color: '#fff',
@@ -199,7 +199,7 @@ function SidebarInner({ onClose }) {
           type="button"
           onClick={handleLogout}
           id="sidebar-logout"
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-
                      text-xs font-bold text-white/60 hover:text-white
                      border border-white/10 hover:bg-white/5
                      transition-all duration-200 cursor-pointer bg-transparent"
@@ -227,11 +227,11 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile top bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-navy flex items-center px-4 gap-3"
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-navy flex items-center px-6 gap-3"
            style={{ background: '#1a2b4a' }}>
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-2 rounded-lg text-white hover:bg-white/10 transition-colors cursor-pointer border-0 bg-transparent"
+          className="p-2 rounded-xl text-white hover:bg-white/10 transition-colors cursor-pointer border-0 bg-transparent"
           aria-label="Open menu"
         >
           <Menu size={20} strokeWidth={1.5} />

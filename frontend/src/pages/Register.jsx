@@ -66,7 +66,7 @@ export default function Register() {
   const isFormValid = form.name.trim().length >= 2 && EMAIL_RE.test(form.email) && form.password.length >= 6;
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4">
+    <div className="min-h-screen relative flex items-center justify-center p-6">
       {/* Background */}
       <div className="fixed inset-0 bg-cover bg-center bg-no-repeat"
            style={{ backgroundImage: `url(${BG_URL})` }} />
@@ -76,7 +76,7 @@ export default function Register() {
       <div className="relative z-10 w-full max-w-[400px]">
 
         {/* Logo */}
-        <div className="bg-white rounded-2xl p-8 border border-white/20"
+        <div className="bg-white rounded- p-8 border border-white/20"
              style={{ boxShadow: '0 24px 64px rgba(0,0,0,0.3)' }}>
           <div className="flex justify-center mb-8">
             <Logo size="lg" dark={false} />
@@ -91,7 +91,7 @@ export default function Register() {
           </div>
 
           {serverError && (
-            <div className="bg-danger-light text-danger p-3 rounded-xl mb-5 text-sm font-medium border border-danger/20 flex items-start gap-2"
+            <div className="bg-danger-light text-danger p-6 rounded- mb-5 text-sm font-medium border border-danger/20 flex items-start gap-2"
                  role="alert" style={{ fontFamily: "'Inter', sans-serif" }}>
               <AlertTriangle size={14} strokeWidth={1.5} className="shrink-0 mt-0.5" />
               <span>{serverError}</span>
@@ -107,7 +107,7 @@ export default function Register() {
                 <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" strokeWidth={1.5} />
                 <input type="text" id="register-name" name="name" required autoComplete="name"
                   placeholder="Your full name"
-                  className={`w-full border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-bg text-navy transition-colors ${fieldErrors.name ? 'border-danger' : 'border-border focus:border-primary'}`}
+                  className={`w-full border rounded- pl-10 pr-6 py-6 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-bg text-navy transition-colors ${fieldErrors.name ? 'border-danger' : 'border-border focus:border-primary'}`}
                   style={{ fontFamily: "'Inter', sans-serif" }}
                   value={form.name} onChange={handleChange} disabled={loading} />
               </div>
@@ -122,7 +122,7 @@ export default function Register() {
                 <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" strokeWidth={1.5} />
                 <input type="email" id="register-email" name="email" required autoComplete="email"
                   placeholder="you@email.com"
-                  className={`w-full border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-bg text-navy transition-colors ${fieldErrors.email ? 'border-danger' : 'border-border focus:border-primary'}`}
+                  className={`w-full border rounded- pl-10 pr-6 py-6 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-bg text-navy transition-colors ${fieldErrors.email ? 'border-danger' : 'border-border focus:border-primary'}`}
                   style={{ fontFamily: "'Inter', sans-serif" }}
                   value={form.email} onChange={handleChange} disabled={loading} />
               </div>
@@ -137,7 +137,7 @@ export default function Register() {
                 <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" strokeWidth={1.5} />
                 <input type="password" id="register-password" name="password" required autoComplete="new-password"
                   placeholder="Min 6 characters"
-                  className={`w-full border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-bg text-navy transition-colors ${fieldErrors.password ? 'border-danger' : 'border-border focus:border-primary'}`}
+                  className={`w-full border rounded- pl-10 pr-6 py-6 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-bg text-navy transition-colors ${fieldErrors.password ? 'border-danger' : 'border-border focus:border-primary'}`}
                   style={{ fontFamily: "'Inter', sans-serif" }}
                   value={form.password} onChange={handleChange} disabled={loading} />
               </div>
@@ -153,17 +153,17 @@ export default function Register() {
             </div>
 
             <button type="submit" id="register-submit" disabled={loading || !isFormValid}
-              className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all duration-150 cursor-pointer border-0 text-sm mt-2"
+              className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-6 rounded- transition-all duration-150 cursor-pointer border-0 text-sm mt-2"
               style={{ fontFamily: "'Inter', sans-serif", boxShadow: '0 4px 14px rgba(255,107,53,0.4)' }}>
               {loading ? (
-                <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Creating account...</>
+                <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded- animate-spin" />Creating account...</>
               ) : (
                 <>Create Account <ArrowRight size={16} strokeWidth={2} /></>
               )}
             </button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-border text-center">
+          <div className="mt-6 pt-6 border-t border-border text-center">
             <p className="text-sm text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>
               Already have an account?{' '}
               <Link to="/login" className="text-accent font-semibold hover:underline no-underline">Sign in</Link>
