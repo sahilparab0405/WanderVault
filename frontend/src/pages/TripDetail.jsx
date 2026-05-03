@@ -351,11 +351,11 @@ out body 5;`;
                      ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-text-muted hover:text-navy hover:border-border'}`}
                  >
                    <tab.icon size={18} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
-                   {tab.label}
-                 </button>
-              ))}
-           </div>
-        </div>
+                  </button>
+               ))}
+               </div>
+            </div>
+         </div>
       </div>
 
       {/* ── Tab Content ── */}
