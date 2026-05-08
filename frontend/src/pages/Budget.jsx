@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import API from '../api/axios';
 import BudgetTracker from '../components/BudgetTracker';
 import { 
@@ -27,7 +27,7 @@ export default function Budget() {
     fetchTrips();
   }, [fetchTrips]);
 
-  const { totalBudget, totalSpent, avgEfficiency, overBudgetTrips } = useMemo(() => {
+  const { totalSpent, avgEfficiency, overBudgetTrips } = useMemo(() => {
     const budget = trips.reduce((sum, t) => sum + (t.budget || 0), 0);
     const spent = trips.reduce((sum, t) => sum + (t.totalExpense || 0), 0);
     return {

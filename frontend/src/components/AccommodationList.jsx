@@ -243,6 +243,7 @@ function AccommodationCard({ place, stats, tripId, valueRank }) {
 
         {/* Amenities row (Area 1 — Addition 3: real Overpass amenities) */}
         <div className="flex items-center gap-4 mb-4 py-6 border-t border-b border-border-light">
+          {/* eslint-disable-next-line no-unused-vars */}
           {amenities.map(({ Icon, label }) => (
             <div key={label} className="flex flex-col items-center gap-1">
               <Icon size={14} strokeWidth={1.5} className="text-text-secondary" />

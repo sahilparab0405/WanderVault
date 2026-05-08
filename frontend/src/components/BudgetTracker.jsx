@@ -579,10 +579,7 @@ export default function BudgetTracker({ trip, expenses }) {
     setPdfLoading(false);
   }, [trip, expenses, categoryTotals, totalSpent, remaining, budgetPercent]);
 
-  // ─── Custom bar color ───
-  const getBarColor = (entry) => {
-    return entry.total > dailyBudget ? '#EF4444' : '#2563EB';
-  };
+
 
   return (
     <div

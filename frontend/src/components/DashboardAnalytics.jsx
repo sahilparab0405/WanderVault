@@ -112,6 +112,7 @@ export default function DashboardAnalytics({ trips }) {
   // Fetch expenses for all trips once
   useEffect(() => {
     if (!trips || trips.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setExpensesLoading(false);
       return;
     }

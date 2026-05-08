@@ -31,6 +31,7 @@ export default function Itinerary() {
     setLoading(false);
   }, [id]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleAdd = async (e) => {

@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
 import Logo from './Logo';
@@ -30,14 +30,11 @@ const NAV_ITEMS = [
 /* ─── Sidebar inner (shared by desktop + mobile) ─── */
 function SidebarInner({ onClose }) {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
   const [activeTrip, setActiveTrip] = useState(null);
-  const [loadingTrip, setLoadingTrip] = useState(false);
 
   useEffect(() => {
     const fetchActiveTrip = async () => {
-      setLoadingTrip(true);
       try {
         const { data } = await API.get('/trips');
         const now = new Date();
@@ -49,8 +46,6 @@ function SidebarInner({ onClose }) {
         setActiveTrip(active);
       } catch (err) {
         console.error('Sidebar: Failed to fetch active trip', err);
-      } finally {
-        setLoadingTrip(false);
       }
     };
     if (user) fetchActiveTrip();
@@ -97,6 +92,7 @@ function SidebarInner({ onClose }) {
            style={{ fontFamily: "'Inter', sans-serif" }}>
           Menu
         </p>
+        {/* eslint-disable-next-line no-unused-vars */}
         {NAV_ITEMS.map(({ to, label, Icon }) => {
           const active = isActive(to);
           return (

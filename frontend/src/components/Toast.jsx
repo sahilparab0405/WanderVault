@@ -15,6 +15,7 @@ import { CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
 
 const ToastContext = createContext(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useToast() {
   const ctx = useContext(ToastContext);
   if (!ctx) throw new Error('useToast must be used within ToastProvider');

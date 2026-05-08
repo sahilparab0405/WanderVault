@@ -221,6 +221,7 @@ out body 15;`;
   }, [latitude, longitude, processPlaces]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSightseeing();
   }, [fetchSightseeing]);
 

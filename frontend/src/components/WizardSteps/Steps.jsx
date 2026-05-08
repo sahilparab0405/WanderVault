@@ -3,6 +3,7 @@ import { Pen, MapPin, Search, X, Navigation, Calendar, Building2, Wallet, Wifi, 
 import DatePicker from 'react-datepicker';
 import BudgetScoreCard from '../BudgetScoreCard';
 
+// eslint-disable-next-line no-unused-vars
 export const StepHeader = ({ Icon, title, subtitle }) => (
   <div className="text-center mb-6">
     <div className="flex justify-center mb-3">

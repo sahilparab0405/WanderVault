@@ -127,6 +127,7 @@ export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded, trip
     setLoading(false);
   }, [latitude, longitude, onPlacesLoaded]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
   if (!latitude || !longitude) {

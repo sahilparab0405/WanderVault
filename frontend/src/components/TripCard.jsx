@@ -34,11 +34,6 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
 
-function formatDateShort(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: '2-digit' });
-}
-
 /* ─── Budget status helper ─── */
 function getBudgetStatus(totalExpense, budget) {
   const percent = (totalExpense / budget) * 100;

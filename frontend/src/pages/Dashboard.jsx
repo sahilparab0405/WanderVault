@@ -43,6 +43,7 @@ export default function Dashboard() {
     setLoading(false);
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchTrips(); }, []);
 
   const confirmDelete = async () => {
@@ -70,14 +71,6 @@ export default function Dashboard() {
     }
     setIsCloning(false);
   };
-
-  const { totalSpent, onBudget, overBudget } = useMemo(() => {
-    return {
-      totalSpent: trips.reduce((sum, t) => sum + (t.totalExpense || 0), 0),
-      onBudget: trips.filter(t => !t.budgetExceeded).length,
-      overBudget: trips.filter(t => t.budgetExceeded).length
-    };
-  }, [trips]);
 
   const filteredTrips = useMemo(() => {
     let result = [...trips];

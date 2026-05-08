@@ -5,7 +5,7 @@
  * Uses react-leaflet for React integration and Leaflet for the map engine.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
