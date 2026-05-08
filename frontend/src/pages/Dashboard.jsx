@@ -3,12 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import TripCard from '../components/TripCard';
-import { TripCardSkeleton, StatCardSkeleton } from '../components/Skeleton';
 import { useToast } from '../components/Toast';
 import { 
-  Plane, DollarSign, Shield, AlertTriangle, Search, PlusCircle, 
-  MapPin, Calendar, ArrowRight, BarChart2, CheckCircle, TrendingUp, Info,
-  Copy, SlidersHorizontal, ChevronDown, X
+  Plane, AlertTriangle, Search, PlusCircle, 
+  MapPin, Calendar, ArrowRight, CheckCircle,
+  Copy, SlidersHorizontal, ChevronDown
 } from 'lucide-react';
 import Logo from '../components/Logo';
 import DashboardAnalytics from '../components/DashboardAnalytics';
@@ -50,7 +49,7 @@ export default function Dashboard() {
     if (!deleteTarget) return;
     try {
       await API.delete(`/trips/${deleteTarget.id}`);
-      setTrips(trips.filter(t => t._id !== deleteTarget.id));
+      setTrips(prev => prev.filter(t => t._id !== deleteTarget.id));
       toast.success(`"${deleteTarget.name}" has been deleted.`, 'Trip Deleted');
       setDeleteTarget(null);
     } catch {
@@ -72,9 +71,13 @@ export default function Dashboard() {
     setIsCloning(false);
   };
 
-  const totalSpent = trips.reduce((sum, t) => sum + (t.totalExpense || 0), 0);
-  const onBudget = trips.filter(t => !t.budgetExceeded).length;
-  const overBudget = trips.filter(t => t.budgetExceeded).length;
+  const { totalSpent, onBudget, overBudget } = useMemo(() => {
+    return {
+      totalSpent: trips.reduce((sum, t) => sum + (t.totalExpense || 0), 0),
+      onBudget: trips.filter(t => !t.budgetExceeded).length,
+      overBudget: trips.filter(t => t.budgetExceeded).length
+    };
+  }, [trips]);
 
   const filteredTrips = useMemo(() => {
     let result = [...trips];

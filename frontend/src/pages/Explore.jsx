@@ -2,11 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import { 
-  Compass, Utensils, MapPin, Building2, ExternalLink, 
-  Plane, ArrowRight, Star, Heart, PlusCircle, Search,
+  Compass, Utensils, MapPin, Building2,
+  ArrowRight, Star, Search,
   TrendingUp, Landmark, Map, Calendar
 } from 'lucide-react';
-import { TripCardSkeleton } from '../components/Skeleton';
 
 // Premium Discover Data
 const POPULAR_DESTINATIONS = [
@@ -79,12 +78,14 @@ export default function Explore() {
     fetchTrips();
   }, [fetchTrips]);
 
-  const activeTrip = trips.find(t => {
-    const now = new Date();
-    return new Date(t.startDate) <= now && new Date(t.endDate) >= now;
-  }) || trips[0];
+  const activeTrip = useMemo(() => {
+    return trips.find(t => {
+      const now = new Date();
+      return new Date(t.startDate) <= now && new Date(t.endDate) >= now;
+    }) || trips[0];
+  }, [trips]);
 
-  const pastTrips = trips.filter(t => new Date(t.endDate) < new Date()).slice(0, 3);
+  const pastTrips = useMemo(() => trips.filter(t => new Date(t.endDate) < new Date()).slice(0, 3), [trips]);
 
   const handlePlanTrip = (destination) => {
     navigate('/create-trip', { state: { prefillDestination: destination } });

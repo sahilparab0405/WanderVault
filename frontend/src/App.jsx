@@ -5,16 +5,18 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { PageSpinner } from './components/Skeleton';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import CreateTrip from './pages/CreateTrip';
-import TripDetail from './pages/TripDetail';
-import Itinerary from './pages/Itinerary';
-import Budget from './pages/Budget';
-import Explore from './pages/Explore';
-import Settings from './pages/Settings';
-import PublicTrip from './pages/PublicTrip';
 import API from './api/axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+
+// Lazy-load all heavy page components for faster initial load
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const CreateTrip = lazy(() => import('./pages/CreateTrip'));
+const TripDetail = lazy(() => import('./pages/TripDetail'));
+const Itinerary = lazy(() => import('./pages/Itinerary'));
+const Budget = lazy(() => import('./pages/Budget'));
+const Explore = lazy(() => import('./pages/Explore'));
+const Settings = lazy(() => import('./pages/Settings'));
+const PublicTrip = lazy(() => import('./pages/PublicTrip'));
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -82,6 +84,7 @@ function App() {
     <BrowserRouter>
       <ErrorBoundary>
         <AppShell>
+          <Suspense fallback={<PageSpinner message="Loading page..." />}>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/login" element={<Login />} />
@@ -164,6 +167,7 @@ function App() {
             />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
+          </Suspense>
         </AppShell>
       </ErrorBoundary>
     </BrowserRouter>

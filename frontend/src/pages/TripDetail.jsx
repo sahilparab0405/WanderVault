@@ -1,15 +1,13 @@
-import { useState, useEffect, useMemo, Suspense, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import { 
-  Plane, Calendar, MapPin, DollarSign, Wallet, MoreVertical, 
-  Trash2, Plus, Info, ChevronRight, Utensils, Compass, Building,
-  Navigation, CheckCircle, Clock, Hotel, ArrowRight, X, Search,
-  Briefcase, Car, Train, AlertTriangle, Star, Bus,
+  Plane, Calendar, MapPin, 
+  Trash2, Utensils, Compass, Hotel, X, 
+  Briefcase, AlertTriangle,
   Share2, MessageCircle, Globe, Copy, Link2
 } from 'lucide-react';
 import { useToast } from '../components/Toast';
-import { StatCardSkeleton, TripCardSkeleton } from '../components/Skeleton';
 import ItineraryTab from '../pages/Itinerary';
 import ConfirmModal from '../components/ConfirmModal';
 import PromptModal from '../components/PromptModal';
@@ -40,7 +38,6 @@ export default function TripDetail() {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [expenseForm, setExpenseForm] = useState({ title: '', amount: '', category: 'Food' });
   const [isAddingExpense, setIsAddingExpense] = useState(false);
-  const [actionError, setActionError] = useState('');
   const [expenseErrors, setExpenseErrors] = useState({});
   const toast = useToast();
 
@@ -228,10 +225,10 @@ out body 5;`;
     if (!itineraryId) return;
     try {
       await API.delete(`/itinerary/${id}/${itineraryId}`);
+      toast.success('Hotel removed from itinerary.', 'Hotel Removed');
       fetchTrip();
     } catch { 
-      setActionError('Failed to remove hotel. Please try again.'); 
-      setTimeout(() => setActionError(''), 5000);
+      toast.error('Failed to remove hotel. Please try again.', 'Error');
     }
   };
 
@@ -346,17 +343,6 @@ out body 5;`;
               </div>
            )}
         </div>
-
-        {/* Action Error */}
-        {actionError && (
-           <div className="max-w-7xl mx-auto px-6 lg:px-8 mt-4">
-             <div className="bg-danger/10 border border-danger text-danger p-4 rounded-xl flex items-center gap-3 animate-in fade-in zoom-in duration-300 shadow-sm">
-               <AlertTriangle size={18} className="shrink-0" />
-               <p className="text-sm font-semibold">{actionError}</p>
-               <button onClick={() => setActionError('')} className="ml-auto text-danger hover:text-danger-dark border-0 bg-transparent cursor-pointer">✕</button>
-             </div>
-           </div>
-        )}
 
         {/* ── Budget Alert ── */}
         {trip.totalExpense > trip.budget && (

@@ -2,11 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import API from '../api/axios';
 import BudgetTracker from '../components/BudgetTracker';
 import { 
-  BarChart2, PieChart, TrendingUp, Wallet, AlertTriangle, 
-  CheckCircle, ArrowRight, Search, Filter, Printer, Download,
+  BarChart2, PieChart, Wallet, AlertTriangle, 
+  CheckCircle, ArrowRight, Filter, Printer, Download,
   Target, Info
 } from 'lucide-react';
-import { StatCardSkeleton } from '../components/Skeleton';
 import { Link } from 'react-router-dom';
 
 export default function Budget() {
@@ -28,10 +27,16 @@ export default function Budget() {
     fetchTrips();
   }, [fetchTrips]);
 
-  const totalBudget = trips.reduce((sum, t) => sum + (t.budget || 0), 0);
-  const totalSpent = trips.reduce((sum, t) => sum + (t.totalExpense || 0), 0);
-  const avgEfficiency = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
-  const overBudgetTrips = trips.filter(t => t.budgetExceeded).length;
+  const { totalBudget, totalSpent, avgEfficiency, overBudgetTrips } = useMemo(() => {
+    const budget = trips.reduce((sum, t) => sum + (t.budget || 0), 0);
+    const spent = trips.reduce((sum, t) => sum + (t.totalExpense || 0), 0);
+    return {
+      totalBudget: budget,
+      totalSpent: spent,
+      avgEfficiency: budget > 0 ? (spent / budget) * 100 : 0,
+      overBudgetTrips: trips.filter(t => t.budgetExceeded).length
+    };
+  }, [trips]);
 
   if (loading) return (
     <div className="min-h-screen bg-bg p-8">
