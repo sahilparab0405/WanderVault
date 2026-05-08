@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
-import { useAuth } from '../context/AuthContext';
 import { 
   Compass, Utensils, MapPin, Building2, ExternalLink, 
   Plane, ArrowRight, Star, Heart, PlusCircle, Search,
@@ -63,14 +62,9 @@ export default function Explore() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dining');
-  const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchTrips();
-  }, []);
-
-  const fetchTrips = async () => {
+  const fetchTrips = useCallback(async () => {
     try {
       const { data } = await API.get('/trips');
       setTrips(data);
@@ -79,7 +73,11 @@ export default function Explore() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchTrips();
+  }, [fetchTrips]);
 
   const activeTrip = trips.find(t => {
     const now = new Date();

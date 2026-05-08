@@ -270,3 +270,154 @@ button {
 .react-datepicker-popper {
   z-index: 50 !important;
 }
+
+/* ═══════════════════════════════════════
+   UI Polish: Consistent Buttons
+   ═══════════════════════════════════════ */
+
+.wv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.wv-btn:active {
+  transform: scale(0.97);
+}
+
+.wv-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Primary variant */
+.wv-btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  padding: 0.625rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+.wv-btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Accent variant */
+.wv-btn-accent {
+  background: var(--color-accent);
+  color: #fff;
+  padding: 0.625rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+}
+.wv-btn-accent:hover:not(:disabled) {
+  background: var(--color-accent-dark);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Ghost variant */
+.wv-btn-ghost {
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  padding: 0.625rem 1.25rem;
+}
+.wv-btn-ghost:hover:not(:disabled) {
+  background: var(--color-card);
+  border-color: var(--color-primary);
+  color: var(--color-navy);
+}
+
+/* ═══════════════════════════════════════
+   UI Polish: Form Inputs
+   ═══════════════════════════════════════ */
+
+.wv-input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-navy);
+  background: var(--color-card);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.wv-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.wv-input.has-error {
+  border-color: var(--color-danger);
+}
+.wv-input.has-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Validation error text */
+.wv-field-error {
+  color: var(--color-danger);
+  font-size: 0.625rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ═══════════════════════════════════════
+   UI Polish: Card hover effects
+   ═══════════════════════════════════════ */
+
+.wv-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+.wv-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26, 43, 74, 0.08);
+}
+
+/* ═══════════════════════════════════════
+   UI Polish: Smooth filter animations
+   ═══════════════════════════════════════ */
+
+@keyframes wv-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wv-slide-enter {
+  animation: wv-slide-down 0.3s ease forwards;
+}
+
+/* ═══════════════════════════════════════
+   No-scrollbar helper
+   ═══════════════════════════════════════ */
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

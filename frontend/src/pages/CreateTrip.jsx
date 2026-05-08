@@ -11,6 +11,7 @@ import {
   ChevronDown, ChevronUp, X, Wifi, Bath, Flame, ParkingCircle, Star,
   Sparkles, CheckCircle2
 } from 'lucide-react';
+import { useToast } from '../components/Toast';
 import {
   CheckCircleIcon,
   Step1TripName,
@@ -179,7 +180,6 @@ out body 10;`;
           const rating = (3.5 + ((hash % 15) / 10)).toFixed(1);
           
           // Generate a pseudo-realistic image URL based on id
-          const photoId = (item.id % 20) + 1; // Unsplash source with seeds
           let photo = `https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80`;
           if (hash % 2 === 0) photo = `https://images.unsplash.com/photo-1551882547-ff40c0d5b5df?w=600&h=360&fit=crop&q=80`;
           else if (hash % 3 === 0) photo = `https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=360&fit=crop&q=80`;
@@ -274,6 +274,7 @@ export default function CreateTrip() {
   const [addingStarter, setAddingStarter] = useState(false);
   const [starterDone, setStarterDone] = useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
 
   const locationSearch = useLocationSearch();
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -306,7 +307,27 @@ export default function CreateTrip() {
     }
   };
 
-  const nextStep = () => { if (canProceed() && step < 6) { setStep(s => s + 1); setError(''); } };
+  const getStepError = () => {
+    switch (step) {
+      case 1: return form.name.trim().length < 2 ? 'Trip name must be at least 2 characters.' : '';
+      case 2: return form.destination.trim().length < 2 ? 'Please select or type a valid destination.' : '';
+      case 3: return form.travelMode === '' ? 'Please select a travel mode.' : '';
+      case 4:
+        if (!form.startDate || !form.endDate) return 'Please select both start and end dates.';
+        if (form.endDate < form.startDate) return 'End date must be after start date.';
+        return '';
+      case 5: return '';
+      case 6:
+        if (form.budget === '' || Number(form.budget) < 1) return 'Please enter a budget of at least ₹1.';
+        return '';
+      default: return '';
+    }
+  };
+
+  const nextStep = () => {
+    if (canProceed() && step < 6) { setStep(s => s + 1); setError(''); }
+    else if (!canProceed()) { setError(getStepError()); }
+  };
   const prevStep = () => { if (step > 1) { setStep(s => s - 1); setError(''); } };
 
   /* ── Detect starter itinerary match ── */
@@ -320,7 +341,7 @@ export default function CreateTrip() {
   };
 
   const handleSubmit = async () => {
-    if (!canProceed()) return;
+    if (!canProceed()) { setError(getStepError()); return; }
     setLoading(true); setError('');
     try {
       const { data: newTrip } = await API.post('/trips', {
@@ -332,6 +353,8 @@ export default function CreateTrip() {
         accommodation: form.accommodation
       });
 
+      toast.success(`"${form.name.trim()}" has been created!`, 'Trip Created 🎉');
+
       // Check for starter itinerary match
       const matchKey = findStarterMatch(form.destination);
       if (matchKey) {
@@ -339,7 +362,7 @@ export default function CreateTrip() {
       } else {
         navigate('/dashboard');
       }
-    } catch (err) { setError(err.response?.data?.message || 'Failed to create trip.'); }
+    } catch (err) { setError(err.response?.data?.message || 'Failed to create trip. Please check your inputs.'); }
     finally { setLoading(false); }
   };
 

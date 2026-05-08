@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import API from '../api/axios';
 import { ItinerarySkeleton } from '../components/Skeleton';
 import ConfirmModal from '../components/ConfirmModal';
+import { useToast } from '../components/Toast';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Calendar, MapPin, Clock, Trash2, AlertTriangle } from 'lucide-react';
@@ -16,24 +17,39 @@ export default function Itinerary() {
   const [form, setForm] = useState({ day: '', title: '', description: '', location: '', time: '' });
   const [itemToDelete, setItemToDelete] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [formErrors, setFormErrors] = useState({});
+  const toast = useToast();
 
-  useEffect(() => { fetchData(); }, [id]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [tripRes, itemsRes] = await Promise.all([API.get(`/trips/${id}`), API.get(`/itinerary/${id}`)]);
       setTrip(tripRes.data);
       setItems(itemsRes.data);
-    } catch (err) { console.error(err); }
+    } catch { 
+      // Error fetching data
+    }
     setLoading(false);
-  };
+  }, [id]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleAdd = async (e) => {
     e.preventDefault();
+
+    // Validation
+    const errors = {};
+    if (!form.day || Number(form.day) < 1) errors.day = 'Enter a valid day number.';
+    if (!form.title.trim()) errors.title = 'Activity title is required.';
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
     
     // 1. Optimistic UI Update
     const optimisticItem = { ...form, _id: 'temp-' + Date.now(), isOptimistic: true };
     setItems((prev) => [...prev, optimisticItem].sort((a, b) => a.day - b.day));
+    const savedTitle = form.title.trim();
     setForm({ day: '', title: '', description: '', location: '', time: '' });
     setShowForm(false);
 
@@ -41,11 +57,10 @@ export default function Itinerary() {
     try {
       const { data } = await API.post(`/itinerary/${id}`, form);
       setItems((prev) => prev.map(item => item._id === optimisticItem._id ? data : item).sort((a, b) => a.day - b.day));
-    } catch (err) { 
-      console.error(err); 
+      toast.success(`"${savedTitle}" added to Day ${form.day || data.day}.`, 'Itinerary Updated');
+    } catch { 
       setItems((prev) => prev.filter(item => item._id !== optimisticItem._id)); // Revert on failure
-      setErrorMsg("Failed to add to itinerary. Please check your connection.");
-      setTimeout(() => setErrorMsg(''), 5000);
+      toast.error('Failed to add to itinerary. Please check your connection.', 'Error');
     }
   };
 
@@ -61,12 +76,11 @@ export default function Itinerary() {
     // 2. Background API Sync
     try {
       await API.delete(`/itinerary/${itemId}`);
-    } catch (err) { 
-      console.error(err); 
+      toast.success('Itinerary item removed.', 'Deleted');
+    } catch { 
       if (itemToDeleteObj) {
          setItems((prev) => [...prev, itemToDeleteObj].sort((a, b) => a.day - b.day)); // Revert on failure
-         setErrorMsg("Failed to delete item. Please try again.");
-         setTimeout(() => setErrorMsg(''), 5000);
+         toast.error('Failed to delete item. Please try again.', 'Error');
       }
     }
   };
@@ -116,7 +130,8 @@ export default function Itinerary() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Day Number</label>
-                  <input type="number" required placeholder="1" min="1" id="itinerary-day" className="w-full border border-border rounded-xl px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" style={{ fontFamily: "'Inter', sans-serif" }} value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })} />
+                  <input type="number" placeholder="1" min="1" id="itinerary-day" className={`w-full border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy transition-colors ${formErrors.day ? 'border-danger' : 'border-border'}`} style={{ fontFamily: "'Inter', sans-serif" }} value={form.day} onChange={(e) => { setForm({ ...form, day: e.target.value }); if (formErrors.day) setFormErrors(p => ({...p, day: ''})); }} />
+                  {formErrors.day && <p className="text-danger text-[10px] font-semibold mt-1">{formErrors.day}</p>}
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Time</label>
@@ -125,7 +140,8 @@ export default function Itinerary() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Activity Title</label>
-                <input type="text" required placeholder="e.g. Visit a local landmark" id="itinerary-title" className="w-full border border-border rounded-xl px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy" style={{ fontFamily: "'Inter', sans-serif" }} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+                <input type="text" placeholder="e.g. Visit a local landmark" id="itinerary-title" className={`w-full border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy transition-colors ${formErrors.title ? 'border-danger' : 'border-border'}`} style={{ fontFamily: "'Inter', sans-serif" }} value={form.title} onChange={(e) => { setForm({ ...form, title: e.target.value }); if (formErrors.title) setFormErrors(p => ({...p, title: ''})); }} />
+                {formErrors.title && <p className="text-danger text-[10px] font-semibold mt-1">{formErrors.title}</p>}
               </div>
               <div>
                 <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Location</label>

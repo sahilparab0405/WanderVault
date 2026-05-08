@@ -4,10 +4,11 @@ import API from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import TripCard from '../components/TripCard';
 import { TripCardSkeleton, StatCardSkeleton } from '../components/Skeleton';
+import { useToast } from '../components/Toast';
 import { 
   Plane, DollarSign, Shield, AlertTriangle, Search, PlusCircle, 
   MapPin, Calendar, ArrowRight, BarChart2, CheckCircle, TrendingUp, Info,
-  Copy
+  Copy, SlidersHorizontal, ChevronDown, X
 } from 'lucide-react';
 import Logo from '../components/Logo';
 
@@ -22,26 +23,38 @@ export default function Dashboard() {
   const [cloneTarget, setCloneTarget] = useState(null);
   const [isCloning, setIsCloning] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+  const [filterDateFrom, setFilterDateFrom] = useState('');
+  const [filterDateTo, setFilterDateTo] = useState('');
+  const [filterBudgetMin, setFilterBudgetMin] = useState('');
+  const [filterBudgetMax, setFilterBudgetMax] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => { fetchTrips(); }, []);
+  const toast = useToast();
 
   const fetchTrips = async () => {
     try {
       const { data } = await API.get('/trips');
       setTrips(data);
-    } catch (err) { console.error(err); }
+    } catch {
+      // Error fetching trips
+    }
     setLoading(false);
   };
+
+  useEffect(() => { fetchTrips(); }, []);
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
       await API.delete(`/trips/${deleteTarget.id}`);
       setTrips(trips.filter(t => t._id !== deleteTarget.id));
+      toast.success(`"${deleteTarget.name}" has been deleted.`, 'Trip Deleted');
       setDeleteTarget(null);
-    } catch (err) { console.error(err); }
+    } catch {
+      toast.error('Failed to delete trip. Please try again.', 'Delete Failed');
+    }
   };
 
   const handleClone = async () => {
@@ -49,12 +62,11 @@ export default function Dashboard() {
     setIsCloning(true);
     try {
       const { data: newTrip } = await API.post(`/trips/${cloneTarget._id}/clone`);
+      toast.success(`"${cloneTarget.name}" cloned successfully!`, 'Trip Cloned');
       setCloneTarget(null);
       navigate(`/trip/${newTrip._id}`);
-    } catch (err) {
-      console.error(err);
-      setErrorMsg('Failed to clone trip. Please try again.');
-      setTimeout(() => setErrorMsg(''), 5000);
+    } catch {
+      toast.error('Failed to clone trip. Please try again.', 'Clone Failed');
     }
     setIsCloning(false);
   };
@@ -64,10 +76,49 @@ export default function Dashboard() {
   const overBudget = trips.filter(t => t.budgetExceeded).length;
 
   const filteredTrips = useMemo(() => {
-    if (!searchQuery.trim()) return trips;
-    const q = searchQuery.toLowerCase();
-    return trips.filter(t => t.name.toLowerCase().includes(q) || t.destination.toLowerCase().includes(q));
-  }, [trips, searchQuery]);
+    let result = [...trips];
+
+    // Search by name/destination
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(t => t.name.toLowerCase().includes(q) || t.destination.toLowerCase().includes(q));
+    }
+
+    // Filter by date range
+    if (filterDateFrom) {
+      result = result.filter(t => new Date(t.startDate) >= new Date(filterDateFrom));
+    }
+    if (filterDateTo) {
+      result = result.filter(t => new Date(t.endDate) <= new Date(filterDateTo));
+    }
+
+    // Filter by budget range
+    if (filterBudgetMin) {
+      result = result.filter(t => t.budget >= Number(filterBudgetMin));
+    }
+    if (filterBudgetMax) {
+      result = result.filter(t => t.budget <= Number(filterBudgetMax));
+    }
+
+    // Sorting
+    switch (sortBy) {
+      case 'oldest':
+        result.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+        break;
+      case 'budget-high':
+        result.sort((a, b) => b.budget - a.budget);
+        break;
+      case 'budget-low':
+        result.sort((a, b) => a.budget - b.budget);
+        break;
+      case 'newest':
+      default:
+        result.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+        break;
+    }
+
+    return result;
+  }, [trips, searchQuery, sortBy, filterDateFrom, filterDateTo, filterBudgetMin, filterBudgetMax]);
 
   const activeTrip = useMemo(() => {
     const now = new Date();
@@ -238,16 +289,83 @@ export default function Dashboard() {
           
           {/* Left Column: Trip List */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
+            {/* Filter & Sort Controls */}
+            <div className="flex items-center justify-between gap-3 flex-wrap">
               <h3 className="text-lg font-black text-navy flex items-center gap-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                <Calendar size={20} className="text-primary" /> Recent Trips
+                <Calendar size={20} className="text-primary" /> Your Trips
               </h3>
-              {filteredTrips.length > 0 && (
-                 <span className="text-[10px] font-bold text-text-muted bg-white border border-border px-6 py-1 rounded- uppercase">
-                   {filteredTrips.length} Total
-                 </span>
-              )}
+              <div className="flex items-center gap-2">
+                {/* Filters toggle */}
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border cursor-pointer transition-all ${
+                    showFilters ? 'bg-primary text-white border-primary' : 'bg-white text-text-secondary border-border hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  <SlidersHorizontal size={14} /> Filters
+                  {(filterDateFrom || filterDateTo || filterBudgetMin || filterBudgetMax) && (
+                    <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                  )}
+                </button>
+
+                {/* Sort dropdown */}
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={e => setSortBy(e.target.value)}
+                    className="appearance-none bg-white border border-border text-text-secondary text-xs font-bold px-4 py-2 pr-8 rounded-xl cursor-pointer hover:border-primary focus:border-primary focus:outline-none transition-colors"
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="budget-high">Budget: High → Low</option>
+                    <option value="budget-low">Budget: Low → High</option>
+                  </select>
+                  <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+                </div>
+
+                {filteredTrips.length > 0 && (
+                  <span className="text-[10px] font-bold text-text-muted bg-white border border-border px-4 py-1.5 rounded-xl uppercase">
+                    {filteredTrips.length} Total
+                  </span>
+                )}
+              </div>
             </div>
+
+            {/* Expandable Filters Panel */}
+            {showFilters && (
+              <div className="bg-white rounded-2xl border border-border p-5 animate-in fade-in slide-in-from-top-2 duration-300" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-xs font-bold text-navy uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Filter Trips</p>
+                  <button
+                    onClick={() => { setFilterDateFrom(''); setFilterDateTo(''); setFilterBudgetMin(''); setFilterBudgetMax(''); }}
+                    className="text-[10px] font-bold text-accent hover:text-accent-dark bg-transparent border-0 cursor-pointer"
+                  >Clear All</button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Date From</label>
+                    <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)}
+                      className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Date To</label>
+                    <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)}
+                      className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Min Budget (₹)</label>
+                    <input type="number" min="0" placeholder="0" value={filterBudgetMin} onChange={e => setFilterBudgetMin(e.target.value)}
+                      className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Max Budget (₹)</label>
+                    <input type="number" min="0" placeholder="∞" value={filterBudgetMax} onChange={e => setFilterBudgetMax(e.target.value)}
+                      className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
+                  </div>
+                </div>
+              </div>
+            )}
+
 
             <div className="grid gap-6">
               {filteredTrips.slice(0, 5).map(trip => (

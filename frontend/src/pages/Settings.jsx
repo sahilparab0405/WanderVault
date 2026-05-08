@@ -77,6 +77,8 @@ export default function Settings() {
                 <input 
                   type="password" 
                   placeholder="••••••••"
+                  value={password.current}
+                  onChange={e => setPassword({...password, current: e.target.value})}
                   className="w-full border border-border rounded-xl px-6 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                 />
               </div>
@@ -85,6 +87,8 @@ export default function Settings() {
                 <input 
                   type="password" 
                   placeholder="••••••••"
+                  value={password.new}
+                  onChange={e => setPassword({...password, new: e.target.value})}
                   className="w-full border border-border rounded-xl px-6 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                 />
               </div>
@@ -93,6 +97,8 @@ export default function Settings() {
                 <input 
                   type="password" 
                   placeholder="••••••••"
+                  value={password.confirm}
+                  onChange={e => setPassword({...password, confirm: e.target.value})}
                   className="w-full border border-border rounded-xl px-6 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                 />
               </div>

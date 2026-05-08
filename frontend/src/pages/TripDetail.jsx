@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import { 
@@ -8,6 +8,7 @@ import {
   Briefcase, Car, Train, AlertTriangle, Star, Bus,
   Share2, MessageCircle, Globe, Copy, Link2
 } from 'lucide-react';
+import { useToast } from '../components/Toast';
 import { StatCardSkeleton, TripCardSkeleton } from '../components/Skeleton';
 import ItineraryTab from '../pages/Itinerary';
 import ConfirmModal from '../components/ConfirmModal';
@@ -31,7 +32,6 @@ export default function TripDetail() {
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [visitedTabs, setVisitedTabs] = useState(new Set([activeTab]));
 
   // Hotel search state
   const [hotelSearch, setHotelSearch] = useState('');
@@ -41,6 +41,8 @@ export default function TripDetail() {
   const [expenseForm, setExpenseForm] = useState({ title: '', amount: '', category: 'Food' });
   const [isAddingExpense, setIsAddingExpense] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [expenseErrors, setExpenseErrors] = useState({});
+  const toast = useToast();
 
   // Share modal state (Area 5)
   const [showShareModal, setShowShareModal] = useState(false);
@@ -51,19 +53,30 @@ export default function TripDetail() {
 
   const handleAddExpense = async (e) => {
     e.preventDefault();
+
+    // Validation
+    const errors = {};
+    if (!expenseForm.title.trim()) errors.title = 'Please enter an expense title.';
+    if (!expenseForm.amount || Number(expenseForm.amount) <= 0) errors.amount = 'Amount must be greater than zero.';
+    if (Object.keys(errors).length > 0) {
+      setExpenseErrors(errors);
+      return;
+    }
+    setExpenseErrors({});
+
     setIsAddingExpense(true);
     try {
       await API.post(`/expenses/${id}`, {
-        title: expenseForm.title,
+        title: expenseForm.title.trim(),
         amount: Number(expenseForm.amount),
         category: expenseForm.category
       });
+      toast.success(`"${expenseForm.title.trim()}" — ₹${Number(expenseForm.amount).toLocaleString()} added.`, 'Expense Added');
       setShowExpenseForm(false);
       setExpenseForm({ title: '', amount: '', category: 'Food' });
       fetchTrip();
-    } catch (err) {
-      setActionError('Failed to add expense. Please try again.');
-      setTimeout(() => setActionError(''), 5000);
+    } catch {
+      toast.error('Failed to add expense. Please try again.', 'Error');
     }
     setIsAddingExpense(false);
   };
@@ -74,32 +87,30 @@ export default function TripDetail() {
     return () => window.removeEventListener('changeHotel', handleHotelChange);
   }, []);
 
-  useEffect(() => {
-    fetchTrip();
-  }, [id]);
-
-  useEffect(() => {
-    if (queryTab && queryTab !== activeTab) {
-      setActiveTab(queryTab);
-      setVisitedTabs(prev => new Set([...prev, queryTab]));
-    }
-  }, [queryTab]);
-
-  const fetchTrip = async () => {
+  const fetchTrip = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await API.get(`/trips/${id}`);
       setTrip(data);
-    } catch (err) {
+    } catch {
       setError('Failed to load trip details. It might have been deleted.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchTrip();
+  }, [fetchTrip]);
+
+  useEffect(() => {
+    if (queryTab && queryTab !== activeTab) {
+      setActiveTab(queryTab);
+    }
+  }, [queryTab, activeTab]);
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
-    setVisitedTabs(prev => new Set([...prev, tabId]));
     // Update URL without full refresh to keep track of tab
     const params = new URLSearchParams(location.search);
     params.set('tab', tabId);
@@ -170,21 +181,23 @@ out body 5;`;
     setIsSearchingHotels(false);
   };
   
-  const getFsqCache = (type) => {
+  const getFsqCache = useCallback((type) => {
      if (!trip?.latitude) return [];
      const key = `wv_fsq_${type}_${trip.latitude}_${trip.longitude}`;
      try {
        const cached = localStorage.getItem(key);
        if (cached) return JSON.parse(cached).data || [];
-     } catch(e) {}
+     } catch {
+       // Ignore cache errors
+     }
      return [];
-  };
+  }, [trip?.latitude, trip?.longitude]);
   
   const allNearbyPins = useMemo(() => {
      const dining = getFsqCache('dining').map(p => ({ ...p, pin_type: 'restaurant' }));
      const sights = getFsqCache('sightseeing').map(p => ({ ...p, pin_type: 'attraction' }));
      return [...dining, ...sights];
-  }, [trip, activeTab]);
+  }, [getFsqCache]);
 
   const confirmBookHotel = async (dayInput) => {
     const hotel = hotelPromptTarget;
@@ -199,14 +212,13 @@ out body 5;`;
         location: hotel.address,
         description: `Booking at ${hotel.name}. Coords: ${hotel.lat}, ${hotel.lon}`,
       });
-      
+      toast.success(`${hotel.name} added to Day ${day}.`, 'Hotel Booked');
       fetchTrip();
       setHotelResults([]);
       setHotelSearch('');
       setActiveTab('itinerary');
-    } catch (err) { 
-      setActionError('Failed to save booking. Please try again.'); 
-      setTimeout(() => setActionError(''), 5000);
+    } catch { 
+      toast.error('Failed to save booking. Please try again.', 'Booking Error');
     }
   };
 
@@ -217,7 +229,7 @@ out body 5;`;
     try {
       await API.delete(`/itinerary/${id}/${itineraryId}`);
       fetchTrip();
-    } catch (err) { 
+    } catch { 
       setActionError('Failed to remove hotel. Please try again.'); 
       setTimeout(() => setActionError(''), 5000);
     }
@@ -308,15 +320,17 @@ out body 5;`;
                  <form onSubmit={handleAddExpense} className="flex flex-wrap items-end gap-4">
                     <div className="flex-1 min-w-[200px]">
                        <label className="block text-xs font-bold text-navy mb-1">Title</label>
-                       <input type="text" required placeholder="e.g. Dinner at Seaside" className="w-full border border-border rounded- px-6 py-2.5 text-sm focus:outline-none focus:border-accent bg-bg" value={expenseForm.title} onChange={e => setExpenseForm({...expenseForm, title: e.target.value})} />
+                       <input type="text" placeholder="e.g. Dinner at Seaside" className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-bg transition-colors ${expenseErrors.title ? 'border-danger' : 'border-border'}`} value={expenseForm.title} onChange={e => { setExpenseForm({...expenseForm, title: e.target.value}); if (expenseErrors.title) setExpenseErrors(prev => ({...prev, title: ''})); }} />
+                       {expenseErrors.title && <p className="text-danger text-[10px] font-semibold mt-1">{expenseErrors.title}</p>}
                     </div>
                     <div className="w-32">
                        <label className="block text-xs font-bold text-navy mb-1">Amount (₹)</label>
-                       <input type="number" required min="1" placeholder="0" className="w-full border border-border rounded- px-6 py-2.5 text-sm focus:outline-none focus:border-accent bg-bg" value={expenseForm.amount} onChange={e => setExpenseForm({...expenseForm, amount: e.target.value})} />
+                       <input type="number" min="1" placeholder="0" className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-bg transition-colors ${expenseErrors.amount ? 'border-danger' : 'border-border'}`} value={expenseForm.amount} onChange={e => { setExpenseForm({...expenseForm, amount: e.target.value}); if (expenseErrors.amount) setExpenseErrors(prev => ({...prev, amount: ''})); }} />
+                       {expenseErrors.amount && <p className="text-danger text-[10px] font-semibold mt-1">{expenseErrors.amount}</p>}
                     </div>
                     <div className="w-40">
                        <label className="block text-xs font-bold text-navy mb-1">Category</label>
-                       <select className="w-full border border-border rounded- px-6 py-2.5 text-sm focus:outline-none focus:border-accent bg-bg" value={expenseForm.category} onChange={e => setExpenseForm({...expenseForm, category: e.target.value})}>
+                       <select className="w-full border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent bg-bg" value={expenseForm.category} onChange={e => setExpenseForm({...expenseForm, category: e.target.value})}>
                           <option value="Food">Food</option>
                           <option value="Transport">Transport</option>
                           <option value="Hotel">Hotel</option>
@@ -325,7 +339,7 @@ out body 5;`;
                           <option value="Other">Other</option>
                        </select>
                     </div>
-                    <button type="submit" disabled={isAddingExpense} className="bg-navy hover:bg-navy-dark text-white px-6 py-2.5 rounded- font-bold border-0 cursor-pointer h-[42px] min-w-[120px]">
+                    <button type="submit" disabled={isAddingExpense} className="bg-navy hover:bg-navy-dark text-white px-6 py-2.5 rounded-xl font-bold border-0 cursor-pointer h-[42px] min-w-[120px] transition-all">
                        {isAddingExpense ? 'Saving...' : 'Save Expense'}
                     </button>
                  </form>

@@ -55,7 +55,7 @@ const PING_INTERVAL = 14 * 60 * 1000;
 const keepAlive = () => {
   const https = require('https');
   https.get(KEEP_ALIVE_URL, (res) => {
-    console.log(`🏓 Keep-alive ping OK [${res.statusCode}]`);
+    // Keep-alive ping successful
   }).on('error', (e) => {
     console.warn('⚠️  Keep-alive ping failed:', e.message);
   });

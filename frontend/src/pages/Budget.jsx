@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import API from '../api/axios';
 import BudgetTracker from '../components/BudgetTracker';
 import { 
@@ -13,20 +13,20 @@ export default function Budget() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchTrips();
-  }, []);
-
-  const fetchTrips = async () => {
+  const fetchTrips = useCallback(async () => {
     try {
       const { data } = await API.get('/trips');
       setTrips(data);
-    } catch (err) {
-      console.error('Failed to fetch trips', err);
+    } catch {
+      // Error fetching trips
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchTrips();
+  }, [fetchTrips]);
 
   const totalBudget = trips.reduce((sum, t) => sum + (t.budget || 0), 0);
   const totalSpent = trips.reduce((sum, t) => sum + (t.totalExpense || 0), 0);
