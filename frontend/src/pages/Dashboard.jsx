@@ -11,6 +11,7 @@ import {
   Copy, SlidersHorizontal, ChevronDown, X
 } from 'lucide-react';
 import Logo from '../components/Logo';
+import DashboardAnalytics from '../components/DashboardAnalytics';
 
 // Lazy load map to keep initial payload small
 const TripMap = lazy(() => import('../components/TripMap'));
@@ -132,15 +133,20 @@ export default function Dashboard() {
   if (loading) return (
     <div className="min-h-screen bg-bg p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="h-64 bg-white rounded- animate-pulse border border-border" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="h-40 bg-white rounded- animate-pulse" />
-            <div className="h-40 bg-white rounded- animate-pulse" />
-          </div>
-          <div className="space-y-6">
-             <div className="h-80 bg-white rounded- animate-pulse" />
-          </div>
+        {/* Skeleton: Spotlight */}
+        <div className="h-64 bg-white rounded-2xl animate-pulse border border-border" />
+        {/* Skeleton: Stat cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[1,2,3].map(i => <div key={i} className="h-32 bg-white rounded-2xl animate-pulse border border-border" />)}
+        </div>
+        {/* Skeleton: Charts */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="h-72 bg-white rounded-2xl animate-pulse border border-border" />
+          <div className="h-72 bg-white rounded-2xl animate-pulse border border-border" />
+        </div>
+        {/* Skeleton: Trip list */}
+        <div className="space-y-4">
+          {[1,2].map(i => <div key={i} className="h-24 bg-white rounded-2xl animate-pulse border border-border" />)}
         </div>
       </div>
     </div>
@@ -284,201 +290,131 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ── Main Dashboard Grid ── */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          
-          {/* Left Column: Trip List */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Filter & Sort Controls */}
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <h3 className="text-lg font-black text-navy flex items-center gap-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                <Calendar size={20} className="text-primary" /> Your Trips
-              </h3>
-              <div className="flex items-center gap-2">
-                {/* Filters toggle */}
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border cursor-pointer transition-all ${
-                    showFilters ? 'bg-primary text-white border-primary' : 'bg-white text-text-secondary border-border hover:border-primary hover:text-primary'
-                  }`}
-                >
-                  <SlidersHorizontal size={14} /> Filters
-                  {(filterDateFrom || filterDateTo || filterBudgetMin || filterBudgetMax) && (
-                    <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-                  )}
-                </button>
+        {/* ── Analytics Section ── */}
+        <DashboardAnalytics trips={trips} />
 
-                {/* Sort dropdown */}
-                <div className="relative">
-                  <select
-                    value={sortBy}
-                    onChange={e => setSortBy(e.target.value)}
-                    className="appearance-none bg-white border border-border text-text-secondary text-xs font-bold px-4 py-2 pr-8 rounded-xl cursor-pointer hover:border-primary focus:border-primary focus:outline-none transition-colors"
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="budget-high">Budget: High → Low</option>
-                    <option value="budget-low">Budget: Low → High</option>
-                  </select>
-                  <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
-                </div>
-
-                {filteredTrips.length > 0 && (
-                  <span className="text-[10px] font-bold text-text-muted bg-white border border-border px-4 py-1.5 rounded-xl uppercase">
-                    {filteredTrips.length} Total
-                  </span>
+        {/* ── Trip List Section ── */}
+        <div className="space-y-6">
+          {/* Filter & Sort Controls */}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <h3 className="text-lg font-black text-navy flex items-center gap-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              <Calendar size={20} className="text-primary" /> Your Trips
+            </h3>
+            <div className="flex items-center gap-2">
+              {/* Filters toggle */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border cursor-pointer transition-all ${
+                  showFilters ? 'bg-primary text-white border-primary' : 'bg-white text-text-secondary border-border hover:border-primary hover:text-primary'
+                }`}
+              >
+                <SlidersHorizontal size={14} /> Filters
+                {(filterDateFrom || filterDateTo || filterBudgetMin || filterBudgetMax) && (
+                  <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                 )}
+              </button>
+
+              {/* Sort dropdown */}
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value)}
+                  className="appearance-none bg-white border border-border text-text-secondary text-xs font-bold px-4 py-2 pr-8 rounded-xl cursor-pointer hover:border-primary focus:border-primary focus:outline-none transition-colors"
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="budget-high">Budget: High → Low</option>
+                  <option value="budget-low">Budget: Low → High</option>
+                </select>
+                <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
               </div>
-            </div>
 
-            {/* Expandable Filters Panel */}
-            {showFilters && (
-              <div className="bg-white rounded-2xl border border-border p-5 animate-in fade-in slide-in-from-top-2 duration-300" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-xs font-bold text-navy uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Filter Trips</p>
-                  <button
-                    onClick={() => { setFilterDateFrom(''); setFilterDateTo(''); setFilterBudgetMin(''); setFilterBudgetMax(''); }}
-                    className="text-[10px] font-bold text-accent hover:text-accent-dark bg-transparent border-0 cursor-pointer"
-                  >Clear All</button>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Date From</label>
-                    <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)}
-                      className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Date To</label>
-                    <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)}
-                      className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Min Budget (₹)</label>
-                    <input type="number" min="0" placeholder="0" value={filterBudgetMin} onChange={e => setFilterBudgetMin(e.target.value)}
-                      className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Max Budget (₹)</label>
-                    <input type="number" min="0" placeholder="∞" value={filterBudgetMax} onChange={e => setFilterBudgetMax(e.target.value)}
-                      className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-
-            <div className="grid gap-6">
-              {filteredTrips.slice(0, 5).map(trip => (
-                <div key={trip._id} className="group bg-white rounded- p-6 border border-border shadow-sm hover:shadow-xl hover:shadow-navy/5 transition-all duration-300 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded- -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-                  <div className="flex items-start justify-between relative z-10">
-                    <div className="flex gap-4 items-center">
-                      <div className="w-14 h-14 bg-bg rounded- border border-border flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                        <Plane size={24} />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-navy group-hover:text-primary transition-colors">{trip.name}</h4>
-                        <p className="text-xs text-text-secondary mt-0.5">{trip.destination}</p>
-                        <div className="flex items-center gap-3 mt-2">
-                           <span className="text-[10px] font-bold text-text-muted bg-bg px-2 py-0.5 rounded-xl border border-border">{new Date(trip.startDate).toLocaleDateString()}</span>
-                           <span className={`text-[10px] font-bold ${trip.budgetExceeded ? 'text-danger' : 'text-success'}`}>₹{trip.totalExpense?.toLocaleString()} spent</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Link to={`/trip/${trip._id}`} className="bg-bg hover:bg-navy hover:text-white p-2.5 rounded- transition-all border border-border">
-                        <ArrowRight size={16} />
-                      </Link>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setCloneTarget(trip); }}
-                        className="bg-bg hover:bg-primary hover:text-white text-text-muted p-2 rounded- transition-all border border-border cursor-pointer"
-                        title="Clone trip"
-                      >
-                        <Copy size={14} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              {filteredTrips.length === 0 && !loading && (
-                <div className="text-center py-12 bg-white/50 rounded- border border-dashed border-border px-6">
-                  <Search size={32} className="text-text-muted mx-auto mb-3 opacity-30" />
-                  <p className="text-sm font-bold text-navy">No trips found matching your search</p>
-                  <button onClick={() => setSearchQuery('')} className="text-xs text-accent font-bold mt-2 bg-transparent border-0 cursor-pointer">Clear Search</button>
-                </div>
+              {filteredTrips.length > 0 && (
+                <span className="text-[10px] font-bold text-text-muted bg-white border border-border px-4 py-1.5 rounded-xl uppercase">
+                  {filteredTrips.length} Total
+                </span>
               )}
             </div>
           </div>
 
-          {/* Right Column: Stats & Analytics */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-black text-navy flex items-center gap-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
-              <TrendingUp size={20} className="text-accent" /> Insights
-            </h3>
-            
-            <div className="space-y-4">
-              {/* Stat Summary */}
-              <div className="bg-navy rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-navy/20">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded- -mr-20 -mt-20" />
-                <div className="relative z-10">
-                  <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">Lifetime Spend</p>
-                  <p className="text-4xl font-black mb-1">₹{totalSpent >= 100000 ? (totalSpent/100000).toFixed(1)+'L' : totalSpent.toLocaleString()}</p>
-                  <div className="flex items-center gap-1.5 text-success-light text-[10px] font-bold mt-4">
-                    <CheckCircle size={12} /> {onBudget} Trips within budget
+          {/* Expandable Filters Panel */}
+          {showFilters && (
+            <div className="bg-white rounded-2xl border border-border p-5 animate-in fade-in slide-in-from-top-2 duration-300" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-xs font-bold text-navy uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Filter Trips</p>
+                <button
+                  onClick={() => { setFilterDateFrom(''); setFilterDateTo(''); setFilterBudgetMin(''); setFilterBudgetMax(''); }}
+                  className="text-[10px] font-bold text-accent hover:text-accent-dark bg-transparent border-0 cursor-pointer"
+                >Clear All</button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Date From</label>
+                  <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)}
+                    className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Date To</label>
+                  <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)}
+                    className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Min Budget (₹)</label>
+                  <input type="number" min="0" placeholder="0" value={filterBudgetMin} onChange={e => setFilterBudgetMin(e.target.value)}
+                    className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-text-muted uppercase mb-1">Max Budget (₹)</label>
+                  <input type="number" min="0" placeholder="∞" value={filterBudgetMax} onChange={e => setFilterBudgetMax(e.target.value)}
+                    className="w-full border border-border rounded-xl px-3 py-2 text-xs bg-bg focus:border-primary focus:outline-none transition-colors" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Trip Cards */}
+          <div className="grid gap-5">
+            {filteredTrips.slice(0, 8).map(trip => (
+              <div key={trip._id} className="group bg-white rounded-2xl p-6 border border-border shadow-sm hover:shadow-xl hover:shadow-navy/5 transition-all duration-300 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
+                <div className="flex items-start justify-between relative z-10">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-12 h-12 bg-bg rounded-xl border border-border flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                      <Plane size={22} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-navy group-hover:text-primary transition-colors">{trip.name}</h4>
+                      <p className="text-xs text-text-secondary mt-0.5">{trip.destination}</p>
+                      <div className="flex items-center gap-3 mt-2">
+                         <span className="text-[10px] font-bold text-text-muted bg-bg px-2 py-0.5 rounded-lg border border-border">{new Date(trip.startDate).toLocaleDateString()}</span>
+                         <span className={`text-[10px] font-bold ${trip.budgetExceeded ? 'text-danger' : 'text-success'}`}>₹{trip.totalExpense?.toLocaleString()} / ₹{trip.budget?.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <Link to={`/trip/${trip._id}`} className="bg-bg hover:bg-navy hover:text-white p-2.5 rounded-xl transition-all border border-border">
+                      <ArrowRight size={16} />
+                    </Link>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setCloneTarget(trip); }}
+                      className="bg-bg hover:bg-primary hover:text-white text-text-muted p-2 rounded-xl transition-all border border-border cursor-pointer"
+                      title="Clone trip"
+                    >
+                      <Copy size={14} />
+                    </button>
                   </div>
                 </div>
               </div>
-
-              {/* Quick Analytics Cards */}
-              <div className="grid grid-cols-2 gap-4">
-                 <div className="bg-white rounded- p-6 border border-border shadow-sm">
-                    <div className="w-8 h-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-3">
-                      <PlusCircle size={18} />
-                    </div>
-                    <p className="text-[10px] font-bold text-text-muted uppercase">Total Trips</p>
-                    <p className="text-xl font-black text-navy">{trips.length}</p>
-                 </div>
-                 <div className="bg-white rounded- p-6 border border-border shadow-sm">
-                    <div className="w-8 h-8 bg-danger/10 text-danger rounded-xl flex items-center justify-center mb-3">
-                      <AlertTriangle size={18} />
-                    </div>
-                    <p className="text-[10px] font-bold text-text-muted uppercase">Health</p>
-                    <p className="text-xl font-black text-navy">{overBudget} Peak</p>
-                 </div>
+            ))}
+            
+            {filteredTrips.length === 0 && !loading && (
+              <div className="text-center py-12 bg-white/50 rounded-2xl border border-dashed border-border px-6">
+                <Search size={32} className="text-text-muted mx-auto mb-3 opacity-30" />
+                <p className="text-sm font-bold text-navy">No trips found matching your criteria</p>
+                <p className="text-xs text-text-muted mt-1">Try adjusting your filters or search query.</p>
+                <button onClick={() => { setSearchQuery(''); setFilterDateFrom(''); setFilterDateTo(''); setFilterBudgetMin(''); setFilterBudgetMax(''); }} className="text-xs text-accent font-bold mt-3 bg-transparent border-0 cursor-pointer">Clear All Filters</button>
               </div>
-
-              {/* Tips / CTR */}
-              <div className="bg-accent/10 rounded- p-6 border border-accent/20">
-                 <div className="flex gap-3">
-                    <div className="w-10 h-10 bg-accent text-white rounded- flex items-center justify-center shrink-0 shadow-lg shadow-accent/20">
-                       <BarChart2 size={20} />
-                    </div>
-                    <div>
-                       <h5 className="font-bold text-navy text-sm">Save your data!</h5>
-                       <p className="text-xs text-text-secondary mt-1">Users who track daily expenses save 24% more on average.</p>
-                       <Link to="/budget" className="inline-flex items-center gap-1 text-[10px] font-bold text-accent mt-3 no-underline border-b border-accent pb-0.5">VIEW ANALYTICS →</Link>
-                    </div>
-                 </div>
-              </div>
-
-              {/* Location Insight */}
-              <div className="bg-white rounded-3xl p-6 border border-border shadow-sm">
-                 <div className="flex items-center justify-between mb-4">
-                    <h5 className="font-bold text-navy text-xs uppercase tracking-wider">Top Destination</h5>
-                    <Info size={14} className="text-text-muted" />
-                 </div>
-                 <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded- overflow-hidden bg-bg border border-border">
-                       <img src="https://images.unsplash.com/photo-1548013146-72479768bada?w=200&h=200&fit=crop" alt="India" className="w-full h-full object-cover" />
-                    </div>
-                    <div>
-                       <p className="font-black text-navy">Goa, IN</p>
-                       <p className="text-[10px] text-text-secondary mt-0.5">Visited {trips.filter(t => t.destination.includes('Goa')).length} times</p>
-                    </div>
-                 </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
         </>
