@@ -154,11 +154,13 @@ export default function TripMap({ latitude, longitude, destination, nearbyPlaces
       </div>
 
       {/* Map container — flex-1 fills all remaining height */}
-      <div className="flex-1 min-h-0" style={{ width: '100%' }}>
+      <div className="flex-1 min-h-0" style={{ width: '100%', touchAction: 'pan-y' }}>
         <MapContainer
           center={center}
           zoom={13}
-          scrollWheelZoom={true}
+          scrollWheelZoom={false}
+          dragging={!(L.Browser.mobile || window.innerWidth <= 768)}
+          tap={!(L.Browser.mobile || window.innerWidth <= 768)}
           style={{ height: '100%', width: '100%' }}
         >
           <TileLayer

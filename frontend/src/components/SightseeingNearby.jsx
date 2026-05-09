@@ -367,8 +367,8 @@ out body 15;`;
           </div>
 
           {filtered.length > 0 && (
-            <div className="h-[300px] w-full rounded- overflow-hidden border border-border shadow-sm mt-4" style={{ zIndex: 0 }}>
-              <MapContainer center={[latitude, longitude]} zoom={13} style={{ height: '100%', width: '100%' }}>
+            <div className="h-[300px] w-full rounded- overflow-hidden border border-border shadow-sm mt-4" style={{ zIndex: 0, touchAction: 'pan-y' }}>
+              <MapContainer center={[latitude, longitude]} zoom={13} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false} dragging={!(L.Browser.mobile || window.innerWidth <= 768)} tap={!(L.Browser.mobile || window.innerWidth <= 768)}>
                 <ChangeView center={[latitude, longitude]} />
                 <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" attribution='&copy; OpenStreetMap &copy; CARTO' />
                 <Marker position={[latitude, longitude]} icon={L.divIcon({ html: `<div style="background-color: #2563EB; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(37,99,235,0.8);"></div>`, className: '', iconSize: [16,16] })}>

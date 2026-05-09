@@ -8,6 +8,16 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const StatCardSkeleton = () => (
+  <div className="bg-white rounded-3xl p-8 border border-border shadow-sm flex items-center gap-5">
+    <div className="w-16 h-16 bg-border/40 rounded- animate-pulse" />
+    <div>
+      <div className="h-3 w-20 bg-border/40 rounded- mb-2 animate-pulse" />
+      <div className="h-6 w-32 bg-border/40 rounded- animate-pulse" />
+    </div>
+  </div>
+);
+
 export default function Budget() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -157,7 +167,7 @@ export default function Budget() {
                    </div>
                    
                    <div className="bg-white rounded-3xl p-10 lg:p-14 border border-border shadow-xl hover:shadow-2xl hover:shadow-navy/5 transition-all">
-                      <AnalyticWrapper tripId={trip._id} trip={trip} />
+                      <AnalyticWrapper tripId={trip._id} trip={trip} refreshTrips={fetchTrips} />
                    </div>
                  </div>
                ))}
@@ -201,23 +211,29 @@ export default function Budget() {
 }
 
 // Wrapper to fetch specific expenses for each trip in the list
-function AnalyticWrapper({ tripId, trip }) {
+function AnalyticWrapper({ tripId, trip, refreshTrips }) {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const { data } = await API.get(`/expenses/${tripId}`);
-        setExpenses(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchExpenses();
+  const fetchExpenses = useCallback(async () => {
+    try {
+      const { data } = await API.get(`/expenses/${tripId}`);
+      setExpenses(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }, [tripId]);
+
+  useEffect(() => {
+    fetchExpenses();
+  }, [fetchExpenses]);
+
+  const handleDeleteExpense = (deletedId) => {
+    setExpenses(prev => prev.filter(e => e._id !== deletedId));
+    if (refreshTrips) refreshTrips();
+  };
 
   if (loading) return (
     <div className="h-64 flex flex-col items-center justify-center gap-4">
@@ -226,5 +242,5 @@ function AnalyticWrapper({ tripId, trip }) {
     </div>
   );
 
-  return <BudgetTracker trip={trip} expenses={expenses} />;
+  return <BudgetTracker trip={trip} expenses={expenses} onDeleteExpense={handleDeleteExpense} />;
 }

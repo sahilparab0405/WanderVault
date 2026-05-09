@@ -12,11 +12,14 @@
  */
 
 import { useMemo, useState, useCallback } from 'react';
-import {
-  PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, ReferenceLine,
-} from 'recharts';
-import { Utensils, Car, Building2, Compass, ShoppingBag, MoreHorizontal, DollarSign, BarChart2, Target, MapPin } from 'lucide-react';
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, ReferenceLine } from 'recharts';
+import { 
+  Utensils, Car, Building2, Compass, ShoppingBag, 
+  MoreHorizontal, DollarSign, BarChart2, Target, 
+  MapPin, Trash2, List, Filter
+} from 'lucide-react';
+import { useToast } from './Toast';
+import API from '../api/axios';
 
 /* ═══════════════════════════════════════
    Constants
@@ -279,6 +282,134 @@ function ThresholdMilestones({ budgetPercent }) {
 }
 
 /* ═══════════════════════════════════════
+   Expense List View (Mobile-Optimized)
+   ═══════════════════════════════════════ */
+
+function ExpenseList({ expenses, onDelete }) {
+  const [filter, setFilter] = useState('');
+  const toast = useToast();
+
+  const filteredExpenses = useMemo(() => {
+    return expenses
+      .filter(e => e.title.toLowerCase().includes(filter.toLowerCase()) || e.category.toLowerCase().includes(filter.toLowerCase()))
+      .sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
+  }, [expenses, filter]);
+
+  const handleDelete = async (id, title) => {
+    if (!window.confirm(`Are you sure you want to delete "${title}"?`)) return;
+    try {
+      await API.delete(`/expenses/${id}`);
+      onDelete(id);
+      toast.success(`"${title}" deleted.`, 'Expense Removed');
+    } catch {
+      toast.error('Failed to delete expense. Please try again.', 'Error');
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-xs font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
+          Recent Transactions
+        </h4>
+        <div className="relative w-48">
+          <Filter size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+          <input 
+            type="text" 
+            placeholder="Search..." 
+            className="w-full pl-8 pr-4 py-1.5 bg-bg border border-border rounded-xl text-[10px] focus:outline-none focus:border-primary transition-colors"
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {filteredExpenses.length === 0 ? (
+        <div className="text-center py-10 bg-bg rounded-2xl border border-dashed border-border">
+          <p className="text-xs text-text-muted">No expenses found.</p>
+        </div>
+      ) : (
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-hidden border border-border rounded-2xl">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-bg">
+                <tr>
+                  <th className="px-6 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">Category</th>
+                  <th className="px-6 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider text-right">Amount</th>
+                  <th className="px-6 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border bg-white">
+                {filteredExpenses.map((exp) => (
+                  <tr key={exp._id} className="hover:bg-bg/50 transition-colors group">
+                    <td className="px-6 py-4 text-xs font-semibold text-navy">{exp.title}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full" style={{ background: CATEGORY_COLORS[exp.category] || '#6B7280' }} />
+                        <span className="text-[10px] font-medium text-text-secondary">{exp.category}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-xs font-bold text-navy text-right">₹{exp.amount.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-[10px] text-text-muted font-medium">
+                      {new Date(exp.date || exp.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button 
+                        onClick={() => handleDelete(exp._id, exp.title)}
+                        className="text-danger/40 hover:text-danger p-1.5 hover:bg-danger/5 rounded- transition-all cursor-pointer border-0 bg-transparent"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-3">
+            {filteredExpenses.map((exp) => (
+              <div key={exp._id} className="bg-white border border-border p-4 rounded-xl flex items-center justify-between group shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: `${CATEGORY_COLORS[exp.category] || '#6B7280'}15`, color: CATEGORY_COLORS[exp.category] || '#6B7280' }}
+                  >
+                    {(() => {
+                      const Icon = CATEGORY_ICON_COMPONENTS[exp.category] || MoreHorizontal;
+                      return <Icon size={18} />;
+                    })()}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-navy leading-tight">{exp.title}</p>
+                    <p className="text-[10px] text-text-muted mt-1">
+                      {exp.category} • {new Date(exp.date || exp.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <p className="text-sm font-black text-navy">₹{exp.amount.toLocaleString()}</p>
+                  <button 
+                    onClick={() => handleDelete(exp._id, exp.title)}
+                    className="text-danger/40 hover:text-danger p-1 border-0 bg-transparent cursor-pointer"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
    CSV Export
    ═══════════════════════════════════════ */
 
@@ -498,9 +629,9 @@ async function exportToPDF(trip, expenses, categoryTotals, totalSpent, remaining
    Main BudgetTracker Component
    ═══════════════════════════════════════ */
 
-export default function BudgetTracker({ trip, expenses }) {
+export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
   const [pdfLoading, setPdfLoading] = useState(false);
-  const [activeView, setActiveView] = useState('charts'); // 'charts' | 'milestones'
+  const [activeView, setActiveView] = useState('charts'); // 'charts' | 'milestones' | 'list'
 
   const categoryTotals = useMemo(() => {
     return expenses.reduce((acc, exp) => {
@@ -718,6 +849,17 @@ export default function BudgetTracker({ trip, expenses }) {
           >
             <Target size={12} strokeWidth={1.5} />Milestones
           </button>
+          <button
+            onClick={() => setActiveView('list')}
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold border cursor-pointer transition-all duration-150 flex items-center justify-center gap-1.5 ${
+              activeView === 'list'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-text-secondary border-border hover:bg-bg'
+            }`}
+            style={{ fontFamily: "'Inter', sans-serif" }}
+          >
+            <List size={12} strokeWidth={1.5} />Transactions
+          </button>
         </div>
 
         {/* ═══ Charts View ═══ */}
@@ -738,8 +880,8 @@ export default function BudgetTracker({ trip, expenses }) {
                     </p>
                   </div>
                 ) : (
-                  <div style={{ width: '100%', height: 220 }}>
-                    <ResponsiveContainer>
+                  <div className="w-full min-h-[220px]">
+                    <ResponsiveContainer width="100%" height={220}>
                       <PieChart>
                         <Pie
                           data={pieData}
@@ -839,8 +981,8 @@ export default function BudgetTracker({ trip, expenses }) {
                     Daily budget: ₹{Math.round(dailyBudget).toLocaleString()}
                   </span>
                 </div>
-                <div style={{ width: '100%', height: 220 }}>
-                  <ResponsiveContainer>
+                <div className="w-full min-h-[220px]">
+                  <ResponsiveContainer width="100%" height={220}>
                     <BarChart
                       data={barData}
                       margin={{ top: 5, right: 5, left: -15, bottom: 5 }}
@@ -915,6 +1057,11 @@ export default function BudgetTracker({ trip, expenses }) {
         {/* ═══ Milestones View ═══ */}
         {activeView === 'milestones' && (
           <ThresholdMilestones budgetPercent={(totalSpent / trip.budget) * 100} />
+        )}
+
+        {/* ═══ List View ═══ */}
+        {activeView === 'list' && (
+          <ExpenseList expenses={expenses} onDelete={onDeleteExpense} />
         )}
       </div>
     </div>

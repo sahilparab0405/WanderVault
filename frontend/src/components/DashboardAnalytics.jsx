@@ -281,8 +281,8 @@ export default function DashboardAnalytics({ trips }) {
             </div>
           ) : (
             <>
-              <div style={{ width: '100%', height: 220 }}>
-                <ResponsiveContainer>
+              <div className="w-full min-h-[220px]">
+                <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
                     <Pie
                       data={pieData}
@@ -348,8 +348,8 @@ export default function DashboardAnalytics({ trips }) {
             </div>
           ) : (
             <>
-              <div style={{ width: '100%', height: 240 }}>
-                <ResponsiveContainer>
+              <div className="w-full min-h-[240px]">
+                <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={barData} margin={{ top: 5, right: 5, left: -10, bottom: 5 }} barGap={4}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-light)" vertical={false} />
                     <XAxis

@@ -131,7 +131,7 @@ export default function Itinerary() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Day Number</label>
-                  <input type="number" placeholder="1" min="1" id="itinerary-day" className={`w-full border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy transition-colors ${formErrors.day ? 'border-danger' : 'border-border'}`} style={{ fontFamily: "'Inter', sans-serif" }} value={form.day} onChange={(e) => { setForm({ ...form, day: e.target.value }); if (formErrors.day) setFormErrors(p => ({...p, day: ''})); }} />
+                  <input type="number" placeholder="1" min="1" id="itinerary-day" className={`w-full border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-white text-navy transition-colors ${formErrors.day ? 'border-danger' : 'border-border'}`} style={{ fontFamily: "'Inter', sans-serif" }} value={form.day} onChange={(e) => { setForm({ ...form, day: Number(e.target.value) || '' }); if (formErrors.day) setFormErrors(p => ({...p, day: ''})); }} />
                   {formErrors.day && <p className="text-danger text-[10px] font-semibold mt-1">{formErrors.day}</p>}
                 </div>
                 <div>

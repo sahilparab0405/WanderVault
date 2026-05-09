@@ -201,8 +201,8 @@ out body 5;`;
     setHotelPromptTarget(null);
     if (!hotel || !dayInput) return;
     try {
-      const day = parseInt(dayInput, 10);
-      
+      const day = Number(dayInput);
+      if (!day || day < 1) return;
       await API.post(`/itinerary/${id}`, {
         day,
         title: `Stay: ${hotel.name}`,

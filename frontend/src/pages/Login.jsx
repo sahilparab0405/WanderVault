@@ -135,6 +135,7 @@ export default function Login() {
                   className={`w-full border rounded- pl-10 pr-6 py-6 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-bg text-navy transition-colors ${fieldErrors.password ? 'border-danger' : 'border-border focus:border-primary'}`}
                   style={{ fontFamily: "'Inter', sans-serif" }}
                   value={form.password} onChange={handleChange} disabled={loading}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !loading) handleSubmit(e); }}
                 />
               </div>
               <FieldError msg={fieldErrors.password} />
