@@ -91,7 +91,7 @@ export default function Navbar() {
               id="navbar-user-info"
             >
               {/* User avatar circle */}
-              <div className="w-7 h-7 rounded- bg-primary flex items-center justify-center text-white text-xs font-semibold uppercase"
+              <div className="w-7 h-7 rounded-xl bg-primary flex items-center justify-center text-white text-xs font-semibold uppercase"
                 style={{ fontFamily: "'Poppins', sans-serif" }}
               >
                 {user?.name?.charAt(0) || 'U'}
@@ -123,19 +123,19 @@ export default function Navbar() {
             aria-expanded={mobileOpen}
           >
             <span
-              className="block w-5 h-0.5 bg-navy rounded- transition-all duration-200"
+              className="block w-5 h-0.5 bg-navy rounded-xl transition-all duration-200"
               style={{
                 transform: mobileOpen ? 'rotate(45deg) translate(2px, 2px)' : 'none',
               }}
             />
             <span
-              className="block w-5 h-0.5 bg-navy rounded- transition-all duration-200 mt-1"
+              className="block w-5 h-0.5 bg-navy rounded-xl transition-all duration-200 mt-1"
               style={{
                 opacity: mobileOpen ? 0 : 1,
               }}
             />
             <span
-              className="block w-5 h-0.5 bg-navy rounded- transition-all duration-200 mt-1"
+              className="block w-5 h-0.5 bg-navy rounded-xl transition-all duration-200 mt-1"
               style={{
                 transform: mobileOpen ? 'rotate(-45deg) translate(3px, -3px)' : 'none',
               }}
@@ -150,7 +150,7 @@ export default function Navbar() {
           mobileOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0 border-t-0'
         }`}
       >
-        <div className="px-6 py-6 space-y-1">
+        <div className="px-6 py-3 space-y-1">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.to}
@@ -172,7 +172,7 @@ export default function Navbar() {
           {/* Mobile user section */}
           <div className="pt-2 mt-2 border-t border-border">
             <div className="flex items-center gap-3 px-6 py-2">
-              <div className="w-8 h-8 rounded- bg-primary flex items-center justify-center text-white text-sm font-semibold uppercase"
+              <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white text-sm font-semibold uppercase"
                 style={{ fontFamily: "'Poppins', sans-serif" }}
               >
                 {user?.name?.charAt(0) || 'U'}

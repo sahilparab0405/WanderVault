@@ -236,7 +236,7 @@ function ProgressBar({ currentStep }) {
           const current = currentStep === step.number;
           return (
             <div key={step.number} className="flex flex-col items-center relative z-10" style={{ flex: 1 }}>
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded- flex items-center justify-center text-xs sm:text-sm font-bold transition-all duration-300 border-2
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-xs sm:text-sm font-bold transition-all duration-300 border-2
                 ${done ? 'bg-primary border-primary text-white' : current ? 'bg-white border-primary text-primary' : 'bg-white border-border text-text-muted'}`}
                 style={{ fontFamily: "'Poppins', sans-serif" }}>
                 {done ? <CheckCircleIcon /> : step.number}
@@ -404,7 +404,7 @@ export default function CreateTrip() {
   };
 
   const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  const inputCls = (err) => `w-full border rounded-xl px-6 py-6 text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white text-navy transition-colors ${err ? 'border-danger' : 'border-border'}`;
+  const inputCls = (err) => `w-full border rounded-xl px-6 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white text-navy transition-colors ${err ? 'border-danger' : 'border-border'}`;
 
   const renderExternalLinks = () => {
     const dest = encodeURIComponent(form.destination);
@@ -435,7 +435,7 @@ export default function CreateTrip() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <div className="max-w-xl mx-auto px-6 sm:px-6 py-6">
+      <div className="max-w-xl mx-auto px-6 sm:px-6 py-3">
         <Link to="/dashboard" className="inline-flex items-center gap-1 text-text-secondary hover:text-navy text-sm no-underline transition-colors mb-6" style={{ fontFamily: "'Inter', sans-serif" }}>← Back to Dashboard</Link>
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Plan Your Trip</h1>
@@ -445,7 +445,7 @@ export default function CreateTrip() {
         </div>
         <ProgressBar currentStep={step} />
 
-        <div className="bg-white rounded- p-6 sm:p-8 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+        <div className="bg-white rounded-xl p-6 sm:p-8 border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
           {error && <div className="bg-danger-light text-danger p-6 rounded-xl mb-5 text-sm font-medium border border-danger/20 flex items-center gap-2" style={{ fontFamily: "'Inter', sans-serif" }}><AlertTriangle size={16} strokeWidth={1.5} />{error}</div>}
 
           {step === 1 && <Step1TripName form={form} setForm={setForm} handleKey={handleKey} inputCls={inputCls} />}
@@ -457,12 +457,12 @@ export default function CreateTrip() {
 
           <div className="flex gap-3 mt-8">
             {step > 1 && (
-              <button type="button" onClick={prevStep} className="flex-1 py-6 rounded-xl border border-border text-text-secondary font-semibold text-sm hover:bg-border-light hover:text-navy transition-colors cursor-pointer bg-white" style={{ fontFamily: "'Inter', sans-serif" }}>← Back</button>
+              <button type="button" onClick={prevStep} className="flex-1 py-3 rounded-xl border border-border text-text-secondary font-semibold text-sm hover:bg-border-light hover:text-navy transition-colors cursor-pointer bg-white" style={{ fontFamily: "'Inter', sans-serif" }}>← Back</button>
             )}
             {step < 6 ? (
-              <button type="button" onClick={nextStep} disabled={!canProceed()} className={`flex-1 py-6 rounded-xl font-semibold text-sm border-0 transition-all cursor-pointer ${canProceed() ? 'bg-primary hover:bg-primary-dark text-white' : 'bg-border-light text-text-muted cursor-not-allowed'}`} style={{ fontFamily: "'Inter', sans-serif" }}>Next →</button>
+              <button type="button" onClick={nextStep} disabled={!canProceed()} className={`flex-1 py-3 rounded-xl font-semibold text-sm border-0 transition-all cursor-pointer ${canProceed() ? 'bg-primary hover:bg-primary-dark text-white' : 'bg-border-light text-text-muted cursor-not-allowed'}`} style={{ fontFamily: "'Inter', sans-serif" }}>Next →</button>
             ) : (
-              <button type="button" onClick={handleSubmit} disabled={!canProceed() || loading} className={`flex-1 py-6 rounded-xl font-semibold text-sm border-0 transition-all cursor-pointer ${canProceed() && !loading ? 'bg-accent hover:bg-accent-dark text-white' : 'bg-border-light text-text-muted cursor-not-allowed'}`} style={{ fontFamily: "'Inter', sans-serif", boxShadow: canProceed() && !loading ? '0 4px 12px rgba(255,107,53,0.35)' : 'none' }}>{loading ? 'Creating...' : 'Create Trip'}</button>
+              <button type="button" onClick={handleSubmit} disabled={!canProceed() || loading} className={`flex-1 py-3 rounded-xl font-semibold text-sm border-0 transition-all cursor-pointer ${canProceed() && !loading ? 'bg-accent hover:bg-accent-dark text-white' : 'bg-border-light text-text-muted cursor-not-allowed'}`} style={{ fontFamily: "'Inter', sans-serif", boxShadow: canProceed() && !loading ? '0 4px 12px rgba(255,107,53,0.35)' : 'none' }}>{loading ? 'Creating...' : 'Create Trip'}</button>
             )}
           </div>
         </div>
@@ -474,7 +474,7 @@ export default function CreateTrip() {
           <div className="bg-white rounded-3xl max-w-md w-full p-8 border border-border shadow-2xl animate-in fade-in zoom-in duration-300 text-center">
             {starterDone ? (
               <>
-                <div className="w-16 h-16 bg-success/10 text-success rounded- flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-success/10 text-success rounded-xl flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 size={32} />
                 </div>
                 <h3 className="text-xl font-black text-navy mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>Starter plan added!</h3>
@@ -482,7 +482,7 @@ export default function CreateTrip() {
               </>
             ) : (
               <>
-                <div className="w-16 h-16 bg-accent/10 text-accent rounded- flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-accent/10 text-accent rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Sparkles size={32} />
                 </div>
                 <h3 className="text-xl font-black text-navy mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -495,14 +495,14 @@ export default function CreateTrip() {
                   <button
                     onClick={handleAddStarter}
                     disabled={addingStarter}
-                    className="w-full bg-accent hover:bg-accent-dark text-white py-6.5 rounded- font-bold text-sm border-0 cursor-pointer transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-2"
+                    className="w-full bg-accent hover:bg-accent-dark text-white py-3 rounded-xl font-bold text-sm border-0 cursor-pointer transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-2"
                     style={{ fontFamily: "'Inter', sans-serif" }}
                   >
-                    {addingStarter ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded- animate-spin" /> Adding...</> : <><Sparkles size={16} /> Yes, add starter plan</>}
+                    {addingStarter ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-xl animate-spin" /> Adding...</> : <><Sparkles size={16} /> Yes, add starter plan</>}
                   </button>
                   <button
                     onClick={() => navigate(`/trip/${starterModal.tripId}`)}
-                    className="w-full bg-white border-2 border-navy text-navy py-6.5 rounded- font-bold text-sm cursor-pointer transition-all hover:bg-navy hover:text-white"
+                    className="w-full bg-white border-2 border-navy text-navy py-3 rounded-xl font-bold text-sm cursor-pointer transition-all hover:bg-navy hover:text-white"
                     style={{ fontFamily: "'Inter', sans-serif" }}
                   >
                     I'll plan myself

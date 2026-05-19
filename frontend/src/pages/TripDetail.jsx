@@ -234,22 +234,22 @@ out body 5;`;
 
   if (loading) return (
     <div className="p-8 max-w-7xl mx-auto space-y-8">
-       <div className="h-48 bg-white rounded- animate-pulse" />
+       <div className="h-48 bg-white rounded-xl animate-pulse" />
        <div className="grid grid-cols-4 gap-4">
-          {[1,2,3,4].map(i => <div key={i} className="h-10 bg-white rounded- animate-pulse" />)}
+          {[1,2,3,4].map(i => <div key={i} className="h-10 bg-white rounded-xl animate-pulse" />)}
        </div>
-       <div className="h-96 bg-white rounded- animate-pulse" />
+       <div className="h-96 bg-white rounded-xl animate-pulse" />
     </div>
   );
 
   if (error || !trip) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
-       <div className="w-20 h-20 bg-danger/10 text-danger rounded- flex items-center justify-center mb-6">
+       <div className="w-20 h-20 bg-danger/10 text-danger rounded-xl flex items-center justify-center mb-6">
           <Trash2 size={40} />
        </div>
        <h2 className="text-2xl font-black text-navy mb-2">Trip Not Found</h2>
        <p className="text-text-secondary max-w-sm mb-8 break-words whitespace-normal px-6">{error || "This trip may have been removed or you don't have access."}</p>
-       <button onClick={() => navigate('/dashboard')} className="bg-navy text-white px-8 py-6 rounded- font-bold border-0 cursor-pointer">Back to Dashboard</button>
+       <button onClick={() => navigate('/dashboard')} className="bg-navy text-white px-8 py-3 rounded-xl font-bold border-0 cursor-pointer">Back to Dashboard</button>
     </div>
   );
 
@@ -270,25 +270,25 @@ out body 5;`;
         <div className="max-w-7xl mx-auto px-6 py-10 lg:px-8">
            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div className="space-y-4">
-                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest">
+                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-6 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest">
                     <Plane size={12} /> Travel Plan
                  </div>
                  <h1 className="text-4xl lg:text-5xl font-black text-navy leading-none" style={{ fontFamily: "'Poppins', sans-serif" }}>
                     {trip.name}
                  </h1>
                  <div className="flex flex-wrap items-center gap-4 text-text-secondary">
-                    <div className="flex items-center gap-1.5 bg-bg px-6 py-1.5 rounded- border border-border">
+                    <div className="flex items-center gap-1.5 bg-bg px-6 py-1.5 rounded-xl border border-border">
                        <MapPin size={16} className="text-accent" />
                        <span className="text-sm font-bold text-navy">{trip.destination}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 bg-bg px-6 py-1.5 rounded- border border-border">
+                    <div className="flex items-center gap-1.5 bg-bg px-6 py-1.5 rounded-xl border border-border">
                        <Calendar size={16} className="text-primary" />
                        <span className="text-sm font-bold text-navy">{new Date(trip.startDate).toLocaleDateString()} — {new Date(trip.endDate).toLocaleDateString()}</span>
                     </div>
                  </div>
               </div>
               <div className="flex items-center gap-3">
-                 <div className="bg-navy rounded- p-6 text-white shadow-xl shadow-navy/20 min-w-[160px] relative">
+                 <div className="bg-navy rounded-xl p-6 text-white shadow-xl shadow-navy/20 min-w-[160px] relative">
                     <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">Total Spent</p>
                     <div className="flex items-baseline gap-1">
                        <span className="text-2xl font-black">₹{trip.totalExpense?.toLocaleString()}</span>
@@ -297,13 +297,13 @@ out body 5;`;
                  </div>
                   <button 
                     onClick={() => setShowExpenseForm(!showExpenseForm)}
-                    className="bg-accent hover:bg-accent-dark text-white px-6 py-6 rounded- text-sm font-bold border-0 cursor-pointer shadow-lg shadow-accent/20 transition-all whitespace-nowrap"
+                    className="bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-xl text-sm font-bold border-0 cursor-pointer shadow-lg shadow-accent/20 transition-all whitespace-nowrap"
                   >
                     {showExpenseForm ? '✕ Cancel' : '+ Add Expense'}
                   </button>
                   <button
                     onClick={() => setShowShareModal(true)}
-                    className="bg-bg border border-border text-navy px-6 py-6 rounded- text-sm font-bold cursor-pointer hover:bg-white transition-all flex items-center gap-2"
+                    className="bg-bg border border-border text-navy px-6 py-3 rounded-xl text-sm font-bold cursor-pointer hover:bg-white transition-all flex items-center gap-2"
                   >
                     <Share2 size={16} /> Share
                   </button>
@@ -312,7 +312,7 @@ out body 5;`;
            
            {/* Add Expense Form Modal/Inline */}
            {showExpenseForm && (
-              <div className="mt-6 bg-white p-6 rounded- border border-border shadow-lg animate-in fade-in slide-in-from-top-2">
+              <div className="mt-6 bg-white p-6 rounded-xl border border-border shadow-lg animate-in fade-in slide-in-from-top-2">
                  <h4 className="font-bold text-navy mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>Log an Expense</h4>
                  <form onSubmit={handleAddExpense} className="flex flex-wrap items-end gap-4">
                     <div className="flex-1 min-w-[200px]">
@@ -366,7 +366,7 @@ out body 5;`;
                  <button
                    key={tab.id}
                    onClick={() => handleTabChange(tab.id)}
-                   className={`flex items-center gap-2 px-6 py-6 text-sm font-bold border-b-2 transition-all cursor-pointer bg-transparent whitespace-nowrap
+                   className={`flex items-center gap-2 px-6 py-3 text-sm font-bold border-b-2 transition-all cursor-pointer bg-transparent whitespace-nowrap
                      ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-text-muted hover:text-navy hover:border-border'}`}
                  >
                    <tab.icon size={18} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
@@ -428,7 +428,7 @@ out body 5;`;
             </div>
 
             {/* Public Toggle */}
-            <div className="bg-bg rounded- p-6 border border-border mb-4">
+            <div className="bg-bg rounded-xl p-6 border border-border mb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${trip.isPublic ? 'bg-success/10 text-success' : 'bg-text-muted/10 text-text-muted'}`}>
@@ -449,9 +449,9 @@ out body 5;`;
                     setTogglingVisibility(false);
                   }}
                   disabled={togglingVisibility}
-                  className={`relative w-12 h-7 rounded- transition-colors duration-200 border-0 cursor-pointer ${trip.isPublic ? 'bg-success' : 'bg-border'}`}
+                  className={`relative w-12 h-7 rounded-xl transition-colors duration-200 border-0 cursor-pointer ${trip.isPublic ? 'bg-success' : 'bg-border'}`}
                 >
-                  <div className={`absolute top-1 w-5 h-5 bg-white rounded- shadow-md transition-transform duration-200 ${trip.isPublic ? 'left-6' : 'left-1'}`} />
+                  <div className={`absolute top-1 w-5 h-5 bg-white rounded-xl shadow-md transition-transform duration-200 ${trip.isPublic ? 'left-6' : 'left-1'}`} />
                 </button>
               </div>
             </div>
@@ -459,7 +459,7 @@ out body 5;`;
             {/* Share Link */}
             {trip.isPublic && (
               <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-300">
-                <div className="bg-bg rounded- p-6 border border-border flex items-center gap-2">
+                <div className="bg-bg rounded-xl p-6 border border-border flex items-center gap-2">
                   <Link2 size={14} className="text-text-muted shrink-0" />
                   <input
                     type="text"
@@ -486,7 +486,7 @@ out body 5;`;
                     const text = `Check out my trip to ${trip.destination}! ${url}`;
                     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-6.5 rounded- text-sm font-bold text-white border-0 cursor-pointer transition-all hover:brightness-110"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white border-0 cursor-pointer transition-all hover:brightness-110"
                   style={{ backgroundColor: '#25D366', fontFamily: "'Inter', sans-serif" }}
                 >
                   <MessageCircle size={16} /> Share on WhatsApp

@@ -220,11 +220,11 @@ out body 15;`;
   if (loading) {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="flex gap-2 mb-6"><div className="h-8 w-20 bg-border rounded-" /><div className="h-8 w-24 bg-border rounded-" /></div>
+        <div className="flex gap-2 mb-6"><div className="h-8 w-20 bg-border rounded-xl" /><div className="h-8 w-24 bg-border rounded-xl" /></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[1,2,3,4].map(k => <div key={k} className="h-40 bg-border/50 rounded-" />)}
+          {[1,2,3,4].map(k => <div key={k} className="h-40 bg-border/50 rounded-xl" />)}
         </div>
-        <div className="h-[300px] w-full bg-border/50 rounded- mt-6" />
+        <div className="h-[300px] w-full bg-border/50 rounded-xl mt-6" />
       </div>
     );
   }
@@ -235,7 +235,7 @@ out body 15;`;
     const isRateLimited = error === 'rate_limited';
     
     return (
-      <div className="bg-amber-50 border border-amber-200 text-amber-900 p-6 rounded- mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-amber-50 border border-amber-200 text-amber-900 p-6 rounded-xl mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3 text-left">
           <AlertCircle size={20} className="text-amber-500 shrink-0" />
           <div>
@@ -272,7 +272,7 @@ out body 15;`;
       </div>
 
       {places.length === 0 ? (
-        <div className="text-center py-10 bg-white rounded- border border-border">
+        <div className="text-center py-10 bg-white rounded-xl border border-border">
           <Coffee size={32} strokeWidth={1.5} className="text-text-muted mx-auto mb-3 opacity-50" />
           <p className="text-sm text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>No dining options found nearby.</p>
         </div>
@@ -282,7 +282,7 @@ out body 15;`;
             {cuisines.map(c => (
               <button
                 key={c} onClick={() => setActiveFilter(c)}
-                className={`px-6 py-1.5 rounded- text-xs font-semibold border transition-all duration-150 cursor-pointer ${activeFilter === c ? 'bg-accent border-accent text-white' : 'bg-white border-navy text-navy hover:bg-navy/5'}`}
+                className={`px-6 py-1.5 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer ${activeFilter === c ? 'bg-accent border-accent text-white' : 'bg-white border-navy text-navy hover:bg-navy/5'}`}
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 {c}
@@ -292,7 +292,7 @@ out body 15;`;
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-1">
             {filtered.map(place => (
-              <div key={place.id} className="bg-white rounded- border border-border p-6 hover:border-accent/40 transition-colors flex flex-col justify-between" style={{ boxShadow: 'var(--shadow-sm)' }}>
+              <div key={place.id} className="bg-white rounded-xl border border-border p-6 hover:border-accent/40 transition-colors flex flex-col justify-between" style={{ boxShadow: 'var(--shadow-sm)' }}>
                 <div>
                   <div className="flex justify-between items-start mb-1">
                     <h4 className="font-bold text-navy text-[15px] line-clamp-1 flex-1 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>{place.name}</h4>
@@ -326,7 +326,7 @@ out body 15;`;
                       })()
                     }}>
                       <div className="absolute inset-0 flex flex-col items-start justify-end p-6">
-                        <span className="bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded- uppercase tracking-wider mb-1">{place.cuisine}</span>
+                        <span className="bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-xl uppercase tracking-wider mb-1">{place.cuisine}</span>
                         <p className="text-white font-bold text-xs leading-tight line-clamp-1 drop-shadow-sm">{place.name}</p>
                       </div>
                       <div className="absolute top-3 right-3">
@@ -350,7 +350,7 @@ out body 15;`;
           </div>
 
           {filtered.length > 0 && (
-            <div className="h-[300px] w-full rounded- overflow-hidden border border-border" style={{ zIndex: 0, touchAction: 'pan-y' }}>
+            <div className="h-[300px] w-full rounded-xl overflow-hidden border border-border" style={{ zIndex: 0, touchAction: 'pan-y' }}>
               <MapContainer center={[latitude, longitude]} zoom={14} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false} dragging={!(L.Browser.mobile || window.innerWidth <= 768)} tap={!(L.Browser.mobile || window.innerWidth <= 768)}>
                 <ChangeView center={[latitude, longitude]} />
                 <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" attribution='&copy; OpenStreetMap &copy; CARTO' />

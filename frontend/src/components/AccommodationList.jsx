@@ -139,9 +139,9 @@ function PricePulseCard({ destination }) {
   const cityName = destination ? destination.split(',')[0] : 'your destination';
 
   return (
-    <div className="bg-white rounded- border border-border p-6 flex items-center gap-4 mb-4"
+    <div className="bg-white rounded-xl border border-border p-6 flex items-center gap-4 mb-4"
          style={{ boxShadow: 'var(--shadow-sm)' }}>
-      <div className="w-10 h-10 bg-primary/10 text-primary rounded- flex items-center justify-center shrink-0">
+      <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0">
         <Building2 size={20} strokeWidth={1.5} />
       </div>
       <div className="flex-1 min-w-0">
@@ -163,14 +163,14 @@ function PricePulseCard({ destination }) {
 function ValueBadge({ rank }) {
   if (rank === 0) {
     return (
-      <div className="absolute top-3 left-3 z-10 flex items-center gap-1 bg-navy text-white text-[10px] font-black px-2.5 py-1 rounded- shadow-md">
+      <div className="absolute top-3 left-3 z-10 flex items-center gap-1 bg-navy text-white text-[10px] font-black px-2.5 py-1 rounded-xl shadow-md">
         <Trophy size={11} strokeWidth={2} /> Best Value
       </div>
     );
   }
   if (rank === 1) {
     return (
-      <div className="absolute top-3 left-3 z-10 flex items-center gap-1 text-white text-[10px] font-black px-2.5 py-1 rounded- shadow-md"
+      <div className="absolute top-3 left-3 z-10 flex items-center gap-1 text-white text-[10px] font-black px-2.5 py-1 rounded-xl shadow-md"
            style={{ backgroundColor: '#FF6B35' }}>
         <Star size={11} strokeWidth={2} /> Recommended
       </div>
@@ -206,7 +206,7 @@ function AccommodationCard({ place, stats, tripId, valueRank }) {
   };
 
   return (
-    <div className="bg-white rounded- overflow-hidden border border-border group hover:-translate-y-1 transition-all duration-300"
+    <div className="bg-white rounded-xl overflow-hidden border border-border group hover:-translate-y-1 transition-all duration-300"
          style={{ boxShadow: 'var(--shadow-card)' }}>
 
       {/* ── Photo strip ── */}
@@ -242,7 +242,7 @@ function AccommodationCard({ place, stats, tripId, valueRank }) {
         </p>
 
         {/* Amenities row (Area 1 — Addition 3: real Overpass amenities) */}
-        <div className="flex items-center gap-4 mb-4 py-6 border-t border-b border-border-light">
+        <div className="flex items-center gap-4 mb-4 py-3 border-t border-b border-border-light">
           {/* eslint-disable-next-line no-unused-vars */}
           {amenities.map(({ Icon, label }) => (
             <div key={label} className="flex flex-col items-center gap-1">
@@ -266,13 +266,13 @@ function AccommodationCard({ place, stats, tripId, valueRank }) {
             onClick={() => setShowPrompt(true)}
             disabled={saving || saved}
             id={`hotel-book-${place.id}`}
-            className={`flex items-center gap-1.5 px-6 py-2.5 rounded- text-xs font-bold transition-all duration-150 border-0 cursor-pointer
+            className={`flex items-center gap-1.5 px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-150 border-0 cursor-pointer
               ${saved ? 'bg-success text-white' : 'bg-accent hover:bg-accent-dark text-white'}
               disabled:opacity-75`}
             style={{ fontFamily: "'Inter', sans-serif", boxShadow: saved ? 'none' : '0 3px 10px rgba(255,107,53,0.35)' }}
           >
             {saving ? (
-              <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded- animate-spin" />Saving...</>
+              <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded-xl animate-spin" />Saving...</>
             ) : saved ? (
               <><CheckCircle2 size={13} strokeWidth={2} />Saved</>
             ) : (
@@ -318,7 +318,7 @@ export default function AccommodationList({ places, tripId, destination }) {
       {destination && <PricePulseCard destination={destination} />}
 
       {/* ── Filter bar ── */}
-      <div className="flex flex-wrap items-center gap-2 bg-white border border-border p-6 rounded-"
+      <div className="flex flex-wrap items-center gap-2 bg-white border border-border p-6 rounded-xl"
            style={{ boxShadow: 'var(--shadow-sm)' }}>
         <div className="flex items-center gap-1.5 text-text-muted mr-1">
           <SlidersHorizontal size={12} strokeWidth={1.5} />

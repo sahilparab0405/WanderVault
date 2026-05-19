@@ -101,7 +101,7 @@ function SidebarInner({ onClose }) {
               to={to}
               onClick={onClose}
               className={`
-                flex items-center gap-3 px-6 py-6 rounded- no-underline
+                flex items-center gap-3 px-6 py-3 rounded-xl no-underline
                 text-sm font-semibold transition-all duration-200 group
                 ${active
                   ? 'bg-white/10 text-white shadow-lg shadow-black/10'
@@ -118,7 +118,7 @@ function SidebarInner({ onClose }) {
               />
               <span>{label}</span>
               {active && (
-                <div className="ml-auto w-1.5 h-1.5 rounded- bg-accent" />
+                <div className="ml-auto w-1.5 h-1.5 rounded-xl bg-accent" />
               )}
             </Link>
           );
@@ -128,7 +128,7 @@ function SidebarInner({ onClose }) {
       {/* ── Active Trip Indicator ── */}
       {activeTrip && (
         <div className="px-6 mb-4">
-          <div className="bg-white/5 border border-white/10 rounded- p-6 overflow-hidden relative group">
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6 overflow-hidden relative group">
             <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100 transition-opacity">
                <Loader2 size={12} className="text-accent animate-pulse" />
             </div>
@@ -152,7 +152,7 @@ function SidebarInner({ onClose }) {
           to="/settings"
           onClick={onClose}
           className={`
-            flex items-center gap-3 px-6 py-6 rounded- no-underline
+            flex items-center gap-3 px-6 py-3 rounded-xl no-underline
             text-sm font-semibold transition-all duration-200
             ${location.pathname === '/settings'
               ? 'bg-white/10 text-white shadow-lg shadow-black/10'
@@ -171,10 +171,10 @@ function SidebarInner({ onClose }) {
       </div>
 
       {/* ── User footer ── */}
-      <div className="px-6 py-6 border-t border-white/5 m-2 bg-black/20 rounded-">
+      <div className="px-6 py-3 border-t border-white/5 m-2 bg-black/20 rounded-xl">
         <div className="flex items-center gap-3 mb-4">
           <div
-            className="w-10 h-10 rounded- flex items-center justify-center text-sm font-bold uppercase shadow-inner"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold uppercase shadow-inner"
             style={{
               background: 'linear-gradient(135deg, #FF6B35, #E5552A)',
               color: '#fff',

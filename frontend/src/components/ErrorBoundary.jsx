@@ -39,7 +39,7 @@ export default class ErrorBoundary extends Component {
           role="alert"
         >
           <div
-            className="bg-card rounded- p-10 w-full max-w-md text-center border border-border"
+            className="bg-card rounded-xl p-10 w-full max-w-md text-center border border-border"
             style={{ boxShadow: 'var(--shadow-lg)' }}
           >
             <div className="flex justify-center mb-6">
@@ -61,7 +61,7 @@ export default class ErrorBoundary extends Component {
             </p>
             <button
               onClick={this.handleReset}
-              className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white px-6 py-6 rounded- text-sm font-black transition-colors duration-150 cursor-pointer border-0 shadow-lg shadow-accent/20"
+              className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-xl text-sm font-black transition-colors duration-150 cursor-pointer border-0 shadow-lg shadow-accent/20"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               <RefreshCw size={18} /> Refresh Page

@@ -122,27 +122,27 @@ function BudgetVoucher({ trip, totalSpent, remaining, budgetPercent }) {
 
   return (
     <div
-      className="relative overflow-hidden rounded-"
+      className="relative overflow-hidden rounded-xl"
       style={{
         border: '2px dashed var(--color-border)',
         background: 'linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%)',
       }}
     >
       {/* Decorative holes on left side */}
-      <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between py-6" style={{ marginLeft: '-8px' }}>
+      <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between py-3" style={{ marginLeft: '-8px' }}>
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="w-4 h-4 rounded- bg-bg border border-border" />
+          <div key={i} className="w-4 h-4 rounded-xl bg-bg border border-border" />
         ))}
       </div>
 
       {/* Decorative holes on right side */}
-      <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-between py-6" style={{ marginRight: '-8px' }}>
+      <div className="absolute right-0 top-0 bottom-0 flex flex-col justify-between py-3" style={{ marginRight: '-8px' }}>
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="w-4 h-4 rounded- bg-bg border border-border" />
+          <div key={i} className="w-4 h-4 rounded-xl bg-bg border border-border" />
         ))}
       </div>
 
-      <div className="px-8 py-6">
+      <div className="px-8 py-3">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -154,7 +154,7 @@ function BudgetVoucher({ trip, totalSpent, remaining, budgetPercent }) {
               {trip.name}
             </h3>
           </div>
-          <div className={`px-6 py-1 rounded- text-xs font-bold ${statusBg}`}
+          <div className={`px-6 py-1 rounded-xl text-xs font-bold ${statusBg}`}
             style={{ fontFamily: "'Inter', sans-serif", color: `var(--color-${statusColor})` }}>
             {statusLabel}
           </div>
@@ -199,9 +199,9 @@ function BudgetVoucher({ trip, totalSpent, remaining, budgetPercent }) {
             <span>{budgetPercent.toFixed(1)}% used</span>
             <span>{Math.max(100 - budgetPercent, 0).toFixed(1)}% left</span>
           </div>
-          <div className="w-full bg-border-light rounded- h-3 overflow-hidden">
+          <div className="w-full bg-border-light rounded-xl h-3 overflow-hidden">
             <div
-              className="h-3 rounded- transition-all duration-700 ease-out"
+              className="h-3 rounded-xl transition-all duration-700 ease-out"
               style={{
                 width: `${Math.min(budgetPercent, 100)}%`,
                 background: budgetPercent >= 100
@@ -252,7 +252,7 @@ function ThresholdMilestones({ budgetPercent }) {
             >
               {/* Milestone indicator */}
               <div
-                className={`w-6 h-6 rounded- flex items-center justify-center shrink-0 text-[10px] font-bold ${
+                className={`w-6 h-6 rounded-xl flex items-center justify-center shrink-0 text-[10px] font-bold ${
                   reached ? 'text-white' : 'text-text-muted border-2 border-border-light bg-white'
                 }`}
                 style={reached ? { background: t.color } : {}}
@@ -359,7 +359,7 @@ function ExpenseList({ expenses, onDelete }) {
                     <td className="px-6 py-4 text-center">
                       <button 
                         onClick={() => handleDelete(exp._id, exp.title)}
-                        className="text-danger/40 hover:text-danger p-1.5 hover:bg-danger/5 rounded- transition-all cursor-pointer border-0 bg-transparent"
+                        className="text-danger/40 hover:text-danger p-1.5 hover:bg-danger/5 rounded-xl transition-all cursor-pointer border-0 bg-transparent"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -714,12 +714,12 @@ export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
 
   return (
     <div
-      className="bg-card rounded- overflow-hidden border border-border"
+      className="bg-card rounded-xl overflow-hidden border border-border"
       style={{ boxShadow: 'var(--shadow-card)' }}
       id="budget-tracker-section"
     >
       {/* ═══ Header ═══ */}
-      <div className="px-6 py-6 border-b border-border flex flex-wrap items-center justify-between gap-2">
+      <div className="px-6 py-3 border-b border-border flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <BarChart2 size={16} strokeWidth={1.5} className="text-primary" />
           <h3 className="font-bold text-navy text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -757,7 +757,7 @@ export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
           >
             {pdfLoading ? (
               <>
-                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded- animate-spin" />
+                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-xl animate-spin" />
                 Generating...
               </>
             ) : (
@@ -788,7 +788,7 @@ export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
 
         {/* ═══ Stats Row ═══ */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-bg rounded- p-6 text-center border border-border-light">
+          <div className="bg-bg rounded-xl p-6 text-center border border-border-light">
             <p className="text-lg font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
               ₹{remaining.toLocaleString()}
             </p>
@@ -796,7 +796,7 @@ export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
               Remaining
             </p>
           </div>
-          <div className="bg-bg rounded- p-6 text-center border border-border-light">
+          <div className="bg-bg rounded-xl p-6 text-center border border-border-light">
             <p className="text-lg font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
               ₹{Math.round(dailyBudgetRemaining).toLocaleString()}
             </p>
@@ -804,7 +804,7 @@ export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
               Per day left
             </p>
           </div>
-          <div className="bg-bg rounded- p-6 text-center border border-border-light">
+          <div className="bg-bg rounded-xl p-6 text-center border border-border-light">
             <p className="text-lg font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
               ₹{Math.round(averageDailySpend).toLocaleString()}
             </p>
@@ -812,7 +812,7 @@ export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
               Avg/day
             </p>
           </div>
-          <div className={`rounded- p-6 text-center border ${
+          <div className={`rounded-xl p-6 text-center border ${
             projectedOverBudget ? 'bg-danger-light border-danger/20' : 'bg-success-light border-success/20'
           }`}>
             <p className={`text-lg font-bold ${projectedOverBudget ? 'text-danger' : 'text-success'}`}
@@ -912,7 +912,7 @@ export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
                   <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mt-2">
                     {pieData.map((seg) => (
                       <div key={seg.name} className="flex items-center gap-1">
-                        <div className="w-2.5 h-2.5 rounded- shrink-0" style={{ background: seg.color }} />
+                        <div className="w-2.5 h-2.5 rounded-xl shrink-0" style={{ background: seg.color }} />
                         <span className="text-[10px] text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>
                           {seg.name} ({seg.percentage.toFixed(0)}%)
                         </span>
@@ -928,7 +928,7 @@ export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
                   By Category
                 </h4>
                 {Object.keys(categoryTotals).length === 0 ? (
-                  <div className="text-center py-6">
+                  <div className="text-center py-3">
                     <p className="text-text-muted text-xs" style={{ fontFamily: "'Inter', sans-serif" }}>
                       No expenses to analyze yet
                     </p>
@@ -952,9 +952,9 @@ export default function BudgetTracker({ trip, expenses, onDeleteExpense }) {
                                   ₹{total.toLocaleString()}
                                 </span>
                               </div>
-                              <div className="w-full bg-border-light rounded- h-1.5">
+                              <div className="w-full bg-border-light rounded-xl h-1.5">
                                 <div
-                                  className="h-1.5 rounded- transition-all duration-500"
+                                  className="h-1.5 rounded-xl transition-all duration-500"
                                   style={{
                                     width: `${catPercent}%`,
                                     background: CATEGORY_COLORS[cat] || '#6B7280',

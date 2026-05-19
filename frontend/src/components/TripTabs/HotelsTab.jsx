@@ -7,27 +7,27 @@ export default function HotelsTab({ trip, hotelSearch, setHotelSearch, searchHot
        <div className="bg-white rounded-3xl p-8 lg:p-14 border border-border shadow-xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
              <div>
-                <div className="inline-flex items-center gap-2 bg-success/10 text-success px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-3">
+                <div className="inline-flex items-center gap-2 bg-success/10 text-success px-6 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest mb-3">
                    <Building size={12} /> Budget Accommodations
                 </div>
                 <h2 className="text-4xl font-black text-navy mb-3" style={{ fontFamily: "'Poppins', sans-serif" }}>Find Your Stay</h2>
                 <p className="text-text-secondary text-lg">Search and book verified budget hotels in {trip.destination}.</p>
              </div>
-             <div className="flex gap-3 bg-bg p-2 rounded- border border-border w-full md:w-auto">
+             <div className="flex gap-3 bg-bg p-2 rounded-xl border border-border w-full md:w-auto">
                 <input 
                    type="text" 
                    placeholder="Search hotel name..."
                    value={hotelSearch}
                    onChange={e => setHotelSearch(e.target.value)}
                    onKeyDown={e => e.key === 'Enter' && searchHotels()}
-                   className="px-6 py-6 rounded- border border-border bg-white text-sm focus:ring-4 focus:ring-primary/10 transition-all w-full md:w-72"
+                   className="px-6 py-3 rounded-xl border border-border bg-white text-sm focus:ring-4 focus:ring-primary/10 transition-all w-full md:w-72"
                 />
                 <button 
                    onClick={searchHotels}
                    disabled={isSearchingHotels}
-                   className="bg-navy text-white px-6 py-6 rounded- hover:bg-navy-dark transition-all border-0 cursor-pointer shrink-0 shadow-lg shadow-navy/20"
+                   className="bg-navy text-white px-6 py-3 rounded-xl hover:bg-navy-dark transition-all border-0 cursor-pointer shrink-0 shadow-lg shadow-navy/20"
                 >
-                   {isSearchingHotels ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded- animate-spin block"></span> : <Search size={20} />}
+                   {isSearchingHotels ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-xl animate-spin block"></span> : <Search size={20} />}
                 </button>
              </div>
           </div>
@@ -46,7 +46,7 @@ export default function HotelsTab({ trip, hotelSearch, setHotelSearch, searchHot
                       <div className="h-20 relative" style={{ background: gradient }}>
                          <div className="absolute inset-0 flex items-center justify-between px-8">
                             <div className="flex items-center gap-3">
-                               <div className="w-12 h-12 bg-white/20 rounded- flex items-center justify-center backdrop-blur-sm">
+                               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
                                   <Building size={24} className="text-white" />
                                </div>
                                <div>
@@ -54,14 +54,14 @@ export default function HotelsTab({ trip, hotelSearch, setHotelSearch, searchHot
                                  <p className="text-white/70 text-[10px] font-bold">Verified Stay</p>
                                </div>
                             </div>
-                            <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-">
+                            <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-xl">
                                <Star size={11} fill="#fff" strokeWidth={0} />
                                <span className="text-white text-xs font-bold">{hotel.rating}</span>
                             </div>
                          </div>
                       </div>
                       <div className="p-8 relative">
-                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded- -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
+                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
                          <div className="relative z-10">
                             <div className="flex justify-between items-start mb-6">
                                <p className="text-xs text-text-muted flex items-center gap-1">
@@ -75,7 +75,7 @@ export default function HotelsTab({ trip, hotelSearch, setHotelSearch, searchHot
                             <div className="flex items-center gap-4 mb-6">
                                <div className="text-[11px] font-bold text-success uppercase tracking-widest">Available Now</div>
                             </div>
-                            <button onClick={() => setHotelPromptTarget(hotel)} className="w-full bg-navy text-white py-6 rounded-3xl text-sm font-black transition-all border-0 cursor-pointer shadow-lg shadow-navy/20 active:scale-95">
+                            <button onClick={() => setHotelPromptTarget(hotel)} className="w-full bg-navy text-white py-3 rounded-3xl text-sm font-black transition-all border-0 cursor-pointer shadow-lg shadow-navy/20 active:scale-95">
                                BOOK THIS STAY
                             </button>
                          </div>

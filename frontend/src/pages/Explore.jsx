@@ -109,7 +109,7 @@ export default function Explore() {
         <div className="h-10 w-48 bg-border/40 rounded-xl animate-pulse" />
         <div className="h-80 bg-white rounded-3xl animate-pulse border border-border" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white rounded- animate-pulse" />)}
+          {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white rounded-xl animate-pulse" />)}
         </div>
       </div>
     </div>
@@ -119,7 +119,7 @@ export default function Explore() {
     <div className="min-h-screen bg-bg flex flex-col">
       
       {/* ── Top Bar ── */}
-      <header className="bg-white border-b border-border px-8 py-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+      <header className="bg-white border-b border-border px-8 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
         <div>
           <h1 className="text-xl font-black text-navy leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
             Explore
@@ -136,10 +136,10 @@ export default function Explore() {
                 placeholder="Find a city..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-6 py-2 bg-bg border border-border rounded- text-xs w-48 focus:w-64 focus:ring-4 focus:ring-primary/10 transition-all duration-300 outline-none"
+                className="pl-9 pr-6 py-2 bg-bg border border-border rounded-xl text-xs w-48 focus:w-64 focus:ring-4 focus:ring-primary/10 transition-all duration-300 outline-none"
               />
            </div>
-           <Link to="/create-trip" className="bg-accent hover:bg-accent-dark text-white px-6 py-2.5 rounded- text-xs font-bold no-underline transition-all shadow-lg shadow-accent/20">
+           <Link to="/create-trip" className="bg-accent hover:bg-accent-dark text-white px-6 py-2.5 rounded-xl text-xs font-bold no-underline transition-all shadow-lg shadow-accent/20">
               New Trip
            </Link>
         </div>
@@ -158,7 +158,7 @@ export default function Explore() {
             <div className="lg:col-span-2 bg-navy p-10 text-white flex flex-col justify-between">
               {activeTrip ? (
                 <div>
-                   <div className="inline-flex items-center gap-2 bg-white/10 text-white px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-4">
+                   <div className="inline-flex items-center gap-2 bg-white/10 text-white px-6 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest mb-4">
                       Current Trip
                    </div>
                    <h3 className="text-3xl font-black mb-3 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>{activeTrip.name}</h3>
@@ -173,7 +173,7 @@ export default function Explore() {
                 </div>
               ) : (
                 <div>
-                   <div className="inline-flex items-center gap-2 bg-white/10 text-white px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-4">
+                   <div className="inline-flex items-center gap-2 bg-white/10 text-white px-6 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest mb-4">
                       Discovery
                    </div>
                    <h3 className="text-2xl font-black mb-3 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>No Trip Yet</h3>
@@ -181,11 +181,11 @@ export default function Explore() {
                 </div>
               )}
               {activeTrip ? (
-                <Link to={`/trip/${activeTrip._id}`} className="bg-white text-navy px-6 py-6 rounded- text-xs font-black no-underline text-center hover:bg-white/90 transition-all mt-6">
+                <Link to={`/trip/${activeTrip._id}`} className="bg-white text-navy px-6 py-3 rounded-xl text-xs font-black no-underline text-center hover:bg-white/90 transition-all mt-6">
                    VIEW TRIP DETAILS
                 </Link>
               ) : (
-                <Link to="/create-trip" className="bg-accent text-white px-6 py-6 rounded- text-xs font-black no-underline text-center hover:bg-accent-dark transition-all mt-6">
+                <Link to="/create-trip" className="bg-accent text-white px-6 py-3 rounded-xl text-xs font-black no-underline text-center hover:bg-accent-dark transition-all mt-6">
                    CREATE FIRST TRIP
                 </Link>
               )}
@@ -208,15 +208,15 @@ export default function Explore() {
                   >
                     <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
                     {tab.label}
-                    {activeTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-" />}
+                    {activeTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-xl" />}
                   </button>
                 ))}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {PLACE_NAMES[activeTab].map((item, i) => (
-                     <div key={i} className="bg-bg rounded- p-6 border border-border hover:border-primary/50 transition-colors cursor-pointer group">
-                        <div className="w-10 h-10 bg-white rounded- flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                     <div key={i} className="bg-bg rounded-xl p-6 border border-border hover:border-primary/50 transition-colors cursor-pointer group">
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
                            {activeTab === 'dining' ? <Utensils size={18} /> : activeTab === 'sightseeing' ? <Landmark size={18} /> : <Building2 size={18} />}
                         </div>
                         <p className="font-bold text-navy text-sm leading-tight mb-1">{item.name}</p>
@@ -245,9 +245,9 @@ export default function Explore() {
               <h2 className="text-2xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Popular Destinations</h2>
             </div>
             <div className="hidden sm:flex gap-2">
-               <div className="w-2.5 h-2.5 rounded- bg-accent" />
-               <div className="w-2.5 h-2.5 rounded- bg-border" />
-               <div className="w-2.5 h-2.5 rounded- bg-border" />
+               <div className="w-2.5 h-2.5 rounded-xl bg-accent" />
+               <div className="w-2.5 h-2.5 rounded-xl bg-border" />
+               <div className="w-2.5 h-2.5 rounded-xl bg-border" />
             </div>
           </div>
 
@@ -264,12 +264,12 @@ export default function Explore() {
                   <img src={dest.image} alt={dest.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                   <div className="absolute inset-0 bg-gradient-to-t from-navy via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
                   <div className="absolute inset-x-0 bottom-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                    <span className="inline-block px-2 py-0.5 bg-accent text-white text-[9px] font-bold rounded- mb-2 uppercase tracking-widest">{dest.category}</span>
+                    <span className="inline-block px-2 py-0.5 bg-accent text-white text-[9px] font-bold rounded-xl mb-2 uppercase tracking-widest">{dest.category}</span>
                     <p className="text-white font-black text-xl mb-1" style={{ fontFamily: "'Poppins', sans-serif" }}>{dest.name}</p>
                     <p className="text-white/60 text-[10px] font-bold mb-4">Starting from {dest.budget}</p>
                     <button 
                       onClick={() => handlePlanTrip(dest.name)}
-                      className="w-full py-6 bg-white text-navy hover:bg-accent hover:text-white rounded- text-[11px] font-black transition-all border-0 cursor-pointer shadow-lg"
+                      className="w-full py-3 bg-white text-navy hover:bg-accent hover:text-white rounded-xl text-[11px] font-black transition-all border-0 cursor-pointer shadow-lg"
                     >
                       PLAN TRIP
                     </button>
@@ -290,13 +290,13 @@ export default function Explore() {
                     style={{ background: `linear-gradient(135deg, ${dest.gradientFrom}, ${dest.gradientTo})` }}
                   />
                   {/* Decorative circles */}
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded- -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000" />
-                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded- -ml-24 -mb-24 group-hover:scale-125 transition-transform duration-700" />
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-xl -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000" />
+                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-xl -ml-24 -mb-24 group-hover:scale-125 transition-transform duration-700" />
                   
                   {/* Always visible content — no hover-to-preview */}
                   <div className="absolute inset-0 p-8 lg:p-10 flex flex-col justify-between relative z-10">
                     <div>
-                      <span className="inline-block px-6 py-1 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold rounded- uppercase tracking-widest border border-white/20">
+                      <span className="inline-block px-6 py-1 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold rounded-xl uppercase tracking-widest border border-white/20">
                         {dest.tag}
                       </span>
                     </div>
@@ -315,7 +315,7 @@ export default function Explore() {
                           </div>
                           <p className="text-white font-black text-lg">{dest.budget}</p>
                         </div>
-                        <button className="bg-white text-navy hover:bg-accent hover:text-white px-6 py-6 rounded- text-[11px] font-black transition-all border-0 shadow-lg shadow-black/10 cursor-pointer">
+                        <button className="bg-white text-navy hover:bg-accent hover:text-white px-6 py-3 rounded-xl text-[11px] font-black transition-all border-0 shadow-lg shadow-black/10 cursor-pointer">
                           PLAN TRIP <ArrowRight size={14} className="inline ml-1" />
                         </button>
                       </div>
@@ -338,14 +338,14 @@ export default function Explore() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {pastTrips.map(trip => (
-                <div key={trip._id} className="bg-white rounded- p-8 border border-border shadow-sm group hover:border-accent hover:shadow-xl hover:shadow-accent/5 transition-all flex flex-col justify-between">
+                <div key={trip._id} className="bg-white rounded-xl p-8 border border-border shadow-sm group hover:border-accent hover:shadow-xl hover:shadow-accent/5 transition-all flex flex-col justify-between">
                   <div>
                      <h4 className="font-black text-navy text-xl mb-1" style={{ fontFamily: "'Poppins', sans-serif" }}>{trip.destination}</h4>
                      <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-6">Last visited {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</p>
                   </div>
                   <button 
                     onClick={() => navigate(`/trip/${trip._id}`)}
-                    className="w-full py-6 bg-bg text-navy hover:bg-navy hover:text-white rounded- text-[11px] font-black tracking-widest transition-all border-0 cursor-pointer uppercase"
+                    className="w-full py-3 bg-bg text-navy hover:bg-navy hover:text-white rounded-xl text-[11px] font-black tracking-widest transition-all border-0 cursor-pointer uppercase"
                   >
                     Explore Again
                   </button>
@@ -362,9 +362,9 @@ export default function Explore() {
           <p className="text-white/40 text-[11px] font-bold tracking-[0.3em] uppercase mb-4">WanderVault</p>
           <p className="text-white/60 text-xs max-w-sm mx-auto font-medium leading-relaxed">Location data powered by OpenStreetMap.</p>
           <div className="mt-8 flex justify-center gap-6">
-             <div className="w-1.5 h-1.5 rounded- bg-white/20" />
-             <div className="w-1.5 h-1.5 rounded- bg-white/20" />
-             <div className="w-1.5 h-1.5 rounded- bg-white/20" />
+             <div className="w-1.5 h-1.5 rounded-xl bg-white/20" />
+             <div className="w-1.5 h-1.5 rounded-xl bg-white/20" />
+             <div className="w-1.5 h-1.5 rounded-xl bg-white/20" />
           </div>
       </footer>
     </div>

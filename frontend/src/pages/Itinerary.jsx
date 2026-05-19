@@ -125,7 +125,7 @@ export default function Itinerary() {
 
         {/* Add Form */}
         {showForm && (
-          <div className="bg-card rounded- p-6 mb-6 border border-primary-100" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="bg-card rounded-xl p-6 mb-6 border border-primary-100" style={{ boxShadow: 'var(--shadow-card)' }}>
             <h4 className="font-semibold text-navy mb-4 text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>New Itinerary Item</h4>
             <form onSubmit={handleAdd} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
@@ -161,7 +161,7 @@ export default function Itinerary() {
 
         {/* Itinerary Timeline */}
         {Object.keys(groupedByDay).length === 0 ? (
-          <div className="text-center py-16 bg-card rounded- border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="text-center py-16 bg-card rounded-xl border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div className="flex justify-center mb-3"><Calendar size={40} strokeWidth={1.5} className="text-text-muted opacity-60" /></div>
             <p className="text-text-secondary text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>No activities added yet.</p>
           </div>
@@ -170,19 +170,19 @@ export default function Itinerary() {
             {Object.entries(groupedByDay).map(([day, dayItems]) => (
               <div key={day}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="bg-primary text-white px-6 py-1 rounded- text-sm font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>{day}</span>
+                  <span className="bg-primary text-white px-6 py-1 rounded-xl text-sm font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>{day}</span>
                   <div className="flex-1 h-px bg-border" />
                 </div>
                 <div className="space-y-3 ml-2">
                   {dayItems.map(item => (
-                    <div key={item._id} className={`bg-card rounded- p-6 flex justify-between items-start border border-border hover:border-primary-100 transition-all duration-300 ${item.isOptimistic ? 'opacity-60 scale-[0.98]' : 'opacity-100 scale-100'}`} style={{ boxShadow: 'var(--shadow-sm)' }}>
+                    <div key={item._id} className={`bg-card rounded-xl p-6 flex justify-between items-start border border-border hover:border-primary-100 transition-all duration-300 ${item.isOptimistic ? 'opacity-60 scale-[0.98]' : 'opacity-100 scale-100'}`} style={{ boxShadow: 'var(--shadow-sm)' }}>
                       <div className="flex gap-3">
-                        <div className="w-1 bg-primary rounded- min-h-full" />
+                        <div className="w-1 bg-primary rounded-xl min-h-full" />
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="font-semibold text-navy text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>{item.title}</p>
                             {item.time && (
-                              <span className="text-xs bg-bg text-text-secondary px-2 py-0.5 rounded- border border-border-light flex items-center gap-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                              <span className="text-xs bg-bg text-text-secondary px-2 py-0.5 rounded-xl border border-border-light flex items-center gap-1" style={{ fontFamily: "'Inter', sans-serif" }}>
                                 <Clock size={10} strokeWidth={1.5} />{item.time}
                               </span>
                             )}

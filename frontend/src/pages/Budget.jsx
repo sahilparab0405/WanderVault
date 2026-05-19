@@ -10,10 +10,10 @@ import { Link } from 'react-router-dom';
 
 const StatCardSkeleton = () => (
   <div className="bg-white rounded-3xl p-8 border border-border shadow-sm flex items-center gap-5">
-    <div className="w-16 h-16 bg-border/40 rounded- animate-pulse" />
+    <div className="w-16 h-16 bg-border/40 rounded-xl animate-pulse" />
     <div>
-      <div className="h-3 w-20 bg-border/40 rounded- mb-2 animate-pulse" />
-      <div className="h-6 w-32 bg-border/40 rounded- animate-pulse" />
+      <div className="h-3 w-20 bg-border/40 rounded-xl mb-2 animate-pulse" />
+      <div className="h-6 w-32 bg-border/40 rounded-xl animate-pulse" />
     </div>
   </div>
 );
@@ -64,7 +64,7 @@ export default function Budget() {
     <div className="min-h-screen bg-bg flex flex-col">
       
       {/* ── Top Bar ── */}
-      <header className="bg-white border-b border-border px-8 py-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+      <header className="bg-white border-b border-border px-8 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
         <div>
           <h1 className="text-xl font-black text-navy leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
             Budgeting
@@ -82,9 +82,9 @@ export default function Budget() {
         {/* Global Stats Matrix */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-navy rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl shadow-navy/20">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded- -mr-16 -mt-16" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-xl -mr-16 -mt-16" />
             <div className="relative z-10 flex items-center gap-5">
-              <div className="w-16 h-16 bg-white/10 text-white rounded- flex items-center justify-center shadow-inner">
+              <div className="w-16 h-16 bg-white/10 text-white rounded-xl flex items-center justify-center shadow-inner">
                 <Wallet size={32} />
               </div>
               <div>
@@ -95,7 +95,7 @@ export default function Budget() {
           </div>
 
           <div className="bg-white rounded-3xl p-8 border border-border shadow-sm flex items-center gap-5 group hover:border-danger/30 transition-colors">
-            <div className={`w-16 h-16 ${overBudgetTrips > 0 ? 'bg-danger/10 text-danger' : 'bg-success/10 text-success'} rounded- flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform`}>
+            <div className={`w-16 h-16 ${overBudgetTrips > 0 ? 'bg-danger/10 text-danger' : 'bg-success/10 text-success'} rounded-xl flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform`}>
               {overBudgetTrips > 0 ? <AlertTriangle size={32} /> : <CheckCircle size={32} />}
             </div>
             <div>
@@ -105,7 +105,7 @@ export default function Budget() {
           </div>
 
           <div className="bg-white rounded-3xl p-8 border border-border shadow-sm flex items-center gap-5 group hover:border-primary/30 transition-colors">
-            <div className="w-16 h-16 bg-primary/10 text-primary rounded- flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-xl flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
               <Target size={32} />
             </div>
             <div>
@@ -117,8 +117,8 @@ export default function Budget() {
 
         {/* Global Warnings / Insights */}
         {overBudgetTrips > 0 && (
-           <div className="bg-amber-50 border border-amber-200 rounded- p-6 flex items-start gap-4">
-              <div className="w-10 h-10 bg-amber-500 text-white rounded- flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/20">
+           <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-start gap-4">
+              <div className="w-10 h-10 bg-amber-500 text-white rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/20">
                  <AlertTriangle size={20} />
               </div>
               <div>
@@ -136,7 +136,7 @@ export default function Budget() {
                  <h2 className="text-xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Trip Breakdowns</h2>
               </div>
               <div className="flex items-center gap-2">
-                 <span className="text-[10px] font-black text-text-muted uppercase tracking-widest bg-white px-6 py-1 rounded- border border-border">Sort by Spend</span>
+                 <span className="text-[10px] font-black text-text-muted uppercase tracking-widest bg-white px-6 py-1 rounded-xl border border-border">Sort by Spend</span>
                  <Filter size={14} className="text-text-muted" />
               </div>
            </div>
@@ -147,7 +147,7 @@ export default function Budget() {
                  <div key={trip._id} className="space-y-6">
                    <div className="flex items-center justify-between px-2">
                      <div className="flex items-center gap-4">
-                       <div className="w-12 h-12 bg-white rounded- border border-border shadow-sm flex items-center justify-center font-black text-navy">
+                       <div className="w-12 h-12 bg-white rounded-xl border border-border shadow-sm flex items-center justify-center font-black text-navy">
                           {trip.destination.charAt(0)}
                        </div>
                        <div>
@@ -155,7 +155,7 @@ export default function Budget() {
                           <p className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em]">{trip.destination}</p>
                        </div>
                      </div>
-                     <Link to={`/trip/${trip._id}`} className="inline-flex items-center gap-2 px-6 py-2.5 bg-bg border border-border rounded- text-[11px] font-black text-navy no-underline hover:bg-white transition-all">
+                     <Link to={`/trip/${trip._id}`} className="inline-flex items-center gap-2 px-6 py-2.5 bg-bg border border-border rounded-xl text-[11px] font-black text-navy no-underline hover:bg-white transition-all">
                         MANAGE EXPENSES <ArrowRight size={14} />
                      </Link>
                    </div>
@@ -173,7 +173,7 @@ export default function Budget() {
                </div>
                <h3 className="text-3xl font-black text-navy mb-4">No Trips Yet</h3>
                 <p className="text-text-secondary mb-10 max-w-sm mx-auto font-medium leading-relaxed">Create your first trip to start tracking expenses and see your spending breakdown here.</p>
-                <Link to="/create-trip" className="inline-flex items-center gap-3 bg-accent text-white px-10 py-6 rounded- font-black text-sm no-underline shadow-2xl shadow-accent/40 hover:-translate-y-1 transition-all">
+                <Link to="/create-trip" className="inline-flex items-center gap-3 bg-accent text-white px-10 py-3 rounded-xl font-black text-sm no-underline shadow-2xl shadow-accent/40 hover:-translate-y-1 transition-all">
                   Create Trip <ArrowRight size={18} />
                 </Link>
              </div>
@@ -183,7 +183,7 @@ export default function Budget() {
         {/* Global Insight Footer */}
         <section className="bg-accent/10 rounded-3xl p-8 border border-accent/20 flex flex-col md:flex-row items-center justify-between gap-6">
            <div className="flex items-center gap-5">
-              <div className="w-14 h-14 bg-accent text-white rounded- flex items-center justify-center shrink-0 shadow-lg shadow-accent/20">
+              <div className="w-14 h-14 bg-accent text-white rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-accent/20">
                  <Info size={28} />
               </div>
               <div className="text-center md:text-left">
@@ -191,7 +191,7 @@ export default function Budget() {
                   <p className="text-sm text-text-secondary mt-1 max-w-md font-medium">Logging your expenses daily helps you stay within budget and avoid last-minute surprises on your trip.</p>
               </div>
            </div>
-           <Link to="/create-trip" className="bg-navy text-white px-8 py-6 rounded- font-black text-xs border-0 cursor-pointer shadow-xl shadow-navy/20 whitespace-nowrap no-underline">
+           <Link to="/create-trip" className="bg-navy text-white px-8 py-3 rounded-xl font-black text-xs border-0 cursor-pointer shadow-xl shadow-navy/20 whitespace-nowrap no-underline">
               CREATE NEW TRIP
            </Link>
         </section>
@@ -231,7 +231,7 @@ function AnalyticWrapper({ tripId, trip, refreshTrips }) {
 
   if (loading) return (
     <div className="h-64 flex flex-col items-center justify-center gap-4">
-       <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded- animate-spin" />
+       <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-xl animate-spin" />
        <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Loading expenses...</p>
     </div>
   );

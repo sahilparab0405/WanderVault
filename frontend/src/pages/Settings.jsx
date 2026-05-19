@@ -35,8 +35,8 @@ export default function Settings() {
         </div>
 
         {/* Profile Section */}
-        <div className="bg-white rounded- border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
-          <div className="px-6 py-6 border-b border-border bg-bg/30 flex items-center gap-2">
+        <div className="bg-white rounded-xl border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
+          <div className="px-6 py-3 border-b border-border bg-bg/30 flex items-center gap-2">
             <User size={18} className="text-primary" />
             <h3 className="font-bold text-navy text-sm uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Profile Information</h3>
           </div>
@@ -65,8 +65,8 @@ export default function Settings() {
         </div>
 
         {/* Security Section */}
-        <div className="bg-white rounded- border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
-          <div className="px-6 py-6 border-b border-border bg-bg/30 flex items-center gap-2">
+        <div className="bg-white rounded-xl border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
+          <div className="px-6 py-3 border-b border-border bg-bg/30 flex items-center gap-2">
             <Lock size={18} className="text-accent" />
             <h3 className="font-bold text-navy text-sm uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Security</h3>
           </div>
@@ -107,8 +107,8 @@ export default function Settings() {
         </div>
 
         {/* Preferences Section */}
-        <div className="bg-white rounded- border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
-          <div className="px-6 py-6 border-b border-border bg-bg/30 flex items-center gap-2">
+        <div className="bg-white rounded-xl border border-border overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
+          <div className="px-6 py-3 border-b border-border bg-bg/30 flex items-center gap-2">
             <Globe size={18} className="text-success" />
             <h3 className="font-bold text-navy text-sm uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Preferences</h3>
           </div>
@@ -136,9 +136,9 @@ export default function Settings() {
               </div>
               <button 
                 onClick={() => setPreferences({...preferences, notifications: !preferences.notifications})}
-                className={`w-12 h-6 rounded- transition-colors relative ${preferences.notifications ? 'bg-primary' : 'bg-border'}`}
+                className={`w-12 h-6 rounded-xl transition-colors relative ${preferences.notifications ? 'bg-primary' : 'bg-border'}`}
               >
-                <div className={`absolute top-1 w-4 h-4 bg-white rounded- transition-all ${preferences.notifications ? 'left-7' : 'left-1'}`} />
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-xl transition-all ${preferences.notifications ? 'left-7' : 'left-1'}`} />
               </button>
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function Settings() {
           )}
           <button 
             onClick={handleSave}
-            className="flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-8 py-6 rounded- font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] border-0 cursor-pointer"
+            className="flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-8 py-3 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] border-0 cursor-pointer"
             style={{ boxShadow: '0 4px 12px rgba(255,107,53,0.3)' }}
           >
             <Save size={18} />

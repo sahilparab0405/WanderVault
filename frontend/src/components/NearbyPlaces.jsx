@@ -81,7 +81,7 @@ function PlaceCard({ place }) {
   const cat = CATEGORIES.find(c => c.id === place.category);
   const CatIcon = cat?.Icon || Compass;
   return (
-    <div className="bg-bg rounded- p-6.5 border border-border-light hover:border-border hover:bg-white transition-all duration-150 flex items-start gap-3">
+    <div className="bg-bg rounded-xl p-6.5 border border-border-light hover:border-border hover:bg-white transition-all duration-150 flex items-start gap-3">
       <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${cat?.color}18` }}>
         <CatIcon size={18} strokeWidth={1.5} style={{ color: cat?.color || '#6B7280' }} />
       </div>
@@ -103,7 +103,7 @@ function PlaceCard({ place }) {
           )}
         </div>
       </div>
-      <span className="text-[10px] font-semibold px-2 py-0.5 rounded- shrink-0 bg-border-light text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>{place.distance}</span>
+      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-xl shrink-0 bg-border-light text-text-secondary" style={{ fontFamily: "'Inter', sans-serif" }}>{place.distance}</span>
     </div>
   );
 }
@@ -132,7 +132,7 @@ export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded, trip
 
   if (!latitude || !longitude) {
     return (
-      <div className="bg-card rounded- border border-border p-6 text-center" style={{ boxShadow: 'var(--shadow-card)' }}>
+      <div className="bg-card rounded-xl border border-border p-6 text-center" style={{ boxShadow: 'var(--shadow-card)' }}>
         <div className="flex justify-center mb-2"><MapPin size={28} strokeWidth={1.5} className="text-text-muted" /></div>
         <p className="text-navy font-semibold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>Nearby places not available</p>
         <p className="text-text-muted text-xs mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>This trip was created without location coordinates. Create a new trip using location search to see nearby places.</p>
@@ -144,18 +144,18 @@ export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded, trip
   const totalCount = places.restaurant.length + places.hotel.length + places.attraction.length;
 
   return (
-    <div className="bg-card rounded- overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
+    <div className="bg-card rounded-xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
       {/* Header */}
-      <div className="px-6 py-6 border-b border-border">
+      <div className="px-6 py-3 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <MapPin size={16} strokeWidth={1.5} className="text-accent" />
             <h3 className="font-bold text-navy text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>Nearby Places</h3>
-            {!loading && <span className="text-[10px] bg-primary-50 text-primary px-2 py-0.5 rounded- font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>{totalCount} found</span>}
+            {!loading && <span className="text-[10px] bg-primary-50 text-primary px-2 py-0.5 rounded-xl font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>{totalCount} found</span>}
           </div>
           <button onClick={fetchAll} disabled={loading} className="text-text-muted hover:text-primary text-xs cursor-pointer bg-transparent border-0 transition-colors duration-150 disabled:opacity-50 flex items-center gap-1" style={{ fontFamily: "'Inter', sans-serif" }} aria-label="Refresh nearby places">
             {loading
-              ? <span className="w-3 h-3 border border-text-muted border-t-primary rounded- animate-spin" />
+              ? <span className="w-3 h-3 border border-text-muted border-t-primary rounded-xl animate-spin" />
               : <RefreshCw size={12} strokeWidth={1.5} />
             }
             Refresh
@@ -174,7 +174,7 @@ export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded, trip
                 style={{ fontFamily: "'Inter', sans-serif" }}>
                 <TabIcon size={12} strokeWidth={1.5} />
                 <span>{cat.shortLabel}</span>
-                {!loading && <span className={`text-[10px] px-1 py-0 rounded- ${isActive ? 'bg-white/20 text-white' : 'bg-border-light text-text-muted'}`}>{count}</span>}
+                {!loading && <span className={`text-[10px] px-1 py-0 rounded-xl ${isActive ? 'bg-white/20 text-white' : 'bg-border-light text-text-muted'}`}>{count}</span>}
               </button>
             );
           })}
@@ -186,21 +186,21 @@ export default function NearbyPlaces({ latitude, longitude, onPlacesLoaded, trip
         {loading ? (
           <div className="space-y-3">
             {[1,2,3,4].map(i => (
-              <div key={i} className="bg-bg rounded- p-6.5 flex items-start gap-3 animate-pulse border border-border-light">
+              <div key={i} className="bg-bg rounded-xl p-6.5 flex items-start gap-3 animate-pulse border border-border-light">
                 <div className="w-10 h-10 rounded-xl bg-border-light shrink-0" />
                 <div className="flex-1"><div className="h-3.5 bg-border-light rounded-xl w-3/4 mb-2" /><div className="h-2.5 bg-border-light rounded-xl w-1/2" /></div>
-                <div className="h-4 w-10 bg-border-light rounded- shrink-0" />
+                <div className="h-4 w-10 bg-border-light rounded-xl shrink-0" />
               </div>
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-6">
+          <div className="text-center py-3">
             <div className="flex justify-center mb-2"><AlertTriangle size={28} strokeWidth={1.5} className="text-text-muted" /></div>
             <p className="text-text-secondary text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>{error}</p>
             <button onClick={fetchAll} className="mt-3 text-primary text-xs font-semibold cursor-pointer bg-transparent border-0 hover:underline" style={{ fontFamily: "'Inter', sans-serif" }}>Try again →</button>
           </div>
         ) : activePlaces.length === 0 ? (
-          <div className="text-center py-6">
+          <div className="text-center py-3">
             {(() => { const cat = CATEGORIES.find(c => c.id === activeTab); const EIcon = cat?.Icon || Compass; return <div className="flex justify-center mb-2"><EIcon size={28} strokeWidth={1.5} className="text-text-muted opacity-60" /></div>; })()}
             <p className="text-text-secondary text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>No {CATEGORIES.find(c => c.id === activeTab)?.label.toLowerCase()} found nearby</p>
             <p className="text-text-muted text-xs mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>Try checking other categories</p>

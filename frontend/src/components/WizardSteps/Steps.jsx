@@ -7,7 +7,7 @@ import BudgetScoreCard from '../BudgetScoreCard';
 export const StepHeader = ({ Icon, title, subtitle }) => (
   <div className="text-center mb-6">
     <div className="flex justify-center mb-3">
-      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded- bg-primary-50 flex items-center justify-center text-primary">
+      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-primary-50 flex items-center justify-center text-primary">
         <Icon size={24} strokeWidth={1.5} />
       </div>
     </div>
@@ -40,13 +40,13 @@ export function Step2Destination({ form, setForm, locationSearch, inputRef, show
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={17} strokeWidth={1.5} />
           <input ref={inputRef} type="text" autoFocus placeholder="Search — e.g. Goa, Manali, Paris..." className={inputCls(false) + ' pl-10 pr-10'} style={{ fontFamily: "'Inter', sans-serif" }} value={locationSearch.query || form.destination} onChange={e => { locationSearch.search(e.target.value); setForm(p => ({ ...p, destination: e.target.value, latitude: null, longitude: null })); setShowSuggestions(true); }} onFocus={() => { if (locationSearch.suggestions.length) setShowSuggestions(true); }} onKeyDown={handleKey} />
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            {locationSearch.isSearching ? <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded- animate-spin" /> : form.destination ? <button type="button" onClick={() => { locationSearch.clear(); setForm(p => ({ ...p, destination: '', latitude: null, longitude: null })); }} className="text-text-muted hover:text-navy cursor-pointer bg-transparent border-0 p-0 flex items-center"><X size={15} strokeWidth={2} /></button> : null}
+            {locationSearch.isSearching ? <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-xl animate-spin" /> : form.destination ? <button type="button" onClick={() => { locationSearch.clear(); setForm(p => ({ ...p, destination: '', latitude: null, longitude: null })); }} className="text-text-muted hover:text-navy cursor-pointer bg-transparent border-0 p-0 flex items-center"><X size={15} strokeWidth={2} /></button> : null}
           </div>
         </div>
         {showSuggestions && locationSearch.suggestions.length > 0 && (
-          <div ref={suggestionsRef} className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded- overflow-hidden z-30" style={{ boxShadow: 'var(--shadow-lg)' }}>
+          <div ref={suggestionsRef} className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-xl overflow-hidden z-30" style={{ boxShadow: 'var(--shadow-lg)' }}>
             {locationSearch.suggestions.map((s, idx) => (
-              <button key={idx} type="button" onClick={() => handleLocationSelect(s)} className="w-full text-left px-6 py-6 hover:bg-primary-50 transition-colors border-0 border-b border-border-light last:border-b-0 bg-transparent flex items-start gap-3 cursor-pointer">
+              <button key={idx} type="button" onClick={() => handleLocationSelect(s)} className="w-full text-left px-6 py-3 hover:bg-primary-50 transition-colors border-0 border-b border-border-light last:border-b-0 bg-transparent flex items-start gap-3 cursor-pointer">
                 <MapPin size={14} strokeWidth={1.5} className="text-accent mt-0.5 shrink-0" />
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-navy truncate" style={{ fontFamily: "'Inter', sans-serif" }}>{s.city || s.name} {s.country && <span className="text-text-muted font-normal">, {s.country}</span>}</p>
@@ -87,7 +87,7 @@ export function BookingPanel({ modeId, bookingData, onChange, onSkip, BOOKING_CO
             {expanded ? <ChevronUp size={13} strokeWidth={2} /> : <ChevronDown size={13} strokeWidth={2} />} {expanded ? 'Hide booking details' : 'Already booked? Add details'}
           </button>
           {expanded && (
-            <div className="mt-3 bg-bg rounded- p-6 border border-border space-y-3">
+            <div className="mt-3 bg-bg rounded-xl p-6 border border-border space-y-3">
               <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Booking Details <span className="text-text-muted font-normal normal-case">(optional)</span></p>
               {config.fields.map(field => (
                 <div key={field.key}>
@@ -113,7 +113,7 @@ export function Step3TravelMode({ form, setForm, TRAVEL_MODES, BOOKING_CONFIG, n
           const isSelected = form.travelMode === mode.id;
           const MIcon = mode.Icon;
           return (
-            <button key={mode.id} type="button" onClick={() => setForm(p => ({ ...p, travelMode: mode.id, bookingDetails: {} }))} className={`flex flex-col items-center gap-2 py-6 px-2 rounded- border-2 cursor-pointer transition-all duration-200 bg-white ${isSelected ? 'border-accent shadow-md' : 'border-border hover:border-primary/40 hover:bg-primary-50'}`} style={{ boxShadow: isSelected ? '0 0 0 1px #FF6B35' : 'none' }}>
+            <button key={mode.id} type="button" onClick={() => setForm(p => ({ ...p, travelMode: mode.id, bookingDetails: {} }))} className={`flex flex-col items-center gap-2 py-3 px-2 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-white ${isSelected ? 'border-accent shadow-md' : 'border-border hover:border-primary/40 hover:bg-primary-50'}`} style={{ boxShadow: isSelected ? '0 0 0 1px #FF6B35' : 'none' }}>
               <MIcon size={28} strokeWidth={1.5} color={isSelected ? '#FF6B35' : '#2563EB'} />
               <span className={`text-xs font-bold ${isSelected ? 'text-accent' : 'text-navy'}`} style={{ fontFamily: "'Poppins', sans-serif" }}>{mode.label}</span>
             </button>
@@ -136,14 +136,14 @@ export function Step4Dates({ form, setForm, toDateStr, totalDays }) {
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-navy mb-1.5" style={{ fontFamily: "'Inter', sans-serif" }}>Start Date</label>
-          <DatePicker selected={form.startDate ? new Date(form.startDate + 'T12:00:00') : null} onChange={date => { if (date) { const s = toDateStr(date); setForm(p => ({ ...p, startDate: s, endDate: (p.endDate && s > p.endDate) ? '' : p.endDate })); } else setForm(p => ({ ...p, startDate: '' })); }} minDate={new Date()} dateFormat="yyyy-MM-dd" placeholderText="Select start date" className="w-full border border-border rounded-xl px-6 py-6 text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white text-navy" wrapperClassName="w-full" />
+          <DatePicker selected={form.startDate ? new Date(form.startDate + 'T12:00:00') : null} onChange={date => { if (date) { const s = toDateStr(date); setForm(p => ({ ...p, startDate: s, endDate: (p.endDate && s > p.endDate) ? '' : p.endDate })); } else setForm(p => ({ ...p, startDate: '' })); }} minDate={new Date()} dateFormat="yyyy-MM-dd" placeholderText="Select start date" className="w-full border border-border rounded-xl px-6 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white text-navy" wrapperClassName="w-full" />
         </div>
         <div>
           <label className="block text-sm font-medium text-navy mb-1.5" style={{ fontFamily: "'Inter', sans-serif" }}>End Date</label>
-          <DatePicker selected={form.endDate ? new Date(form.endDate + 'T12:00:00') : null} onChange={date => setForm(p => ({ ...p, endDate: date ? toDateStr(date) : '' }))} minDate={form.startDate ? new Date(form.startDate + 'T12:00:00') : new Date()} dateFormat="yyyy-MM-dd" placeholderText="Select end date" className="w-full border border-border rounded-xl px-6 py-6 text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white text-navy" wrapperClassName="w-full" />
+          <DatePicker selected={form.endDate ? new Date(form.endDate + 'T12:00:00') : null} onChange={date => setForm(p => ({ ...p, endDate: date ? toDateStr(date) : '' }))} minDate={form.startDate ? new Date(form.startDate + 'T12:00:00') : new Date()} dateFormat="yyyy-MM-dd" placeholderText="Select end date" className="w-full border border-border rounded-xl px-6 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white text-navy" wrapperClassName="w-full" />
         </div>
       </div>
-      {totalDays > 0 && <div className="mt-4 bg-primary-50 rounded-xl px-6 py-6 text-center border border-primary-100"><p className="text-sm text-primary font-bold">{totalDays} {totalDays === 1 ? 'Day' : 'Days'}</p></div>}
+      {totalDays > 0 && <div className="mt-4 bg-primary-50 rounded-xl px-6 py-3 text-center border border-primary-100"><p className="text-sm text-primary font-bold">{totalDays} {totalDays === 1 ? 'Day' : 'Days'}</p></div>}
     </div>
   );
 }
@@ -172,8 +172,8 @@ export function Step5Accommodation({ form, accMode, setAccMode, accForm, setAccF
 
       {accMode === '' && (
         <div className="space-y-3">
-          <button type="button" onClick={() => setAccMode('browse')} className="w-full bg-white border-2 border-border hover:border-primary/40 hover:bg-primary-50 text-navy font-bold py-6 rounded- transition-all duration-150 cursor-pointer text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>Search Hotels Near Destination</button>
-          <button type="button" onClick={() => setAccMode('booked')} className="w-full bg-white border-2 border-border hover:border-accent/40 hover:bg-accent-50 text-navy font-bold py-6 rounded- transition-all duration-150 cursor-pointer text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>Already Booked? Add Details</button>
+          <button type="button" onClick={() => setAccMode('browse')} className="w-full bg-white border-2 border-border hover:border-primary/40 hover:bg-primary-50 text-navy font-bold py-3 rounded-xl transition-all duration-150 cursor-pointer text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>Search Hotels Near Destination</button>
+          <button type="button" onClick={() => setAccMode('booked')} className="w-full bg-white border-2 border-border hover:border-accent/40 hover:bg-accent-50 text-navy font-bold py-3 rounded-xl transition-all duration-150 cursor-pointer text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>Already Booked? Add Details</button>
           <button type="button" onClick={() => nextStep()} className="w-full text-text-muted hover:text-text-secondary cursor-pointer bg-transparent border-0 px-0 py-2 transition-colors text-xs font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>{form.accommodation.length > 0 ? 'Continue to Budget' : 'Skip for now (add later)'}</button>
         </div>
       )}
@@ -185,13 +185,13 @@ export function Step5Accommodation({ form, accMode, setAccMode, accForm, setAccF
             <button type="button" onClick={() => setAccMode('')} className="text-xs text-primary font-semibold border-0 bg-transparent cursor-pointer">← Back</button>
           </div>
           {hotelsLoading ? (
-            <div className="py-10 text-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded- animate-spin mx-auto" /></div>
+            <div className="py-10 text-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-xl animate-spin mx-auto" /></div>
           ) : hotels.length === 0 ? (
-            <div className="text-center py-6 text-sm text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>No hotels found for this location.</div>
+            <div className="text-center py-3 text-sm text-text-muted" style={{ fontFamily: "'Inter', sans-serif" }}>No hotels found for this location.</div>
           ) : (
             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
               {hotels.map((h, i) => (
-                <div key={i} className="bg-white rounded- overflow-hidden border border-border flex flex-col sm:flex-row group" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <div key={i} className="bg-white rounded-xl overflow-hidden border border-border flex flex-col sm:flex-row group" style={{ boxShadow: 'var(--shadow-card)' }}>
                   <div className="w-full sm:w-32 h-32 shrink-0 relative bg-bg">
                     <img src={h.image} alt={h.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
@@ -224,7 +224,7 @@ export function Step5Accommodation({ form, accMode, setAccMode, accForm, setAccF
       )}
 
       {accMode === 'booked' && (
-        <div className="bg-bg rounded- p-6 border border-border mt-2 space-y-4">
+        <div className="bg-bg rounded-xl p-6 border border-border mt-2 space-y-4">
           <div className="flex justify-between items-center mb-1">
             <h4 className="font-bold text-navy text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>Hotel Details</h4>
             <button type="button" onClick={() => setAccMode('')} className="text-xs text-primary font-semibold border-0 bg-transparent cursor-pointer">Cancel</button>
@@ -239,7 +239,7 @@ export function Step5Accommodation({ form, accMode, setAccMode, accForm, setAccF
             <div><label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>To Day</label><input type="number" min="1" placeholder={totalDays || 7} value={accForm.toDay} onChange={e => setAccForm(p => ({ ...p, toDay: e.target.value }))} className="w-full border border-border rounded-xl px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" /></div>
             <div><label className="block text-xs font-medium text-navy mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>Price/Night (₹)</label><input type="number" min="0" placeholder="0" value={accForm.pricePerNight} onChange={e => setAccForm(p => ({ ...p, pricePerNight: e.target.value }))} className="w-full border border-border rounded-xl px-6 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" /></div>
           </div>
-          <button type="button" onClick={saveAccommodation} disabled={!accForm.name.trim()} className="w-full bg-accent hover:bg-accent-dark disabled:opacity-50 text-white font-bold py-6 rounded-xl text-sm border-0 transition-all duration-150 cursor-pointer mt-2" style={{ boxShadow: accForm.name.trim() ? '0 4px 12px rgba(255,107,53,0.3)' : 'none' }}>Save Accommodation</button>
+          <button type="button" onClick={saveAccommodation} disabled={!accForm.name.trim()} className="w-full bg-accent hover:bg-accent-dark disabled:opacity-50 text-white font-bold py-3 rounded-xl text-sm border-0 transition-all duration-150 cursor-pointer mt-2" style={{ boxShadow: accForm.name.trim() ? '0 4px 12px rgba(255,107,53,0.3)' : 'none' }}>Save Accommodation</button>
         </div>
       )}
     </div>
@@ -251,7 +251,7 @@ export function Step6Budget({ form, setForm, handleKey, inputCls, totalDays }) {
     <div>
       <StepHeader Icon={Wallet} title="Set your budget" subtitle="We'll track your spending against this" />
       <div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-navy font-bold text-lg" style={{ fontFamily: "'Poppins', sans-serif" }}>₹</span><input type="number" autoFocus placeholder="10000" min="1" step="1" className={inputCls(false) + ' pl-10 text-xl font-bold text-center'} style={{ fontFamily: "'Poppins', sans-serif" }} value={form.budget} onChange={e => { const v = e.target.value; if (v === '' || Number(v) >= 0) setForm(p => ({ ...p, budget: v })); }} onKeyDown={handleKey} /></div>
-      <div className="flex flex-wrap gap-2 mt-4 justify-center">{[5000, 10000, 15000, 25000, 50000].map(amount => (<button key={amount} type="button" onClick={() => setForm(p => ({ ...p, budget: String(amount) }))} className={`px-6 py-1.5 rounded- text-xs font-semibold border cursor-pointer transition-all duration-150 ${form.budget === String(amount) ? 'bg-primary text-white border-primary' : 'bg-white text-text-secondary border-border hover:border-primary hover:text-primary'}`} style={{ fontFamily: "'Inter', sans-serif" }}>₹{amount.toLocaleString()}</button>))}</div>
+      <div className="flex flex-wrap gap-2 mt-4 justify-center">{[5000, 10000, 15000, 25000, 50000].map(amount => (<button key={amount} type="button" onClick={() => setForm(p => ({ ...p, budget: String(amount) }))} className={`px-6 py-1.5 rounded-xl text-xs font-semibold border cursor-pointer transition-all duration-150 ${form.budget === String(amount) ? 'bg-primary text-white border-primary' : 'bg-white text-text-secondary border-border hover:border-primary hover:text-primary'}`} style={{ fontFamily: "'Inter', sans-serif" }}>₹{amount.toLocaleString()}</button>))}</div>
       {form.budget && <BudgetScoreCard budget={Number(form.budget)} days={totalDays || 1} destination={form.destination} />}
     </div>
   );
