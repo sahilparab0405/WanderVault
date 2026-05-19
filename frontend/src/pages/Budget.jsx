@@ -3,7 +3,7 @@ import API from '../api/axios';
 import BudgetTracker from '../components/BudgetTracker';
 import { 
   BarChart2, PieChart, Wallet, AlertTriangle, 
-  CheckCircle, ArrowRight, Filter, Printer, Download,
+  CheckCircle, ArrowRight, Filter,
   Target, Info
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -74,12 +74,6 @@ export default function Budget() {
           </p>
         </div>
         <div className="flex gap-2">
-           <button className="p-2.5 bg-bg border border-border rounded- text-text-muted hover:text-navy transition-colors border-0 cursor-pointer">
-              <Printer size={18} />
-           </button>
-           <button className="p-2.5 bg-bg border border-border rounded- text-text-muted hover:text-navy transition-colors border-0 cursor-pointer">
-              <Download size={18} />
-           </button>
         </div>
       </header>
 
@@ -197,9 +191,9 @@ export default function Budget() {
                   <p className="text-sm text-text-secondary mt-1 max-w-md font-medium">Logging your expenses daily helps you stay within budget and avoid last-minute surprises on your trip.</p>
               </div>
            </div>
-           <button className="bg-navy text-white px-8 py-6 rounded- font-black text-xs border-0 cursor-pointer shadow-xl shadow-navy/20 whitespace-nowrap">
-              EXPORT REPORT (.PDF)
-           </button>
+           <Link to="/create-trip" className="bg-navy text-white px-8 py-6 rounded- font-black text-xs border-0 cursor-pointer shadow-xl shadow-navy/20 whitespace-nowrap no-underline">
+              CREATE NEW TRIP
+           </Link>
         </section>
       </main>
 

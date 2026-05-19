@@ -255,7 +255,7 @@ router.delete('/:id/accommodation/:accId', protect, async (req, res) => {
   }
 });
 
-// DELETE trip
+// DELETE trip (cascade: also remove related expenses + itinerary items)
 router.delete('/:id', protect, async (req, res) => {
   try {
     const trip = await Trip.findById(req.params.id);
@@ -265,8 +265,17 @@ router.delete('/:id', protect, async (req, res) => {
       return res.status(401).json({ message: 'Not authorized' });
     }
 
+    // Remove all related expenses and itinerary items first
+    const Expense = require('../models/Expense');
+    const Itinerary = require('../models/Itinerary');
+
+    await Promise.all([
+      Expense.deleteMany({ trip: trip._id }),
+      Itinerary.deleteMany({ trip: trip._id }),
+    ]);
+
     await trip.deleteOne();
-    res.json({ message: 'Trip deleted successfully' });
+    res.json({ message: 'Trip and related data deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

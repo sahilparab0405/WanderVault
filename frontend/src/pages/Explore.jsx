@@ -61,6 +61,7 @@ export default function Explore() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dining');
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   const fetchTrips = useCallback(async () => {
@@ -86,6 +87,17 @@ export default function Explore() {
   }, [trips]);
 
   const pastTrips = useMemo(() => trips.filter(t => new Date(t.endDate) < new Date()).slice(0, 3), [trips]);
+
+  // Filter destinations by search query
+  const filteredDestinations = useMemo(() => {
+    if (!searchQuery.trim()) return POPULAR_DESTINATIONS;
+    return POPULAR_DESTINATIONS.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()) || d.category.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [searchQuery]);
+
+  const filteredSeasonal = useMemo(() => {
+    if (!searchQuery.trim()) return SEASONAL_HIGHLIGHTS;
+    return SEASONAL_HIGHLIGHTS.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()) || d.tag.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [searchQuery]);
 
   const handlePlanTrip = (destination) => {
     navigate('/create-trip', { state: { prefillDestination: destination } });
@@ -122,6 +134,8 @@ export default function Explore() {
               <input 
                 type="text" 
                 placeholder="Find a city..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 pr-6 py-2 bg-bg border border-border rounded- text-xs w-48 focus:w-64 focus:ring-4 focus:ring-primary/10 transition-all duration-300 outline-none"
               />
            </div>
@@ -240,7 +254,12 @@ export default function Explore() {
           <div className="space-y-12">
             {/* Popular Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {POPULAR_DESTINATIONS.map(dest => (
+              {filteredDestinations.length === 0 && filteredSeasonal.length === 0 ? (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-text-muted text-sm">No destinations match "{searchQuery}"</p>
+                </div>
+              ) : (
+                filteredDestinations.map(dest => (
                 <div key={dest.name} className="group relative rounded-3xl overflow-hidden aspect-[4/5] shadow-xl hover:-translate-y-2 transition-all duration-500">
                   <img src={dest.image} alt={dest.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                   <div className="absolute inset-0 bg-gradient-to-t from-navy via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
@@ -256,12 +275,14 @@ export default function Explore() {
                     </button>
                   </div>
                 </div>
-              ))}
+              ))
+              )}
             </div>
 
             {/* Featured Seasonal — Shimla + Pondicherry with CSS gradient backgrounds */}
+            {filteredSeasonal.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6">
-              {SEASONAL_HIGHLIGHTS.map(dest => (
+              {filteredSeasonal.map(dest => (
                 <div key={dest.name} className="relative rounded-3xl overflow-hidden h-80 shadow-2xl group cursor-pointer" onClick={() => handlePlanTrip(dest.name)}>
                   {/* CSS Gradient Background instead of broken image */}
                   <div 
@@ -303,6 +324,7 @@ export default function Explore() {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </section>
 
