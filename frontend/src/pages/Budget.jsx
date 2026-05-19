@@ -6,6 +6,7 @@ import {
   CheckCircle, ArrowRight, Filter,
   Target, Info
 } from 'lucide-react';
+import NotificationBell from '../components/NotificationBell';
 import { Link } from 'react-router-dom';
 
 const StatCardSkeleton = () => (
@@ -73,7 +74,8 @@ export default function Budget() {
             All trips overview
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <NotificationBell />
         </div>
       </header>
 

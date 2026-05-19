@@ -18,6 +18,7 @@ import {
   LayoutDashboard, Plane, Wallet, CalendarDays, Compass,
   Settings, LogOut, Menu, X, MapPin, Loader2
 } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 const NAV_ITEMS = [
   { to: '/dashboard',       label: 'Dashboard',  Icon: LayoutDashboard },
@@ -233,6 +234,9 @@ export default function Sidebar() {
           <Menu size={20} strokeWidth={1.5} />
         </button>
         <Logo size="sm" dark={true} />
+        <div className="ml-auto flex items-center">
+          <NotificationBell dark={true} />
+        </div>
       </div>
 
       {/* Mobile overlay */}

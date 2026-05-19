@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
+import NotificationBell from '../components/NotificationBell';
 import { 
   Compass, Utensils, MapPin, Building2,
   ArrowRight, Star, Search,
-  TrendingUp, Landmark, Map, Calendar
+  TrendingUp, Landmark, Map, Calendar, PlusCircle
 } from 'lucide-react';
 
 // Premium Discover Data
@@ -141,9 +142,15 @@ export default function Explore() {
                 className="pl-9 pr-6 py-2 bg-bg border border-border rounded-xl text-xs w-48 focus:w-64 focus:ring-4 focus:ring-primary/10 transition-all duration-300 outline-none"
               />
            </div>
-           <Link to="/create-trip" className="bg-accent hover:bg-accent-dark text-white px-6 py-2.5 rounded-xl text-xs font-bold no-underline transition-all shadow-lg shadow-accent/20">
-              New Trip
-           </Link>
+            <Link 
+              to="/create-trip" 
+              className="flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-6 py-2.5 rounded-xl text-xs font-bold no-underline transition-all shadow-lg shadow-accent/20 hover:-translate-y-0.5"
+            >
+              <PlusCircle size={14} /> Plan Trip
+            </Link>
+            <div className="flex items-center gap-4 border-l border-border pl-4 ml-2">
+              <NotificationBell />
+            </div>
         </div>
       </header>
 

@@ -7,6 +7,8 @@ import {
   Briefcase, AlertTriangle,
   Share2, MessageCircle, Globe, Copy, Link2
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 import { useToast } from '../components/Toast';
 import ItineraryTab from '../pages/Itinerary';
 import ConfirmModal from '../components/ConfirmModal';
@@ -39,6 +41,8 @@ export default function TripDetail() {
   const [expenseForm, setExpenseForm] = useState({ title: '', amount: '', category: 'Food' });
   const [isAddingExpense, setIsAddingExpense] = useState(false);
   const [expenseErrors, setExpenseErrors] = useState({});
+  const { user } = useAuth();
+  const { addNotification } = useNotifications();
   const toast = useToast();
 
   // Share modal state
@@ -69,6 +73,7 @@ export default function TripDetail() {
         category: expenseForm.category
       });
       toast.success(`"${expenseForm.title.trim()}" — ₹${Number(expenseForm.amount).toLocaleString()} added.`, 'Expense Added');
+      addNotification('success', 'Expense Added', `₹${Number(expenseForm.amount).toLocaleString()} added to ${trip?.destination || 'your trip'}!`);
       setShowExpenseForm(false);
       setExpenseForm({ title: '', amount: '', category: 'Food' });
       fetchTrip();

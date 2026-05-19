@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import Logo from '../components/Logo';
 import DashboardAnalytics from '../components/DashboardAnalytics';
+import NotificationBell from '../components/NotificationBell';
 
 // Lazy load map to keep initial payload small
 const TripMap = lazy(() => import('../components/TripMap'));
@@ -188,8 +189,11 @@ export default function Dashboard() {
           >
             <PlusCircle size={16} /> New Trip
           </Link>
-          <div className="w-9 h-9 rounded-xl bg-navy text-white flex items-center justify-center text-xs font-black shadow-inner">
-            {user?.name?.charAt(0) || 'U'}
+          <div className="flex items-center gap-4 border-l border-border pl-4 ml-2">
+            <NotificationBell />
+            <div className="w-9 h-9 rounded-xl bg-navy text-white flex items-center justify-center text-xs font-black shadow-inner">
+              {user?.name?.charAt(0) || 'U'}
+            </div>
           </div>
         </div>
       </header>
