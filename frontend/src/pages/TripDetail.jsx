@@ -125,22 +125,14 @@ export default function TripDetail() {
     setIsSearchingHotels(true);
     try {
       const q = hotelSearch.toLowerCase();
-      const query = `[out:json][timeout:25];
-(
-  node["tourism"="hotel"]["name"~"${q}", i](around:10000,${trip.latitude},${trip.longitude});
-  node["tourism"="hostel"]["name"~"${q}", i](around:10000,${trip.latitude},${trip.longitude});
-  node["tourism"="resort"]["name"~"${q}", i](around:10000,${trip.latitude},${trip.longitude});
-  node["tourism"="guest_house"]["name"~"${q}", i](around:10000,${trip.latitude},${trip.longitude});
-);
-out body 5;`;
-
-      const res = await fetch('https://overpass-api.de/api/interpreter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `data=${encodeURIComponent(query)}`
+      
+      const { data } = await API.get('/places/hotels', {
+        params: {
+          lat: trip.latitude,
+          lon: trip.longitude,
+          q
+        }
       });
-      if (!res.ok) throw new Error('OSM Error');
-      const data = await res.json();
       
       let results = (data.elements || []).map(h => {
           const lat = h.lat;
@@ -158,23 +150,11 @@ out body 5;`;
           };
       }).filter(h => h && h.name);
       
-      // If Overpass exact name search fails or returns nothing, just do a generic search nearby
-      if (results.length === 0) {
-          const fbQuery = `[out:json][timeout:25];(node["tourism"="hotel"](around:5000,${trip.latitude},${trip.longitude}););out body 5;`;
-          const fbRes = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `data=${encodeURIComponent(fbQuery)}`});
-          const fbData = await fbRes.json();
-          results = (fbData.elements || []).map(h => {
-             const name = h.tags?.name || 'Local Hotel';
-             const seed = parseInt(String(h.id).slice(0,6)) || 0;
-             return {
-                id: String(h.id), name, address: h.tags?.['addr:street'] ? `${h.tags['addr:street']}, ${trip.destination}` : trip.destination,
-                lat: h.lat, lon: h.lon, price: 800 + (seed % 4000), rating: (3.5 + (seed % 15) / 10).toFixed(1)
-             };
-          }).filter(h => h && h.name && h.name.toLowerCase().includes(q));
-      }
-      
       setHotelResults(results);
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err); 
+      // Ensure we don't leave it completely blank on failure if we can help it, though user can try again
+    }
     setIsSearchingHotels(false);
   };
   

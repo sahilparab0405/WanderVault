@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import AccommodationList from './AccommodationList';
 import { Utensils, Building2, Compass, MapPin, Star, Tag, RefreshCw, AlertTriangle } from 'lucide-react';
+import API from '../api/axios';
 
 /* ─── Category Configuration ─── */
 const CATEGORIES = [
@@ -49,7 +50,7 @@ function formatDistance(km) {
 }
 
 /* ─── Overpass API fetcher with Cache ─── */
-async function fetchNearbyPlaces(lat, lon, category, radius = 3000) {
+async function fetchNearbyPlaces(lat, lon, category) {
   const cacheKey = `wv_places_${Number(lat).toFixed(4)}_${Number(lon).toFixed(4)}_${category.id}`;
   const cachedData = localStorage.getItem(cacheKey);
   if (cachedData) {
@@ -59,11 +60,13 @@ async function fetchNearbyPlaces(lat, lon, category, radius = 3000) {
     } catch (e) { console.warn('Cache parse failed', e); }
   }
 
-  const query = `[out:json][timeout:10];(node${category.query}(around:${radius},${lat},${lon});way${category.query}(around:${radius},${lat},${lon}););out center 15;`;
   try {
-    const response = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: `data=${encodeURIComponent(query)}`, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
-    if (!response.ok) throw new Error(`Overpass error: ${response.status}`);
-    const data = await response.json();
+    let endpoint = '';
+    if (category.id === 'restaurant') endpoint = '/places/dining';
+    else if (category.id === 'hotel') endpoint = '/places/hotels';
+    else if (category.id === 'attraction') endpoint = '/places/sightseeing';
+
+    const { data } = await API.get(endpoint, { params: { lat, lon } });
     const formattedData = data.elements.map((el) => {
       const elLat = el.lat || el.center?.lat;
       const elLon = el.lon || el.center?.lon;

@@ -11,7 +11,7 @@ import Logo from '../components/Logo';
 import { AlertTriangle, Mail, Lock, ArrowRight } from 'lucide-react';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const BG_URL = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&q=80&fit=crop';
+const BG_URL = '';
 
 function FieldError({ msg }) {
   if (!msg) return null;

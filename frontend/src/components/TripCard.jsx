@@ -22,10 +22,18 @@ const TRAVEL_MODES = {
   car:    { Icon: Car,    label: 'Car' },
 };
 
-/* ─── Unsplash image URL helper (no API key needed) ─── */
-function getDestinationImageUrl(destination) {
-  const query = encodeURIComponent(destination?.split(',')[0]?.trim() || 'travel landscape');
-  return `https://source.unsplash.com/600x300/?${query},travel,city`;
+/* ─── Deterministic gradient helper ─── */
+function getDestinationGradient(destination) {
+  const hash = destination?.split('').reduce((a,c) => a + c.charCodeAt(0), 0) || 0;
+  const gradients = [
+    'linear-gradient(135deg, #38bdf8, #0284c7)',
+    'linear-gradient(135deg, #94a3b8, #475569)',
+    'linear-gradient(135deg, #4ade80, #16a34a)',
+    'linear-gradient(135deg, #facc15, #ca8a04)',
+    'linear-gradient(135deg, #a78bfa, #8b5cf6)',
+    'linear-gradient(135deg, #fb7185, #e11d48)'
+  ];
+  return gradients[hash % gradients.length];
 }
 
 /* ─── Date formatter ─── */
@@ -78,14 +86,9 @@ export default function TripCard({ trip, onDelete }) {
     >
       {/* ═══ TOP: Destination Photo Strip ═══ */}
       <div className="relative h-32 overflow-hidden">
-        <img
-          src={getDestinationImageUrl(trip.destination)}
-          alt={trip.destination}
-          className="w-full h-full object-cover"
-          loading="lazy"
-          onError={(e) => {
-            e.target.style.display = 'none';
-          }}
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{ background: getDestinationGradient(trip.destination) }}
         />
         {/* Dark gradient overlay */}
         <div

@@ -9,10 +9,10 @@ import {
 
 // Premium Discover Data
 const POPULAR_DESTINATIONS = [
-  { name: 'Goa', image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600&h=400&fit=crop', budget: '₹15,000+', category: 'Beach' },
-  { name: 'Manali', image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=600&h=400&fit=crop', budget: '₹20,000+', category: 'Mountains' },
-  { name: 'Munnar', image: 'https://images.unsplash.com/photo-1622309805370-ca556372befa?w=600&h=400&fit=crop', budget: '₹18,000+', category: 'Nature' },
-  { name: 'Leh', image: 'https://images.unsplash.com/photo-1544085311-11a028465b03?w=600&h=400&fit=crop', budget: '₹40,000+', category: 'Adventure' },
+  { name: 'Goa', image: null, budget: '₹15,000+', category: 'Beach' },
+  { name: 'Manali', image: null, budget: '₹20,000+', category: 'Mountains' },
+  { name: 'Munnar', image: null, budget: '₹18,000+', category: 'Nature' },
+  { name: 'Leh', image: null, budget: '₹40,000+', category: 'Adventure' },
 ];
 
 const SEASONAL_HIGHLIGHTS = [
@@ -261,8 +261,20 @@ export default function Explore() {
               ) : (
                 filteredDestinations.map(dest => (
                 <div key={dest.name} className="group relative rounded-3xl overflow-hidden aspect-[4/5] shadow-xl hover:-translate-y-2 transition-all duration-500">
-                  <img src={dest.image} alt={dest.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+                    {dest.image ? (
+                      <img src={dest.image} alt={dest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    ) : (
+                      <div 
+                        className="w-full h-full group-hover:scale-105 transition-transform duration-500"
+                        style={{
+                          background: dest.category === 'Beach' ? 'linear-gradient(135deg, #38bdf8, #0284c7)' :
+                                      dest.category === 'Mountains' ? 'linear-gradient(135deg, #94a3b8, #475569)' :
+                                      dest.category === 'Nature' ? 'linear-gradient(135deg, #4ade80, #16a34a)' :
+                                      'linear-gradient(135deg, #facc15, #ca8a04)'
+                        }}
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
                   <div className="absolute inset-x-0 bottom-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                     <span className="inline-block px-2 py-0.5 bg-accent text-white text-[9px] font-bold rounded-xl mb-2 uppercase tracking-widest">{dest.category}</span>
                     <p className="text-white font-black text-xl mb-1" style={{ fontFamily: "'Poppins', sans-serif" }}>{dest.name}</p>

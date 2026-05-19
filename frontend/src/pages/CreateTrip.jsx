@@ -153,23 +153,10 @@ function useHotelSearch(destination, lat, lon) {
       const cached = getCachedData(cacheKey);
       if (cached) { setHotels(cached); setLoading(false); return; }
       try {
-        const query = `[out:json][timeout:25];
-(
-  node["tourism"="hotel"](around:5000,${lat},${lon});
-  node["tourism"="hostel"](around:5000,${lat},${lon});
-  node["tourism"="guest_house"](around:5000,${lat},${lon});
-  node["tourism"="resort"](around:5000,${lat},${lon});
-);
-out body 10;`;
-
-        const res = await fetch('https://overpass-api.de/api/interpreter', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `data=${encodeURIComponent(query)}`
+        const { data } = await API.get('/places/hotels', {
+          params: { lat, lon }
         });
 
-        if (!res.ok) throw new Error('OSM Error');
-        const data = await res.json();
         const results = (data.elements || []).map(item => {
           const name = item.tags?.name;
           if (!name) return null;
@@ -178,11 +165,6 @@ out body 10;`;
           const priceTier = (1 + (hash % 3)); 
           const price = Math.round((800 + (hash % 4700)) / 50) * 50 * priceTier;
           const rating = (3.5 + ((hash % 15) / 10)).toFixed(1);
-          
-          // Generate a pseudo-realistic image URL based on id
-          let photo = `https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80`;
-          if (hash % 2 === 0) photo = `https://images.unsplash.com/photo-1551882547-ff40c0d5b5df?w=600&h=360&fit=crop&q=80`;
-          else if (hash % 3 === 0) photo = `https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=360&fit=crop&q=80`;
 
           // Calculate distance via Haversine
           const R = 6371;
@@ -196,7 +178,7 @@ out body 10;`;
             name,
             address: item.tags?.['addr:street'] ? `${item.tags['addr:street']}, ${destination}` : destination,
             distance: (distKm).toFixed(1) + 'km',
-            price, rating, image: photo,
+            price, rating, image: null,
             hash
           };
         }).filter(h => h && h.name);
@@ -212,7 +194,7 @@ out body 10;`;
         const dummy = {
             id: 'fallback', name: 'Standard Tourist Hotel', address: destination,
             distance: '1.2km', price: 2500, rating: '4.2', hash: 1234,
-            image: `https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80`
+            image: null
         };
         setHotels([dummy]); 
       }

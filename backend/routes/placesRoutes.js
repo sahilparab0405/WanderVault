@@ -117,4 +117,49 @@ router.get('/sightseeing', protect, async (req, res) => {
   }
 });
 
+/* ─── GET /api/places/hotels?lat=X&lon=Y&q=query ─── */
+router.get('/hotels', protect, async (req, res) => {
+  const { lat, lon, q } = req.query;
+  if (!lat || !lon) return res.status(400).json({ message: 'lat and lon are required' });
+
+  const key = getCacheKey(`hotels_${q || 'all'}`, lat, lon);
+
+  if (cache[key] && Date.now() - cache[key].ts < CACHE_DURATION) {
+    return res.json({ elements: cache[key].data, fromCache: true });
+  }
+
+  let query = '';
+  if (q) {
+    // Escape quotes for Overpass query
+    const searchString = q.replace(/"/g, '\\"');
+    query = `[out:json][timeout:25];(
+      node["tourism"="hotel"]["name"~"${searchString}", i](around:10000,${lat},${lon});
+      node["tourism"="hostel"]["name"~"${searchString}", i](around:10000,${lat},${lon});
+      node["tourism"="resort"]["name"~"${searchString}", i](around:10000,${lat},${lon});
+      node["tourism"="guest_house"]["name"~"${searchString}", i](around:10000,${lat},${lon});
+    );out center qt limit 40;`;
+  } else {
+    query = `[out:json][timeout:25];(
+      node["tourism"="hotel"](around:5000,${lat},${lon});
+      node["tourism"="hostel"](around:5000,${lat},${lon});
+      node["tourism"="resort"](around:5000,${lat},${lon});
+      node["tourism"="guest_house"](around:5000,${lat},${lon});
+    );out center qt limit 40;`;
+  }
+
+  try {
+    const data = await fetchOverpass(query);
+    const elements = data.elements || [];
+    cache[key] = { ts: Date.now(), data: elements };
+    return res.json({ elements, fromCache: false });
+  } catch (err) {
+    if (err.status === 429) {
+      cache[key] = { ts: Date.now() - (5 * 60 * 60 * 1000), data: [] };
+      return res.status(429).json({ message: 'Rate limited. Try again later.', elements: [] });
+    }
+    console.error('[placesRoutes] Hotels fetch error:', err.message);
+    return res.status(err.status || 500).json({ message: err.message, elements: [] });
+  }
+});
+
 module.exports = router;
