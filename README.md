@@ -1,21 +1,21 @@
 # WanderVault 🌍
 
-WanderVault is a comprehensive, production-ready travel planning and budgeting application designed to help users seamlessly organize their trips, track expenses, map out daily itineraries, and manage accommodations all in one place.
+WanderVault is a travel planning and budgeting web app built with the MERN stack. It helps users organize trips, track expenses, plan daily itineraries, and discover nearby places — all in one place.
 
 ## Features ✨
-- **Intelligent Trip Creation:** Step-by-step wizard to plan trips, set budgets, and determine travel modes.
-- **Budget Analytics:** Real-time expense tracking with intuitive pie charts and daily spending bars.
-- **Interactive Itineraries:** Map out your daily activities, tag locations, and track scheduled times.
-- **Accommodation & Dining Integrations:** Search for and manage hotel bookings, nearby dining, and sightseeing using location data.
-- **Data Export:** Export your entire trip budget and itinerary into professional PDF or CSV formats.
-- **Social Sharing:** Generate public trip links or share your itinerary directly via WhatsApp.
+- **Trip Creation Wizard:** Step-by-step form to plan trips with destination search, travel mode, dates, and accommodation.
+- **Budget Tracking:** Real-time expense tracking with pie charts, bar charts, and budget alerts.
+- **Daily Itinerary:** Plan day-by-day activities with time, location, and notes.
+- **Nearby Places:** Search for dining, sightseeing, and hotels near your destination using live map data.
+- **Data Export:** Export trip budgets and expenses as PDF or CSV files.
+- **Social Sharing:** Share public trip links or send itineraries via WhatsApp.
 
 ## Tech Stack 🛠️
 - **Frontend:** React, Vite, TailwindCSS, Recharts, Lucide Icons
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB
 - **Authentication:** JWT (JSON Web Tokens)
-- **External APIs:** Foursquare API (for rich location, hotel, and dining data)
+- **External APIs:** OpenStreetMap / Overpass API (for location, dining, and sightseeing data)
 
 ## Setup Steps 🚀
 

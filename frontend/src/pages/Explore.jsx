@@ -38,7 +38,7 @@ const SEASONAL_HIGHLIGHTS = [
   },
 ];
 
-/* ── Contextual Discovery place names ── */
+/* ── Nearby recommendations place names ── */
 const PLACE_NAMES = {
   dining: [
     { name: 'Popular Local Restaurant', desc: 'Authentic regional cuisine with top ratings from travelers.' },
@@ -137,7 +137,7 @@ export default function Explore() {
         <section className="space-y-6">
           <div className="flex items-center gap-3">
             <TrendingUp size={24} className="text-accent" />
-            <h2 className="text-2xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Contextual Discovery</h2>
+            <h2 className="text-2xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Nearby Recommendations</h2>
           </div>
           
           <div className="bg-white rounded-3xl border border-border overflow-hidden shadow-xl shadow-navy/5 grid lg:grid-cols-5 min-h-[300px]">
@@ -145,7 +145,7 @@ export default function Explore() {
               {activeTrip ? (
                 <div>
                    <div className="inline-flex items-center gap-2 bg-white/10 text-white px-6 py-1 rounded- text-[10px] font-bold uppercase tracking-widest mb-4">
-                      Active Trip Proximity
+                      Current Trip
                    </div>
                    <h3 className="text-3xl font-black mb-3 leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>{activeTrip.name}</h3>
                    <div className="flex items-center gap-2 mb-2 text-white/80">
@@ -223,12 +223,12 @@ export default function Explore() {
           </div>
         </section>
 
-        {/* SECTION 2 — DISCOVER NEW HORIZONS */}
+        {/* SECTION 2 — POPULAR DESTINATIONS */}
         <section className="space-y-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Compass size={24} className="text-primary" />
-              <h2 className="text-2xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>New Horizons</h2>
+              <h2 className="text-2xl font-black text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>Popular Destinations</h2>
             </div>
             <div className="hidden sm:flex gap-2">
                <div className="w-2.5 h-2.5 rounded- bg-accent" />
@@ -337,8 +337,8 @@ export default function Explore() {
 
       {/* ── Footer ── */}
       <footer className="bg-navy py-12 px-8 text-center border-t border-white/5 mt-12">
-          <p className="text-white/40 text-[11px] font-bold tracking-[0.3em] uppercase mb-4">WanderVault Experience</p>
-          <p className="text-white/60 text-xs max-w-sm mx-auto font-medium leading-relaxed">Personalized discovery engine Powered by OpenStreetMap & WanderVault Intelligence.</p>
+          <p className="text-white/40 text-[11px] font-bold tracking-[0.3em] uppercase mb-4">WanderVault</p>
+          <p className="text-white/60 text-xs max-w-sm mx-auto font-medium leading-relaxed">Location data powered by OpenStreetMap.</p>
           <div className="mt-8 flex justify-center gap-6">
              <div className="w-1.5 h-1.5 rounded- bg-white/20" />
              <div className="w-1.5 h-1.5 rounded- bg-white/20" />

@@ -468,7 +468,7 @@ export default function CreateTrip() {
         </div>
       </div>
 
-      {/* ── Starter Itinerary Modal (Area 3) ── */}
+      {/* ── Starter Itinerary Modal ── */}
       {starterModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-6">
           <div className="bg-white rounded-3xl max-w-md w-full p-8 border border-border shadow-2xl animate-in fade-in zoom-in duration-300 text-center">

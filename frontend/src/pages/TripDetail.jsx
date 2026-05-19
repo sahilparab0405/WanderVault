@@ -41,7 +41,7 @@ export default function TripDetail() {
   const [expenseErrors, setExpenseErrors] = useState({});
   const toast = useToast();
 
-  // Share modal state (Area 5)
+  // Share modal state
   const [showShareModal, setShowShareModal] = useState(false);
   const [togglingVisibility, setTogglingVisibility] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -414,7 +414,7 @@ out body 5;`;
          </div>
       </main>
 
-      {/* ── Share Trip Modal (Area 5) ── */}
+      {/* ── Share Trip Modal ── */}
       {showShareModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-6">
           <div className="bg-white rounded-3xl max-w-md w-full p-8 border border-border shadow-2xl animate-in fade-in zoom-in duration-300">
@@ -479,7 +479,7 @@ out body 5;`;
                   </button>
                 </div>
 
-                {/* WhatsApp Share (Feature B) */}
+                {/* WhatsApp Share */}
                 <button
                   onClick={() => {
                     const url = `${window.location.origin}/trip/public/${id}`;

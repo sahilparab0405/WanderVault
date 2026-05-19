@@ -165,7 +165,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 mt-0.5">
               <div className="w-1.5 h-1.5 rounded- bg-success animate-pulse" />
               <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
-                Active Session for {user?.name?.split(' ')[0] || 'Traveler'}
+                Welcome back, {user?.name?.split(' ')[0] || 'Traveler'}
               </p>
             </div>
           </div>
@@ -448,7 +448,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Clone Confirmation Modal (Area 5 Feature C) */}
+      {/* Clone Confirmation Modal */}
       {cloneTarget && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-navy/60 backdrop-blur-md p-6">
           <div className="bg-white rounded-3xl max-w-md w-full p-10 border border-white/20 shadow-2xl animate-in fade-in zoom-in duration-300">

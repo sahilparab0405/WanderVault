@@ -70,7 +70,7 @@ export default function Budget() {
             Budgeting
           </h1>
           <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-0.5">
-            Global Financial Health
+            All trips overview
           </p>
         </div>
         <div className="flex gap-2">
@@ -94,7 +94,7 @@ export default function Budget() {
                 <Wallet size={32} />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mb-1">Global Spend</p>
+                <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mb-1">Total Spent</p>
                 <p className="text-3xl font-black leading-tight">₹{totalSpent.toLocaleString()}</p>
               </div>
             </div>
@@ -115,7 +115,7 @@ export default function Budget() {
               <Target size={32} />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-1">Efficiency Ratio</p>
+              <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-1">Budget Used</p>
               <p className="text-2xl font-black text-navy leading-tight">{avgEfficiency.toFixed(1)}%</p>
             </div>
           </div>
@@ -128,8 +128,8 @@ export default function Budget() {
                  <AlertTriangle size={20} />
               </div>
               <div>
-                 <h4 className="font-black text-amber-900 text-sm">Action Required</h4>
-                 <p className="text-xs text-amber-800/80 mt-1 leading-relaxed">We've detected {overBudgetTrips} trips that have exceeded their planned budgets. Review your expenses in the breakdown below to optimize future travel spending.</p>
+                 <h4 className="font-black text-amber-900 text-sm">Budget Warning</h4>
+                 <p className="text-xs text-amber-800/80 mt-1 leading-relaxed">{overBudgetTrips} {overBudgetTrips === 1 ? 'trip has' : 'trips have'} gone over budget. Check the breakdown below to review your spending.</p>
               </div>
            </div>
         )}
@@ -177,11 +177,11 @@ export default function Budget() {
                <div className="w-24 h-24 bg-bg rounded-3xl flex items-center justify-center mx-auto mb-8">
                   <BarChart2 size={48} className="text-text-muted opacity-30" />
                </div>
-               <h3 className="text-3xl font-black text-navy mb-4">No Financial Records</h3>
-               <p className="text-text-secondary mb-10 max-w-sm mx-auto font-medium leading-relaxed">Start planning your first adventure to visualize detailed budget analytics and spending patterns here.</p>
-               <Link to="/create-trip" className="inline-flex items-center gap-3 bg-accent text-white px-10 py-6 rounded- font-black text-sm no-underline shadow-2xl shadow-accent/40 hover:-translate-y-1 transition-all">
-                 INITIALIZE TRIP <ArrowRight size={18} />
-               </Link>
+               <h3 className="text-3xl font-black text-navy mb-4">No Trips Yet</h3>
+                <p className="text-text-secondary mb-10 max-w-sm mx-auto font-medium leading-relaxed">Create your first trip to start tracking expenses and see your spending breakdown here.</p>
+                <Link to="/create-trip" className="inline-flex items-center gap-3 bg-accent text-white px-10 py-6 rounded- font-black text-sm no-underline shadow-2xl shadow-accent/40 hover:-translate-y-1 transition-all">
+                  Create Trip <ArrowRight size={18} />
+                </Link>
              </div>
            )}
         </section>
@@ -193,8 +193,8 @@ export default function Budget() {
                  <Info size={28} />
               </div>
               <div className="text-center md:text-left">
-                 <h5 className="font-black text-navy text-lg leading-tight">Budget Tip</h5>
-                 <p className="text-sm text-text-secondary mt-1 max-w-md font-medium">Tracking daily expenses manually increases financial awareness by 40%. Stay on top of your trips for a worry-free experience.</p>
+                 <h5 className="font-black text-navy text-lg leading-tight">Quick Tip</h5>
+                  <p className="text-sm text-text-secondary mt-1 max-w-md font-medium">Logging your expenses daily helps you stay within budget and avoid last-minute surprises on your trip.</p>
               </div>
            </div>
            <button className="bg-navy text-white px-8 py-6 rounded- font-black text-xs border-0 cursor-pointer shadow-xl shadow-navy/20 whitespace-nowrap">
@@ -204,7 +204,7 @@ export default function Budget() {
       </main>
 
       <footer className="py-12 px-8 text-center text-text-muted/40 text-[10px] font-black uppercase tracking-[0.3em]">
-          WanderVault Analytics Engine v2.0
+          WanderVault — Budget Tracker
       </footer>
     </div>
   );
@@ -238,7 +238,7 @@ function AnalyticWrapper({ tripId, trip, refreshTrips }) {
   if (loading) return (
     <div className="h-64 flex flex-col items-center justify-center gap-4">
        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded- animate-spin" />
-       <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Compiling Data...</p>
+       <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Loading expenses...</p>
     </div>
   );
 

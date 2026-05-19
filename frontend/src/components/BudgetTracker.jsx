@@ -148,7 +148,7 @@ function BudgetVoucher({ trip, totalSpent, remaining, budgetPercent }) {
           <div>
             <p className="text-[10px] text-text-muted uppercase tracking-widest font-semibold"
               style={{ fontFamily: "'Inter', sans-serif" }}>
-              WanderVault Budget Pass
+              Budget Summary
             </p>
             <h3 className="text-lg font-bold text-navy" style={{ fontFamily: "'Poppins', sans-serif" }}>
               {trip.name}
