@@ -45,7 +45,14 @@ const TAG_AMENITIES = [
 /* ─── Deterministic stats from OSM/Fallback ─── */
 function getHotelStats(place) {
   if (place.hash === 1234 || !place.image) {
-     place.image = null;
+     const hash = place.hash || (String(place.id).split('').reduce((a, c) => a + c.charCodeAt(0), 0) + (place.name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0));
+     const images = [
+       'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80',
+       'https://images.unsplash.com/photo-1551882547-ff40c0d1398c?w=600&h=360&fit=crop&q=80',
+       'https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?w=600&h=360&fit=crop&q=80',
+       'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&h=360&fit=crop&q=80',
+     ];
+     place.image = images[hash % images.length];
   }
   
   let budgetLevel = '₹';
@@ -204,19 +211,19 @@ function AccommodationCard({ place, stats, tripId, valueRank }) {
 
       {/* ── Photo strip ── */}
       <div className="relative h-44 overflow-hidden bg-border-light">
-        {stats.image ? (
+        <div 
+          className="absolute inset-0 w-full h-full group-hover:scale-105 transition-transform duration-500 flex items-center justify-center"
+          style={{ background: 'linear-gradient(135deg, #a78bfa, #8b5cf6)' }}
+        >
+          <Building2 size={32} className="text-white/50" />
+        </div>
+        {stats.image && (
           <img
             src={stats.image} alt={place.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
+            onError={(e) => { e.target.style.display = 'none'; }}
           />
-        ) : (
-          <div 
-            className="w-full h-full group-hover:scale-105 transition-transform duration-500 flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #a78bfa, #8b5cf6)' }}
-          >
-            <Building2 size={32} className="text-white/50" />
-          </div>
         )}
         {/* Rating badge overlay */}
         <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-xl shadow-md">

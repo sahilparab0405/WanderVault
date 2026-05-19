@@ -22,6 +22,12 @@ const TRAVEL_MODES = {
   car:    { Icon: Car,    label: 'Car' },
 };
 
+/* ─── Unsplash image URL helper ─── */
+function getDestinationImageUrl(destination) {
+  const query = encodeURIComponent(destination?.split(',')[0]?.trim() || 'travel landscape');
+  return `https://source.unsplash.com/600x300/?${query},travel,city`;
+}
+
 /* ─── Deterministic gradient helper ─── */
 function getDestinationGradient(destination) {
   const hash = destination?.split('').reduce((a,c) => a + c.charCodeAt(0), 0) || 0;
@@ -89,6 +95,15 @@ export default function TripCard({ trip, onDelete }) {
         <div 
           className="absolute inset-0 w-full h-full"
           style={{ background: getDestinationGradient(trip.destination) }}
+        />
+        <img
+          src={getDestinationImageUrl(trip.destination)}
+          alt={trip.destination}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
         />
         {/* Dark gradient overlay */}
         <div

@@ -173,12 +173,17 @@ function useHotelSearch(destination, lat, lon) {
           const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat * Math.PI / 180) * Math.cos(item.lat * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
           const distKm = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
+          // Generate a pseudo-realistic image URL based on id
+          let photo = `https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80`;
+          if (hash % 2 === 0) photo = `https://images.unsplash.com/photo-1551882547-ff40c0d5b5df?w=600&h=360&fit=crop&q=80`;
+          else if (hash % 3 === 0) photo = `https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=360&fit=crop&q=80`;
+
           return {
             id: item.id,
             name,
             address: item.tags?.['addr:street'] ? `${item.tags['addr:street']}, ${destination}` : destination,
             distance: (distKm).toFixed(1) + 'km',
-            price, rating, image: null,
+            price, rating, image: photo,
             hash
           };
         }).filter(h => h && h.name);
@@ -194,7 +199,7 @@ function useHotelSearch(destination, lat, lon) {
         const dummy = {
             id: 'fallback', name: 'Standard Tourist Hotel', address: destination,
             distance: '1.2km', price: 2500, rating: '4.2', hash: 1234,
-            image: null
+            image: `https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=360&fit=crop&q=80`
         };
         setHotels([dummy]); 
       }

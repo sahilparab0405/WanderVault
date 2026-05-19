@@ -192,8 +192,9 @@ export function Step5Accommodation({ form, accMode, setAccMode, accForm, setAccF
             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
               {hotels.map((h, i) => (
                 <div key={i} className="bg-white rounded-xl overflow-hidden border border-border flex flex-col sm:flex-row group" style={{ boxShadow: 'var(--shadow-card)' }}>
-                  <div className="w-full sm:w-32 h-32 shrink-0 relative bg-bg">
-                    <img src={h.image} alt={h.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="w-full sm:w-32 h-32 shrink-0 relative flex items-center justify-center bg-border-light overflow-hidden">
+                    <div className="absolute inset-0 w-full h-full" style={{ background: 'linear-gradient(135deg, #a78bfa, #8b5cf6)' }}></div>
+                    <img src={h.image} alt={h.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.style.display = 'none'; }} />
                   </div>
                   <div className="p-6 flex-1 flex flex-col justify-between">
                     <div>

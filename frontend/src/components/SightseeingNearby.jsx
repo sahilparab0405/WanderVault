@@ -98,7 +98,7 @@ export default function SightseeingNearby({ latitude, longitude }) {
         fee: 'Free entry',
         lat: latitude + f.lat_off,
         lon: longitude + f.lon_off,
-        photo: null
+        photo: `https://source.unsplash.com/400x300/?${encodeURIComponent(f.name)},landmark`
       }));
     } else {
       pList = elements.map(el => {
@@ -133,7 +133,7 @@ export default function SightseeingNearby({ latitude, longitude }) {
           desc,
           fee: entryFee,
           lat, lon,
-          photo: null
+          photo: `https://source.unsplash.com/400x300/?${encodeURIComponent(name)},${CATEGORY_MAP[cat].label.toLowerCase()}`
         };
       })
       .filter(p => p && p.name && p.name !== 'Local Attraction');
@@ -323,31 +323,28 @@ out body 15;`;
                       </span>
                     </div>
                     
-                    {place.photo ? (
-                      <div className="mt-3 w-full h-24 rounded-xl overflow-hidden border border-border-light">
-                        <img src={place.photo} alt={place.name} className="w-full h-full object-cover" />
+                    <div className="mt-3 w-full h-24 rounded-xl overflow-hidden relative" style={{
+                      background: (() => {
+                        const cat = place.category || '';
+                        if (cat === 'museums') return 'linear-gradient(135deg, #a855f7, #8b5cf6)';
+                        if (cat === 'parks') return 'linear-gradient(135deg, #22c55e, #34d399)';
+                        if (cat === 'temples') return 'linear-gradient(135deg, #f97316, #fbbf24)';
+                        if (cat === 'monuments') return 'linear-gradient(135deg, #64748b, #9ca3af)';
+                        if (cat === 'beaches') return 'linear-gradient(135deg, #60a5fa, #67e8f9)';
+                        return 'linear-gradient(135deg, #2dd4bf, #67e8f9)';
+                      })()
+                    }}>
+                      <div className="absolute inset-0 flex flex-col items-start justify-end p-6">
+                        <span className="bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-xl uppercase tracking-wider mb-1">{CATEGORY_MAP[place.category]?.label || 'Attraction'}</span>
+                        <p className="text-white font-bold text-xs leading-tight line-clamp-1 drop-shadow-sm">{place.name}</p>
                       </div>
-                    ) : (
-                      <div className="mt-3 w-full h-24 rounded-xl overflow-hidden relative" style={{
-                        background: (() => {
-                          const cat = place.category || '';
-                          if (cat === 'museums') return 'linear-gradient(135deg, #a855f7, #8b5cf6)';
-                          if (cat === 'parks') return 'linear-gradient(135deg, #22c55e, #34d399)';
-                          if (cat === 'temples') return 'linear-gradient(135deg, #f97316, #fbbf24)';
-                          if (cat === 'monuments') return 'linear-gradient(135deg, #64748b, #9ca3af)';
-                          if (cat === 'beaches') return 'linear-gradient(135deg, #60a5fa, #67e8f9)';
-                          return 'linear-gradient(135deg, #2dd4bf, #67e8f9)';
-                        })()
-                      }}>
-                        <div className="absolute inset-0 flex flex-col items-start justify-end p-6">
-                          <span className="bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-xl uppercase tracking-wider mb-1">{CATEGORY_MAP[place.category]?.label || 'Attraction'}</span>
-                          <p className="text-white font-bold text-xs leading-tight line-clamp-1 drop-shadow-sm">{place.name}</p>
-                        </div>
-                        <div className="absolute top-3 right-3">
-                          <CatIcon size={20} className="text-white/30" />
-                        </div>
+                      <div className="absolute top-3 right-3">
+                        <CatIcon size={20} className="text-white/30" />
                       </div>
-                    )}
+                      {place.photo && (
+                        <img src={place.photo} alt={place.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" onError={(e) => { e.target.style.display = 'none'; }} />
+                      )}
+                    </div>
 
                     <p className="text-xs text-text-muted mt-3 line-clamp-2" style={{ fontFamily: "'Inter', sans-serif" }}>
                       "{place.desc}"

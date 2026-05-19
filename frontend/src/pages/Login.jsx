@@ -11,7 +11,7 @@ import Logo from '../components/Logo';
 import { AlertTriangle, Mail, Lock, ArrowRight } from 'lucide-react';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const BG_URL = '';
+const BG_URL = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=80&fit=crop';
 
 function FieldError({ msg }) {
   if (!msg) return null;
@@ -64,10 +64,14 @@ export default function Login() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-6">
+      {/* Fallback gradient */}
+      <div className="fixed inset-0" style={{ background: 'linear-gradient(135deg, #1a2b4a, #0f172a)' }} />
       {/* Full-screen background */}
-      <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${BG_URL})` }}
+      <img
+        src={BG_URL}
+        alt="Travel"
+        className="fixed inset-0 w-full h-full object-cover"
+        onError={(e) => { e.target.style.display = 'none'; }}
       />
       {/* Dark overlay */}
       <div className="fixed inset-0" style={{ background: 'linear-gradient(135deg, rgba(26,43,74,0.88) 0%, rgba(26,43,74,0.72) 100%)' }} />
