@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const https = require('https');
+const { protect } = require('../middleware/authMiddleware');
 
 /* ─── In-memory cache (survives request, resets on server restart) ─── */
 const cache = {};
@@ -59,7 +60,7 @@ function fetchOverpass(query) {
 }
 
 /* ─── GET /api/places/dining?lat=X&lon=Y ─── */
-router.get('/dining', async (req, res) => {
+router.get('/dining', protect, async (req, res) => {
   const { lat, lon } = req.query;
   if (!lat || !lon) return res.status(400).json({ message: 'lat and lon are required' });
 
@@ -89,7 +90,7 @@ router.get('/dining', async (req, res) => {
 });
 
 /* ─── GET /api/places/sightseeing?lat=X&lon=Y ─── */
-router.get('/sightseeing', async (req, res) => {
+router.get('/sightseeing', protect, async (req, res) => {
   const { lat, lon } = req.query;
   if (!lat || !lon) return res.status(400).json({ message: 'lat and lon are required' });
 

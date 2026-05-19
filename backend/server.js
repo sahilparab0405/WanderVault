@@ -1,6 +1,7 @@
 const express = require('express');
 require('dotenv').config();
 const connectDB = require('./config/db');
+const helmet = require('helmet');
 
 const authRoutes = require('./routes/authRoutes');
 const tripRoutes = require('./routes/tripRoutes');
@@ -13,6 +14,12 @@ const app = express();
 connectDB();
 
 const cors = require('cors');
+
+// Security headers via helmet (safe defaults — no CSP to avoid frontend conflicts)
+app.use(helmet({
+  contentSecurityPolicy: false,   // frontend loads fonts/images from CDNs
+  crossOriginEmbedderPolicy: false, // Leaflet map tiles need cross-origin access
+}));
 
 app.use(cors({
   origin: [process.env.FRONTEND_URL || "https://wandervault-frontend.vercel.app", "http://localhost:5173", "http://127.0.0.1:5173"],
@@ -48,11 +55,12 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ message: err.message || 'Internal server error' });
 });
 
-// Keep-alive ping
-const KEEP_ALIVE_URL = 'https://wandervault-backend.onrender.com';
+// Keep-alive ping (prevents Render free-tier cold starts)
+const KEEP_ALIVE_URL = process.env.KEEP_ALIVE_URL || '';
 const PING_INTERVAL = 14 * 60 * 1000;
 
 const keepAlive = () => {
+  if (!KEEP_ALIVE_URL) return;
   const https = require('https');
   https.get(KEEP_ALIVE_URL, (res) => {
     // Keep-alive ping successful
@@ -61,7 +69,7 @@ const keepAlive = () => {
   });
 };
 
-if (process.env.NODE_ENV !== 'development') {
+if (process.env.NODE_ENV !== 'development' && KEEP_ALIVE_URL) {
   setInterval(keepAlive, PING_INTERVAL);
 }
 
